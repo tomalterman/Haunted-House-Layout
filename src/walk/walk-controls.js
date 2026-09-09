@@ -13,11 +13,7 @@
 //   forward = (-sin yaw, -cos yaw)   right = (cos yaw, -sin yaw)
 // Pitch is the camera's rotation.x: positive looks up, clamped to 80 degrees.
 import { slideCircleAlongWalls, zoneAt, distancePointToSegment } from "../geometry.js";
-
-/** Walls plus solid-volume edges; falls back to walls for a bare floor plan. */
-function collisionWalls(floorplan) {
-  return floorplan.collisionWalls ?? floorplan.walls;
-}
+import { combineCollisionWalls } from "../stroke-walls.js";
 
 export const DEFAULT_SPEED_FPS = 3;
 export const DEFAULT_RADIUS_FEET = 0.75;
@@ -35,10 +31,10 @@ function wallClearance(wall, radius) {
   return radius + (wall.thickness ?? 0) / 2;
 }
 
-function isFree(point, floorplan, radius) {
+function isFree(point, floorplan, radius, extraWalls = []) {
   const { w, h } = floorplan.bounds;
   if (point[0] < radius || point[1] < radius || point[0] > w - radius || point[1] > h - radius) return false;
-  return collisionWalls(floorplan).every(
+  return combineCollisionWalls(floorplan, extraWalls).every(
     (wall) => distancePointToSegment(point, wall.a, wall.b) >= wallClearance(wall, radius),
   );
 }
@@ -49,14 +45,14 @@ function isFree(point, floorplan, radius) {
  * back unchanged; otherwise rings of candidates at growing distance are tried
  * and the first free one wins, so a tap on a wall lands right beside it.
  */
-export function nearestFreeSpot(point, floorplan, radius = DEFAULT_RADIUS_FEET) {
+export function nearestFreeSpot(point, floorplan, radius = DEFAULT_RADIUS_FEET, extraWalls = []) {
   const start = [point[0], point[1]];
-  if (isFree(start, floorplan, radius)) return start;
+  if (isFree(start, floorplan, radius, extraWalls)) return start;
   for (let r = NUDGE_RING_STEP; r <= NUDGE_MAX_RADIUS; r += NUDGE_RING_STEP) {
     for (let i = 0; i < NUDGE_RING_SAMPLES; i++) {
       const angle = (i / NUDGE_RING_SAMPLES) * Math.PI * 2;
       const candidate = [start[0] + r * Math.cos(angle), start[1] + r * Math.sin(angle)];
-      if (isFree(candidate, floorplan, radius)) return candidate;
+      if (isFree(candidate, floorplan, radius, extraWalls)) return candidate;
     }
   }
   // Nothing free nearby (should not happen on this plan): the gym centre.
@@ -85,6 +81,7 @@ export function yawFacing([dx, dy]) {
 export function createWalker({
   floorplan,
   getZones = () => [],
+  getExtraWalls = () => [],
   speed = DEFAULT_SPEED_FPS,
   radius = DEFAULT_RADIUS_FEET,
   eyeHeight = DEFAULT_EYE_HEIGHT_FEET,
@@ -95,8 +92,9 @@ export function createWalker({
   // Yaw 0 (up the sketch) unless the caller picks one; main.js passes
   // yawFacing(first path leg) so the entrance start looks into the gym.
   const defaultYaw = startYaw ?? 0;
+  const extraWalls = () => getExtraWalls() ?? [];
 
-  let startPoint = nearestFreeSpot(start ?? defaultStart, floorplan, radius);
+  let startPoint = nearestFreeSpot(start ?? defaultStart, floorplan, radius, extraWalls());
   let position = [startPoint[0], startPoint[1]];
   let yaw = defaultYaw;
   let pitch = 0;
@@ -127,7 +125,7 @@ export function createWalker({
       const ry = -Math.sin(yaw);
       const distance = speed * dt;
       const delta = [(fx * forward + rx * strafe) * distance, (fy * forward + ry * strafe) * distance];
-      position = slideCircleAlongWalls(position, delta, radius, collisionWalls(floorplan));
+      position = slideCircleAlongWalls(position, delta, radius, combineCollisionWalls(floorplan, extraWalls()));
     }
     return snapshot();
   }
@@ -138,7 +136,7 @@ export function createWalker({
   }
 
   function setStart(point) {
-    startPoint = nearestFreeSpot(point, floorplan, radius);
+    startPoint = nearestFreeSpot(point, floorplan, radius, extraWalls());
     position = [startPoint[0], startPoint[1]];
     elapsed = 0;
   }

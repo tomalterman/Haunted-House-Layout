@@ -2,6 +2,7 @@
 // sync status readout, plus the glue between the input state machine and the
 // store/map view. Thin DOM code; the machine itself is tested in map-input.js.
 import { encodeStrokePoints } from "../store.js";
+import { WALL_SWATCH } from "../stroke-walls.js";
 import { hitTestMark } from "./map-input.js";
 
 export const STROKE_SIZE_FEET = 0.6;
@@ -135,7 +136,10 @@ export function createToolbar({
   root.append(chipsRow, toolsRow, warning);
 
   const chips = new Map();
-  for (const t of teams) {
+  // Walls is a drawing color, not a haunt team: last so the six team chips
+  // stay first and the default stroke color remains the first team.
+  const palette = [...teams, WALL_SWATCH];
+  for (const t of palette) {
     const chip = el("div", "chip");
     chip.style.setProperty("--team", t.color);
 

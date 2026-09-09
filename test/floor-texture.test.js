@@ -79,6 +79,16 @@ describe("createFloorTexture", () => {
     expect(center.slice(0, 3)).toEqual([0x3a, 0x9d, 0x4f]);
   });
 
+  it("paints a Walls stroke in black, not the unknown-team gray", () => {
+    const { store, texture, ctx } = setup();
+    strokeAt(store, "walls", 10, 10);
+    texture.draw();
+    const center = pixel(ctx, 200, 200);
+    expect(center[0]).toBeLessThan(40);
+    expect(center[1]).toBeLessThan(40);
+    expect(center[2]).toBeLessThan(40);
+  });
+
   it("tints pixels inside a zone over the entrance tents and not outside", () => {
     const { store, texture, ctx } = setup();
     store.setZone({

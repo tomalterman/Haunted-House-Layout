@@ -7,11 +7,13 @@
 // PlaneGeometry rotated -90 degrees about X and positioned at the gym's
 // center, which puts the texture's top-left pixel at world (0, 0, 0).
 //
-// Look (KTD9, from the build photos): 8 foot black-sheeted panels with open
-// tops on tan Ram Board, off-white pop-up canopies on thin legs, a raised
-// stage with a dark blue curtain, all inside a light gym box with a high
-// white ceiling.
+// Look: 8 foot black-sheeted panels on tan Ram Board, off-white pop-up
+// canopies on thin legs, a raised stage with a dark blue curtain. The haunt
+// path is covered — a low dark ceiling over the named regions — so looking
+// up is black sheeting, not an empty gym box. Fixed floor-plan walls and
+// freehand Walls strokes both extrude as the same black panels.
 import * as THREE_MODULE from "three";
+import { hauntCoverPolygons } from "../stroke-walls.js";
 
 // A third grader's eye height, shared with the walker so the camera and the
 // collision body can never disagree.
@@ -27,14 +29,19 @@ const CONTEXT_RESTORE_GRACE_MS = 2000;
 const COLORS = {
   floorBase: 0xc9a86c,
   wall: 0x0b0b0c,
+  cover: 0x0a0a0c,
   tentRoof: 0xf1ede4,
   tentLeg: 0x5b5b5e,
   stage: 0x2b2420,
   curtain: 0x1a2a5c,
-  gym: 0xe9e6df,
-  sky: 0xffffff,
-  ground: 0xb59a67,
+  gym: 0x6b665c,
+  sky: 0x4a453c,
+  ground: 0x3a3228,
+  fog: 0x1c1914,
 };
+const COVER_LIFT_FEET = 0.08;
+const FOG_NEAR = 12;
+const FOG_FAR = 46;
 
 /** Map feet [x, y] to world [x, 0, z]. */
 export function mapToWorld([x, y]) {
@@ -59,28 +66,64 @@ function buildFloor(THREE, floorplan, floorCanvas) {
   return { floor, texture };
 }
 
-function buildWalls(THREE, floorplan) {
-  const material = new THREE.MeshStandardMaterial({
+function wallMaterial(THREE) {
+  return new THREE.MeshStandardMaterial({
     color: COLORS.wall,
     roughness: 0.45,
     metalness: 0.05,
   });
-  return floorplan.walls.map((wall) => {
-    const [ax, ay] = wall.a;
-    const [bx, by] = wall.b;
-    const dx = bx - ax;
-    const dz = by - ay;
-    const length = Math.hypot(dx, dz);
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(length, floorplan.wallHeight, wall.thickness),
-      material,
-    );
-    mesh.name = wall.id;
-    mesh.userData.wallId = wall.id;
-    mesh.position.set((ax + bx) / 2, floorplan.wallHeight / 2, (ay + by) / 2);
-    // Rotation about Y by theta sends local +x to (cos theta, 0, -sin theta),
-    // so the segment direction (dx, dz) needs theta = -atan2(dz, dx).
-    mesh.rotation.y = -Math.atan2(dz, dx);
+}
+
+function wallMesh(THREE, wall, height, material) {
+  const [ax, ay] = wall.a;
+  const [bx, by] = wall.b;
+  const dx = bx - ax;
+  const dz = by - ay;
+  const length = Math.hypot(dx, dz) || 0.01;
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(length, height, wall.thickness), material);
+  mesh.name = wall.id;
+  mesh.userData.wallId = wall.id;
+  if (wall.strokeId != null) mesh.userData.strokeId = wall.strokeId;
+  mesh.position.set((ax + bx) / 2, height / 2, (ay + by) / 2);
+  // Rotation about Y by theta sends local +x to (cos theta, 0, -sin theta),
+  // so the segment direction (dx, dz) needs theta = -atan2(dz, dx).
+  mesh.rotation.y = -Math.atan2(dz, dx);
+  return mesh;
+}
+
+function buildWalls(THREE, floorplan) {
+  const material = wallMaterial(THREE);
+  return floorplan.walls.map((wall) => wallMesh(THREE, wall, floorplan.wallHeight, material));
+}
+
+function buildStrokeWalls(THREE, floorplan, strokeWalls) {
+  const group = new THREE.Group();
+  group.name = "stroke-walls";
+  const material = wallMaterial(THREE);
+  const meshes = (strokeWalls ?? []).map((wall) => {
+    const mesh = wallMesh(THREE, wall, floorplan.wallHeight, material);
+    group.add(mesh);
+    return mesh;
+  });
+  return { group, meshes };
+}
+
+function buildCovers(THREE, floorplan) {
+  const material = new THREE.MeshStandardMaterial({
+    color: COLORS.cover,
+    roughness: 0.95,
+    metalness: 0,
+    side: THREE.DoubleSide,
+  });
+  const y = floorplan.wallHeight + COVER_LIFT_FEET;
+  return hauntCoverPolygons(floorplan).map(({ id, points }) => {
+    const shape = new THREE.Shape(points.map(([x, z]) => new THREE.Vector2(x, z)));
+    const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+    mesh.name = id;
+    mesh.userData.coverId = id;
+    // +90 about X sends shape (x, y) to world (x, 0, y), matching map y -> z.
+    mesh.rotation.x = Math.PI / 2;
+    mesh.position.y = y;
     return mesh;
   });
 }
@@ -163,10 +206,10 @@ function buildGym(THREE, floorplan) {
 }
 
 function buildLights(THREE, floorplan) {
-  const hemisphere = new THREE.HemisphereLight(COLORS.sky, COLORS.ground, 1.1);
+  const hemisphere = new THREE.HemisphereLight(COLORS.sky, COLORS.ground, 0.55);
   hemisphere.position.set(0, floorplan.ceiling, 0);
-  const sun = new THREE.DirectionalLight(0xffffff, 1.4);
-  sun.position.set(floorplan.bounds.w * 0.35, floorplan.ceiling, floorplan.bounds.h * 0.3);
+  const sun = new THREE.DirectionalLight(0xe8d8b8, 0.45);
+  sun.position.set(floorplan.bounds.w * 0.35, floorplan.wallHeight + 2, floorplan.bounds.h * 0.3);
   sun.target.position.set(floorplan.bounds.w / 2, 0, floorplan.bounds.h / 2);
   return { hemisphere, sun };
 }
@@ -176,18 +219,33 @@ function buildLights(THREE, floorplan) {
  * `floorCanvas` becomes a CanvasTexture; in Node an object with width and
  * height is enough.
  */
-export function buildScene(floorplan, teams, { THREE = THREE_MODULE, floorCanvas } = {}) {
+export function buildScene(floorplan, teams, { THREE = THREE_MODULE, floorCanvas, strokeWalls = [] } = {}) {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(COLORS.gym);
+  scene.background = new THREE.Color(COLORS.fog);
+  scene.fog = new THREE.Fog(COLORS.fog, FOG_NEAR, FOG_FAR);
 
   const { floor, texture } = buildFloor(THREE, floorplan, floorCanvas);
   const walls = buildWalls(THREE, floorplan);
+  const stroke = buildStrokeWalls(THREE, floorplan, strokeWalls);
+  const covers = buildCovers(THREE, floorplan);
   const tents = buildTents(THREE, floorplan);
   const { stage, curtain } = buildStage(THREE, floorplan);
   const gym = buildGym(THREE, floorplan);
   const { hemisphere, sun } = buildLights(THREE, floorplan);
 
-  scene.add(floor, ...walls, ...tents, stage, curtain, gym, hemisphere, sun, sun.target);
+  scene.add(
+    floor,
+    ...walls,
+    stroke.group,
+    ...covers,
+    ...tents,
+    stage,
+    curtain,
+    gym,
+    hemisphere,
+    sun,
+    sun.target,
+  );
 
   function dispose() {
     scene.traverse((object) => {
@@ -198,7 +256,21 @@ export function buildScene(floorplan, teams, { THREE = THREE_MODULE, floorCanvas
     texture.dispose();
   }
 
-  return { scene, floor, texture, walls, tents, stage, curtain, gym, lights: { hemisphere, sun }, dispose };
+  return {
+    scene,
+    floor,
+    texture,
+    walls,
+    strokeWalls: stroke.group,
+    strokeWallMeshes: stroke.meshes,
+    covers,
+    tents,
+    stage,
+    curtain,
+    gym,
+    lights: { hemisphere, sun },
+    dispose,
+  };
 }
 
 /**
@@ -207,6 +279,21 @@ export function buildScene(floorplan, teams, { THREE = THREE_MODULE, floorCanvas
  * scene on WebGL context restore (KTD5); if restore does not arrive within
  * 2 seconds, onContextLost callbacks fire so the app can offer a reload.
  */
+function disposeObject3D(object) {
+  if (!object) return;
+  object.traverse((child) => {
+    child.geometry?.dispose?.();
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    for (const material of materials) material?.dispose?.();
+  });
+  object.parent?.remove(object);
+}
+
+function strokeWallKey(walls) {
+  if (!walls?.length) return "";
+  return walls.map((wall) => `${wall.id}:${wall.a[0]},${wall.a[1]}-${wall.b[0]},${wall.b[1]}`).join("|");
+}
+
 export function createWalkView({
   canvas,
   floorplan,
@@ -216,6 +303,7 @@ export function createWalkView({
   width,
   height,
   dpr = Math.min(globalThis.devicePixelRatio || 1, 2),
+  getStrokeWalls = () => [],
 }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(dpr, 2));
@@ -230,11 +318,26 @@ export function createWalkView({
   let running = false;
   let lastTime = 0;
   let restoreTimer = null;
+  let lastStrokeKey = null;
   const frameCallbacks = new Set();
   const lostCallbacks = new Set();
 
+  function applyStrokeWalls() {
+    const walls = getStrokeWalls() ?? [];
+    const key = strokeWallKey(walls);
+    if (key === lastStrokeKey) return;
+    lastStrokeKey = key;
+    disposeObject3D(built.strokeWalls);
+    const next = buildStrokeWalls(THREE, floorplan, walls);
+    built.scene.add(next.group);
+    built.strokeWalls = next.group;
+    built.strokeWallMeshes = next.meshes;
+  }
+
   function build() {
-    built = buildScene(floorplan, teams, { THREE, floorCanvas: floorTexture.canvas });
+    const strokeWalls = getStrokeWalls() ?? [];
+    built = buildScene(floorplan, teams, { THREE, floorCanvas: floorTexture.canvas, strokeWalls });
+    lastStrokeKey = strokeWallKey(strokeWalls);
     built.texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
     floorTexture.markDirty();
   }
@@ -248,6 +351,7 @@ export function createWalkView({
     const dt = lastTime ? Math.min((time - lastTime) / 1000, 0.1) : 0;
     lastTime = time;
     for (const cb of frameCallbacks) cb(dt);
+    applyStrokeWalls();
     uploadFloorIfDirty();
     renderer.render(built.scene, camera);
   }
@@ -266,6 +370,7 @@ export function createWalkView({
   }
 
   function render() {
+    applyStrokeWalls();
     uploadFloorIfDirty();
     renderer.render(built.scene, camera);
   }

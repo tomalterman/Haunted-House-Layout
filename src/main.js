@@ -14,6 +14,7 @@ import { createToolbar } from "./map/toolbar.js";
 import { createZoneTool } from "./map/zone-tool.js";
 // Pure walk controls (Layer 2, no three/nipplejs): cheap enough to load with the map.
 import { createWalker, createTouchControls, formatClock, yawFacing } from "./walk/walk-controls.js";
+import { wallSegmentsFromStrokes } from "./stroke-walls.js";
 
 const mapView = document.getElementById("map-view");
 const walkView = document.getElementById("walk-view");
@@ -124,6 +125,16 @@ function zoneCache() {
   return { getZones: () => zones, unsubscribe };
 }
 
+function strokeWallCache() {
+  const fromState = (state) =>
+    wallSegmentsFromStrokes(state.strokes, { hidden: state.hidden, teams: TEAMS });
+  let segments = fromState(store.getState());
+  const unsubscribe = store.subscribe(() => {
+    segments = fromState(store.getState());
+  });
+  return { getStrokeWalls: () => segments, unsubscribe };
+}
+
 let lastClockText = null;
 let lastZoneId;
 // The HUD clock is wall time since the walk began (or the last "Walk here"),
@@ -171,6 +182,7 @@ async function loadWalkModules() {
 
 function buildWalk(mods) {
   const zones = zoneCache();
+  const strokeWalls = strokeWallCache();
   const floorTexture = mods.createFloorTexture({
     store,
     floorplan: FLOORPLAN,
@@ -186,6 +198,7 @@ function buildWalk(mods) {
     THREE: mods.THREE,
     width,
     height,
+    getStrokeWalls: strokeWalls.getStrokeWalls,
   });
 
   // Start where the map's "Walk here" tap put us, else at the entrance door,
@@ -195,6 +208,7 @@ function buildWalk(mods) {
   const walker = createWalker({
     floorplan: FLOORPLAN,
     getZones: zones.getZones,
+    getExtraWalls: strokeWalls.getStrokeWalls,
     start: store.getWalkStart() ?? p0,
     yaw: yawFacing([p1[0] - p0[0], p1[1] - p0[1]]),
   });
@@ -237,6 +251,7 @@ function buildWalk(mods) {
       view.dispose();
       floorTexture.destroy();
       zones.unsubscribe();
+      strokeWalls.unsubscribe();
     },
   };
 }
