@@ -61,6 +61,7 @@ export function createToolbar({
   const { transform } = mapView;
   let team = teams[0]?.id ?? null;
   let zoneHandler = () => {};
+  const toolListeners = new Set();
   let stroke = null;
   let strokePointerType = null;
 
@@ -277,6 +278,7 @@ export function createToolbar({
     machine.setTool(name);
     if (name !== "label") closeLabel();
     for (const [tname, b] of toolButtons) b.setAttribute("aria-pressed", String(tname === name));
+    for (const fn of toolListeners) fn(name);
   }
 
   function refresh() {
@@ -307,10 +309,16 @@ export function createToolbar({
     setZoneHandler(fn) {
       zoneHandler = typeof fn === "function" ? fn : () => {};
     },
+    /** Called with the tool name after every setTool; returns an unsubscribe. */
+    onToolChange(fn) {
+      toolListeners.add(fn);
+      return () => toolListeners.delete(fn);
+    },
     refresh,
     closeLabel,
     destroy() {
       unsubscribe();
+      toolListeners.clear();
       closeLabel();
       labelInput?.removeEventListener("keydown", onLabelKey);
       labelDone?.removeEventListener("click", commitLabel);

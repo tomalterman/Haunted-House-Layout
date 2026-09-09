@@ -1,0 +1,44 @@
+/* Zone tool (U6): the in-progress outline overlay and the bottom sheet.
+   Colors come from the :root tokens in styles.css. */
+
+/* Draft outline drawn over the map canvas; taps go through to the canvas. */
+.zone-draft { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 1; }
+.zone-draft[hidden] { display: none; }
+.zone-draft .zone-draft-fill { fill: rgba(255, 255, 255, 0.18); stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+.zone-draft .zone-draft-line { fill: none; stroke: #fff; stroke-width: 2; stroke-linejoin: round; stroke-dasharray: 6 4; }
+.zone-draft .zone-draft-corner { fill: #fff; stroke: #111; stroke-width: 1.5; }
+.zone-draft .zone-draft-first { fill: #ffd166; stroke: #111; stroke-width: 2; }
+
+/* Bottom sheet, sitting just above the toolbar. */
+.zone-sheet { position: absolute; left: 0; right: 0; bottom: var(--zone-sheet-bottom, 0px); z-index: 3; display: flex; flex-direction: column; gap: 8px; padding: 10px max(10px, env(safe-area-inset-right)) 10px max(10px, env(safe-area-inset-left)); background: var(--panel); border-top: 1px solid var(--line); box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.45); max-height: 60dvh; overflow-y: auto; }
+.zone-sheet[hidden] { display: none; }
+.zone-sheet .zone-sheet-title { font-weight: 600; font-size: 15px; }
+.zone-sheet .zone-sheet-hint { color: var(--muted); font-size: 13px; }
+.zone-sheet .zone-sheet-hint[hidden], .zone-sheet .zone-sheet-row[hidden], .zone-sheet .zone-sheet-warning[hidden], .zone-sheet button[hidden] { display: none; }
+.zone-sheet .zone-sheet-row { display: flex; gap: 6px; align-items: stretch; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.zone-sheet .zone-sheet-row::-webkit-scrollbar { display: none; }
+.zone-sheet .zone-sheet-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.zone-sheet button { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; min-width: 44px; padding: 0 12px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; white-space: nowrap; flex: 0 0 auto; }
+.zone-sheet button:active { filter: brightness(1.25); }
+
+/* Team chips: same look as the toolbar chips, one button each. */
+.zone-sheet .zone-chip { --team: #888; display: flex; align-items: center; gap: 8px; }
+.zone-sheet .zone-chip .swatch { width: 16px; height: 16px; border-radius: 50%; background: var(--team); border: 2px solid rgba(255, 255, 255, 0.85); flex: 0 0 auto; }
+.zone-sheet .zone-chip[aria-pressed="true"] { background: var(--team); color: #fff; border-color: var(--team); font-weight: 600; }
+
+.zone-sheet .zone-preset { color: var(--ink); }
+
+.zone-sheet .zone-name { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 8px 10px; font: inherit; font-size: 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+
+.zone-sheet .zone-sheet-warning { color: #ffd166; font-size: 13px; }
+
+.zone-sheet .zone-sheet-actions { display: flex; gap: 6px; }
+.zone-sheet .zone-save { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.zone-sheet .zone-delete { color: #ff6b6b; border-color: #ff6b6b; margin-left: auto; }
+.zone-sheet .zone-cancel { color: var(--muted); }
+
+@media (max-height: 480px) {
+  .zone-sheet { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
+  .zone-sheet button, .zone-sheet .zone-name { min-height: 40px; }
+}
