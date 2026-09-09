@@ -137,9 +137,11 @@ function updateHud(out) {
     lastClockText = clock;
     hud.clock.textContent = clock;
   }
-  const zoneId = out.zone?.id ?? null;
-  if (zoneId === lastZoneId) return;
-  lastZoneId = zoneId;
+  // Key on the zone's identity AND its label, so a remote rename or team
+  // reassignment updates the chip without the walker leaving the polygon (AE1).
+  const zoneKey = out.zone ? `${out.zone.id}|${out.zone.team}|${out.zone.name}` : null;
+  if (zoneKey === lastZoneId) return;
+  lastZoneId = zoneKey;
   if (!out.zone) {
     hud.zone.textContent = "No zone";
     hud.zone.classList.add("is-none");
@@ -215,6 +217,9 @@ function buildWalk(mods) {
   const unsubscribeLost = view.onContextLost(() => {
     reloadOverlay.hidden = false;
   });
+  const unsubscribeRestored = view.onContextRestored(() => {
+    reloadOverlay.hidden = true;
+  });
 
   view.setCamera({ position: walker.position, yaw: walker.yaw, pitch: walker.pitch });
   updateHud(walker.step({ forward: 0, strafe: 0 }, 0));
@@ -227,6 +232,7 @@ function buildWalk(mods) {
     destroy() {
       unsubscribeFrame();
       unsubscribeLost();
+      unsubscribeRestored();
       controls.destroy();
       view.dispose();
       floorTexture.destroy();

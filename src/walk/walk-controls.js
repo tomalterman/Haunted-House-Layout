@@ -14,6 +14,11 @@
 // Pitch is the camera's rotation.x: positive looks up, clamped to 80 degrees.
 import { slideCircleAlongWalls, zoneAt, distancePointToSegment } from "../geometry.js";
 
+/** Walls plus solid-volume edges; falls back to walls for a bare floor plan. */
+function collisionWalls(floorplan) {
+  return floorplan.collisionWalls ?? floorplan.walls;
+}
+
 export const DEFAULT_SPEED_FPS = 3;
 export const DEFAULT_RADIUS_FEET = 0.75;
 export const DEFAULT_EYE_HEIGHT_FEET = 4;
@@ -33,7 +38,7 @@ function wallClearance(wall, radius) {
 function isFree(point, floorplan, radius) {
   const { w, h } = floorplan.bounds;
   if (point[0] < radius || point[1] < radius || point[0] > w - radius || point[1] > h - radius) return false;
-  return floorplan.walls.every(
+  return collisionWalls(floorplan).every(
     (wall) => distancePointToSegment(point, wall.a, wall.b) >= wallClearance(wall, radius),
   );
 }
@@ -122,7 +127,7 @@ export function createWalker({
       const ry = -Math.sin(yaw);
       const distance = speed * dt;
       const delta = [(fx * forward + rx * strafe) * distance, (fy * forward + ry * strafe) * distance];
-      position = slideCircleAlongWalls(position, delta, radius, floorplan.walls);
+      position = slideCircleAlongWalls(position, delta, radius, collisionWalls(floorplan));
     }
     return snapshot();
   }

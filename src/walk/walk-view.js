@@ -292,6 +292,14 @@ export function createWalkView({
     return () => lostCallbacks.delete(cb);
   };
 
+  // Fires when the GPU context comes back, so a reload prompt shown during the
+  // outage can be taken down instead of covering a working scene.
+  const restoredCallbacks = new Set();
+  const onContextRestored = (cb) => {
+    restoredCallbacks.add(cb);
+    return () => restoredCallbacks.delete(cb);
+  };
+
   let wasRunning = false;
   function handleContextLost(event) {
     event.preventDefault();
@@ -311,6 +319,7 @@ export function createWalkView({
     build();
     if (wasRunning) start();
     else render();
+    for (const cb of restoredCallbacks) cb();
   }
 
   canvas.addEventListener("webglcontextlost", handleContextLost, false);
@@ -341,6 +350,7 @@ export function createWalkView({
     render,
     onFrame,
     onContextLost,
+    onContextRestored,
     dispose,
   };
 }

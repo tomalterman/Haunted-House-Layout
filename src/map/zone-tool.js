@@ -132,7 +132,7 @@ function createOverlay(doc, host, transform) {
   const svg = doc.createElementNS(SVG_NS, "svg");
   svg.setAttribute("class", "zone-draft");
   svg.setAttribute("aria-hidden", "true");
-  svg.hidden = true;
+  svg.setAttribute("hidden", "");
   // Sit right above the canvas so the toolbar and sheet still paint over it.
   const canvas = host.querySelector("canvas");
   if (canvas) canvas.insertAdjacentElement("afterend", svg);
@@ -142,10 +142,10 @@ function createOverlay(doc, host, transform) {
     render(points, closed) {
       svg.replaceChildren();
       if (!points || points.length === 0) {
-        svg.hidden = true;
+        svg.setAttribute("hidden", "");
         return;
       }
-      svg.hidden = false;
+      svg.removeAttribute("hidden");
       const px = points.map((p) => transform.toPx(p));
       const shape = doc.createElementNS(SVG_NS, closed || px.length > 2 ? "polygon" : "polyline");
       shape.setAttribute("class", closed ? "zone-draft-fill" : "zone-draft-line");

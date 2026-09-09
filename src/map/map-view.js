@@ -166,6 +166,7 @@ export function createMapView({
   let width = 0;
   let height = 0;
   let fitted = false;
+  let fittedAspect = 1;
   let frame = null;
   let inProgress = null;
   let destroyed = false;
@@ -192,9 +193,13 @@ export function createMapView({
       height = Math.max(1, Math.round(size?.height ?? canvas.clientHeight ?? canvas.height));
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
-      if (!fitted) {
+      // Refit on the first sizing and whenever the viewport's shape changes
+      // materially, so rotating the phone never leaves the gym off-screen.
+      const aspect = width / height;
+      if (!fitted || Math.abs(aspect - fittedAspect) / fittedAspect > 0.2) {
         transform.fitToBounds({ width, height }, floorplan.bounds, 20, size?.insets);
         fitted = true;
+        fittedAspect = aspect;
       }
       view.requestRedraw();
     },

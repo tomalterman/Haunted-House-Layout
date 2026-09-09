@@ -6,6 +6,8 @@ import { hitTestMark } from "./map-input.js";
 
 export const STROKE_SIZE_FEET = 0.6;
 export const ERASE_RADIUS_FEET = 1;
+/** Minimum erase tolerance in CSS pixels, a comfortable fingertip. */
+export const ERASE_RADIUS_PX = 22;
 const LONG_PRESS_MS = 500;
 const LABEL_MARGIN_PX = 8;
 
@@ -99,7 +101,10 @@ export function createToolbar({
           case "label":
             return openLabel([x, y], feet);
           case "erase": {
-            const id = hitTestMark(store.getState(), feet, ERASE_RADIUS_FEET);
+            // The tolerance a finger feels is in pixels, so widen the foot radius
+            // when zoomed out; at fit zoom 1 ft is only ~4 px.
+            const radius = Math.max(ERASE_RADIUS_FEET, ERASE_RADIUS_PX / mapView.transform.scale);
+            const id = hitTestMark(store.getState(), feet, radius);
             if (id) store.erase(id);
             return undefined;
           }
