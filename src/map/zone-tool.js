@@ -261,10 +261,13 @@ function createSheet(doc, host, { teams, regions, handlers }) {
       hint.hidden = !drafting;
       if (drafting) {
         const n = view.corners;
-        hint.textContent =
-          n < MIN_CORNERS
-            ? `${n} corner${n === 1 ? "" : "s"}. Tap corners along the walls.`
-            : `${n} corners. Tap the first corner to close.`;
+        if (n === 0) {
+          hint.textContent = "Pick a region, tap a zone to edit, or tap corners along the walls.";
+        } else if (n < MIN_CORNERS) {
+          hint.textContent = `${n} corner${n === 1 ? "" : "s"}. Tap corners along the walls.`;
+        } else {
+          hint.textContent = `${n} corners. Tap the first corner to close.`;
+        }
       }
       presetsLabel.hidden = !drafting;
       presets.hidden = !drafting;
@@ -408,7 +411,14 @@ export function createZoneTool({
   function handleTap(feet) {
     // The sheet for a finished outline is modal until Save or Cancel.
     if (mode === "new") return;
-    if (mode === "draft") return addCorner(feet);
+    if (mode === "draft") {
+      // Empty draft: tapping an existing zone edits it; otherwise start corners.
+      if (draft.points.length === 0) {
+        const zone = zoneAt(feet, store.getState().zones);
+        if (zone) return void openSheetFor(zone.id);
+      }
+      return addCorner(feet);
+    }
     const zone = zoneAt(feet, store.getState().zones);
     if (zone) return void openSheetFor(zone.id);
     if (mode === "edit") close();
@@ -438,7 +448,15 @@ export function createZoneTool({
 
   toolbar.setZoneHandler((feet) => handleTap(feet));
   const unlistenTool = toolbar.onToolChange?.((tool) => {
-    if (tool !== "zone") close();
+    if (tool !== "zone") {
+      close();
+      return;
+    }
+    // Show region presets as soon as Zone is picked; do not wait for a map tap.
+    if (mode === "idle") {
+      mode = "draft";
+      render();
+    }
   });
 
   return {

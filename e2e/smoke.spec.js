@@ -142,6 +142,13 @@ test.describe("first open", () => {
     await expect(page.locator("#toolbar .chip"), "one chip per team").toHaveCount(6);
     await expect(page.locator("#toolbar .chip").first()).toContainText("Poison Breakfast");
 
+    const walkBox = await page.locator("#toolbar .walk").boundingBox();
+    const view = page.viewportSize();
+    expect(walkBox, "Walk is laid out").not.toBeNull();
+    expect(walkBox.x + walkBox.width, "Walk is on screen without scrolling the toolbar").toBeLessThanOrEqual(
+      view.width + 1,
+    );
+
     // The floor plan is drawn, so the canvas is not blank.
     const painted = await page.evaluate(() => {
       const canvas = document.getElementById("map-canvas");
@@ -157,6 +164,16 @@ test.describe("first open", () => {
     // With no Worker reachable the board is usable from local state.
     await expect(page.locator("#toolbar .status-word")).not.toHaveText("live", { timeout: 5000 });
     expect(errors, `unexpected page errors: ${errors.join(" | ")}`).toEqual([]);
+  });
+});
+
+test.describe("zones", () => {
+  test("picking Zone shows region presets without a map tap first", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(".tool", { hasText: /^Zone$/ }).click();
+    await expect(page.locator(".zone-sheet"), "the zone sheet opens with the tool").toBeVisible();
+    await expect(page.locator(".zone-preset"), "named regions are one-tap starts").toHaveCount(5);
+    await expect(page.locator(".zone-preset").first()).toContainText("Entrance tents");
   });
 });
 
@@ -247,6 +264,12 @@ test.describe("orientation", () => {
     const view = page.viewportSize();
     expect(toolbar.y, "the toolbar stays on screen in landscape").toBeLessThan(view.height);
     await expect(page.locator("#toolbar .walk")).toBeVisible();
+
+    const walk = page.locator("#toolbar .walk");
+    const walkBox = await walk.boundingBox();
+    expect(walkBox, "Walk stays in the viewport").not.toBeNull();
+    expect(walkBox.x, "Walk is not scrolled off to the right").toBeGreaterThanOrEqual(-1);
+    expect(walkBox.x + walkBox.width, "Walk fits on screen").toBeLessThanOrEqual(view.width + 1);
 
     // The gym is still drawn after the rotation, not scrolled off.
     const painted = await page.evaluate(() => {
