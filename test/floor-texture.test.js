@@ -178,3 +178,25 @@ describe("createFloorTexture", () => {
     expect(texture.drawIfDirty()).toBe(false);
   });
 });
+
+describe("pen pressure parity with the map", () => {
+  it("renders a pressure-varying stroke the same way the map does", async () => {
+    const { strokeOutline } = await import("../src/stroke-outline.js");
+    // A pen stroke: pressure rises along its length, so the outline is not
+    // uniform. The texture must use the same outline the map draws.
+    const stroke = {
+      id: "p1",
+      team: "garden",
+      size: 0.6,
+      points: [200, 200, 240, 200, 280, 200, 320, 200],
+      pressure: [0.1, 0.4, 0.8, 1],
+    };
+    const withPressure = strokeOutline(stroke);
+    const withoutPressure = strokeOutline(stroke.points, stroke.size);
+    expect(withPressure, "pen stroke produces an outline").not.toBeNull();
+    expect(
+      JSON.stringify(withPressure),
+      "honoring pressure differs from ignoring it, so the texture must pass the whole stroke",
+    ).not.toEqual(JSON.stringify(withoutPressure));
+  });
+});

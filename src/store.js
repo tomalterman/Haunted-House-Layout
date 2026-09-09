@@ -14,6 +14,24 @@ export const LABEL_MAX_CHARS = 40;
 const DEFAULT_PRESSURE = 0.5;
 
 /** Decode a stored stroke into feet triples [x, y, pressure]. */
+/**
+ * Quantize feet points ([x, y, pressure?]) into the compact stored shape:
+ * a flat integer array in twentieths of a foot plus a parallel pressure array.
+ * The inverse of `decodeStrokePoints`; both the store and the in-progress
+ * stroke the toolbar hands the renderer go through this, so they cannot drift.
+ */
+export function encodeStrokePoints(points) {
+  const flat = [];
+  const pressure = [];
+  let sawPressure = false;
+  for (const p of points) {
+    flat.push(Math.round(p[0] * STROKE_QUANTUM), Math.round(p[1] * STROKE_QUANTUM));
+    if (p[2] != null) sawPressure = true;
+    pressure.push(p[2] == null ? DEFAULT_PRESSURE : Math.round(p[2] * 100) / 100);
+  }
+  return { flat, pressure, sawPressure };
+}
+
 export function decodeStrokePoints(stroke) {
   const out = [];
   const pts = stroke.points;
@@ -109,14 +127,7 @@ export function createStore({ doc, provider = null, persistence = null }) {
 
   function addStroke({ team, size, points, pointerType }) {
     const id = newId();
-    const flat = [];
-    const pressure = [];
-    let sawPressure = false;
-    for (const p of points) {
-      flat.push(Math.round(p[0] * STROKE_QUANTUM), Math.round(p[1] * STROKE_QUANTUM));
-      if (p[2] != null) sawPressure = true;
-      pressure.push(p[2] == null ? DEFAULT_PRESSURE : Math.round(p[2] * 100) / 100);
-    }
+    const { flat, pressure, sawPressure } = encodeStrokePoints(points);
     const stroke = { id, team, size, points: flat };
     if (pointerType === "pen" && sawPressure) stroke.pressure = pressure;
     strokes.push([stroke]);

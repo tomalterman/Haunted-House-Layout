@@ -13,7 +13,10 @@
 // white ceiling.
 import * as THREE_MODULE from "three";
 
-export const EYE_HEIGHT_FEET = 4;
+// A third grader's eye height, shared with the walker so the camera and the
+// collision body can never disagree.
+import { DEFAULT_EYE_HEIGHT_FEET } from "./walk-controls.js";
+export const EYE_HEIGHT_FEET = DEFAULT_EYE_HEIGHT_FEET;
 export const TENT_HEIGHT_FEET = 7;
 export const TENT_LEG_SIZE_FEET = 0.2;
 export const STAGE_HEIGHT_FEET = 4;
