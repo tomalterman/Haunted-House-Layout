@@ -115,8 +115,13 @@ export function createInputMachine({ minStrokePoints = 4, ...options } = {}) {
       return;
     }
     if (state === "Placing") {
+      const dx = next.x - prev.x;
+      const dy = next.y - prev.y;
       pointers.set(e.id, next);
-      if (Math.hypot(e.x - origin.x, e.y - origin.y) >= TAP_SLOP_PX) moved = true;
+      if (!moved && Math.hypot(e.x - origin.x, e.y - origin.y) >= TAP_SLOP_PX) moved = true;
+      // One finger / mouse drag pans in every non-draw tool so a laptop can
+      // move the map without a second pointer (R7, R15).
+      if (moved) handlers.onPan([dx, dy]);
       return;
     }
     if (state === "Panning") {
@@ -137,6 +142,19 @@ export function createInputMachine({ minStrokePoints = 4, ...options } = {}) {
         handlers.onZoom({ center: after, factor: afterDist / beforeDist });
       }
     }
+  }
+
+  function handleWheel(e) {
+    // Trackpad pinch arrives as ctrl+wheel; a plain wheel or two-finger
+    // scroll pans. Prevents the desktop map from being stuck at fit-zoom.
+    if (e.ctrlKey || e.metaKey) {
+      const factor = Math.exp(-(e.deltaY ?? 0) * 0.01);
+      if (factor > 0 && Number.isFinite(factor)) {
+        handlers.onZoom({ center: [e.x, e.y], factor });
+      }
+      return;
+    }
+    handlers.onPan([-(e.deltaX ?? 0), -(e.deltaY ?? 0)]);
   }
 
   function handleUp(e) {
@@ -193,6 +211,8 @@ export function createInputMachine({ minStrokePoints = 4, ...options } = {}) {
         case "cancel":
           if (pointers.has(e.id)) cancelGesture();
           return undefined;
+        case "wheel":
+          return handleWheel(e);
         default:
           return undefined;
       }
@@ -254,16 +274,24 @@ export function hitTestMark(state, pointFeet, radius = 1) {
  * not abort the handler (KTD10). Returns an unbind function.
  */
 export function bindPointerEvents(canvas, machine, { toFeet } = {}) {
+  // clientX/Y minus the canvas box, not offsetX/Y: pointer capture makes
+  // offsetX wrong in some browsers once the pointer leaves the element.
+  const pointOnCanvas = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
   const normalize = (type, e) => {
+    const { x, y } = pointOnCanvas(e);
     const event = {
       type,
       id: e.pointerId,
-      x: e.offsetX,
-      y: e.offsetY,
+      x,
+      y,
       pressure: e.pressure,
       pointerType: e.pointerType,
     };
-    if (toFeet) event.feet = toFeet([e.offsetX, e.offsetY]);
+    if (toFeet) event.feet = toFeet([x, y]);
     return event;
   };
 
@@ -286,12 +314,26 @@ export function bindPointerEvents(canvas, machine, { toFeet } = {}) {
   };
   const onCancel = (e) => machine.handle(normalize("cancel", e));
   const onContextMenu = (e) => e.preventDefault();
+  const onWheel = (e) => {
+    e.preventDefault();
+    const { x, y } = pointOnCanvas(e);
+    machine.handle({
+      type: "wheel",
+      x,
+      y,
+      deltaX: e.deltaX,
+      deltaY: e.deltaY,
+      ctrlKey: e.ctrlKey,
+      metaKey: e.metaKey,
+    });
+  };
 
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerup", onUp);
   canvas.addEventListener("pointercancel", onCancel);
   canvas.addEventListener("contextmenu", onContextMenu);
+  canvas.addEventListener("wheel", onWheel, { passive: false });
 
   return () => {
     canvas.removeEventListener("pointerdown", onDown);
@@ -299,5 +341,6 @@ export function bindPointerEvents(canvas, machine, { toFeet } = {}) {
     canvas.removeEventListener("pointerup", onUp);
     canvas.removeEventListener("pointercancel", onCancel);
     canvas.removeEventListener("contextmenu", onContextMenu);
+    canvas.removeEventListener("wheel", onWheel);
   };
 }

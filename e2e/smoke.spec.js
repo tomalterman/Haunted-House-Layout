@@ -133,14 +133,27 @@ async function mapPoint(page, fx = 0.5, fy = 0.4) {
   return { x: box.x + box.width * fx, y: box.y + box.height * fy };
 }
 
+/** Unique room so parallel tests do not share a Yjs BroadcastChannel or IndexedDB board. */
+function roomUrl(name) {
+  const slug = String(name).toLowerCase().replace(/[^a-z0-9-]+/g, "").slice(0, 24);
+  return `/?room=e2e-${slug}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
 test.describe("first open", () => {
   test("shows the gym, the six teams, and works without a sync server", async ({ page }) => {
     const errors = watchForErrors(page);
-    await page.goto("/");
+    await page.goto(roomUrl("first-open"));
 
     await expect(page.locator("#map-canvas")).toBeVisible();
     await expect(page.locator("#toolbar .chip"), "one chip per team").toHaveCount(6);
     await expect(page.locator("#toolbar .chip").first()).toContainText("Poison Breakfast");
+
+    const walkBox = await page.locator("#toolbar .walk").boundingBox();
+    const view = page.viewportSize();
+    expect(walkBox, "Walk is laid out").not.toBeNull();
+    expect(walkBox.x + walkBox.width, "Walk is on screen without scrolling the toolbar").toBeLessThanOrEqual(
+      view.width + 1,
+    );
 
     // The floor plan is drawn, so the canvas is not blank.
     const painted = await page.evaluate(() => {
@@ -154,15 +167,26 @@ test.describe("first open", () => {
     });
     expect(painted, "the floor plan is drawn on the canvas").toBe(true);
 
-    // With no Worker reachable the board is usable from local state.
-    await expect(page.locator("#toolbar .status-word")).not.toHaveText("live", { timeout: 5000 });
+    // Sync may be connecting, offline, local, or live (a Worker on this
+    // machine, or another tab on the same origin). The page must still work.
+    await expect(page.locator("#toolbar .status-word")).toHaveText(/^(connecting|live|offline|local)$/);
     expect(errors, `unexpected page errors: ${errors.join(" | ")}`).toEqual([]);
+  });
+});
+
+test.describe("zones", () => {
+  test("picking Zone shows region presets without a map tap first", async ({ page }) => {
+    await page.goto(roomUrl("zone-presets"));
+    await page.locator(".tool", { hasText: /^Zone$/ }).click();
+    await expect(page.locator(".zone-sheet"), "the zone sheet opens with the tool").toBeVisible();
+    await expect(page.locator(".zone-preset"), "named regions are one-tap starts").toHaveCount(5);
+    await expect(page.locator(".zone-preset").first()).toContainText("Entrance tents");
   });
 });
 
 test.describe("drawing", () => {
   test("one finger draws a stroke in the selected team colour", async ({ page, isMobile }) => {
-    await page.goto("/");
+    await page.goto(roomUrl("draw-stroke"));
     const before = await countTeamPixels(page, TEAM_GREEN);
 
     const start = await mapPoint(page, 0.35, 0.4);
@@ -179,7 +203,7 @@ test.describe("drawing", () => {
 
   test("two fingers zoom and leave no stroke behind", async ({ page, isMobile }) => {
     test.skip(!isMobile, "pinch is a touch gesture; the desktop project has no touch input");
-    await page.goto("/");
+    await page.goto(roomUrl("pinch-zoom"));
     await expect(page.locator("#map-canvas")).toBeVisible();
 
     // Nothing drawn yet, so any team-coloured pixel after the gesture is a
@@ -204,7 +228,7 @@ test.describe("drawing", () => {
 
 test.describe("walk", () => {
   test("opens at kid height, runs the clock, and returns to the map", async ({ page, isMobile }) => {
-    await page.goto("/");
+    await page.goto(roomUrl("walk-roundtrip"));
 
     // Leave a mark so the return trip can prove the map survived the round trip.
     const start = await mapPoint(page, 0.35, 0.4);
@@ -236,7 +260,7 @@ test.describe("walk", () => {
 test.describe("orientation", () => {
   test("keeps the toolbar and the gym reachable in landscape", async ({ page, isMobile }) => {
     test.skip(!isMobile, "orientation only matters on the phone project");
-    await page.goto("/");
+    await page.goto(roomUrl("landscape"));
     await expect(page.locator("#map-canvas")).toBeVisible();
 
     const portrait = page.viewportSize();
@@ -247,6 +271,12 @@ test.describe("orientation", () => {
     const view = page.viewportSize();
     expect(toolbar.y, "the toolbar stays on screen in landscape").toBeLessThan(view.height);
     await expect(page.locator("#toolbar .walk")).toBeVisible();
+
+    const walk = page.locator("#toolbar .walk");
+    const walkBox = await walk.boundingBox();
+    expect(walkBox, "Walk stays in the viewport").not.toBeNull();
+    expect(walkBox.x, "Walk is not scrolled off to the right").toBeGreaterThanOrEqual(-1);
+    expect(walkBox.x + walkBox.width, "Walk fits on screen").toBeLessThanOrEqual(view.width + 1);
 
     // The gym is still drawn after the rotation, not scrolled off.
     const painted = await page.evaluate(() => {

@@ -127,6 +127,9 @@ export function createToolbar({
 
   const chipsRow = el("div", "chips");
   const toolsRow = el("div", "tools");
+  const toolsScroll = el("div", "tools-scroll");
+  const toolsPin = el("div", "tools-pin");
+  toolsRow.append(toolsScroll, toolsPin);
   const warning = el("div", "save-warning", "Save failed");
   warning.hidden = true;
   root.append(chipsRow, toolsRow, warning);
@@ -180,7 +183,7 @@ export function createToolbar({
   for (const [name, text] of TOOL_BUTTONS) {
     const b = button("tool", text, () => setTool(name));
     toolButtons.set(name, b);
-    toolsRow.append(b);
+    toolsScroll.append(b);
   }
   const undoButton = button("tool action", "Undo", () => store.undo());
   const walkButton = button("tool action walk", "Walk", () => onWalk());
@@ -189,7 +192,9 @@ export function createToolbar({
   const dot = el("span", "status-dot");
   const word = el("span", "status-word");
   status.append(dot, word);
-  toolsRow.append(undoButton, walkButton, status);
+  // Walk / Undo / live stay pinned: on a phone the tool row otherwise
+  // scrolls them off-screen, and volunteers never find the walk.
+  toolsPin.append(undoButton, walkButton, status);
 
   // ---- label entry ----
 

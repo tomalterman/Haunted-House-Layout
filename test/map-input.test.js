@@ -199,6 +199,37 @@ describe("createInputMachine: placing tools", () => {
     expect(spies.onTap).not.toHaveBeenCalled();
   });
 
+  it("a Placing drag past tap slop pans the map so desktop can move without a second finger", () => {
+    const { machine, spies } = machineWithSpies();
+    machine.setTool("erase");
+    machine.handle(down(1, 50, 60));
+    machine.handle(move(1, 54, 60));
+    expect(spies.onPan).not.toHaveBeenCalled();
+    machine.handle(move(1, 70, 64));
+    expect(spies.onPan).toHaveBeenCalled();
+    const total = spies.onPan.mock.calls.reduce(
+      (acc, [delta]) => [acc[0] + delta[0], acc[1] + delta[1]],
+      [0, 0],
+    );
+    // Only motion after the tap slop is applied (50 → 54 was still a tap).
+    expect(total[0]).toBe(16);
+    expect(total[1]).toBe(4);
+    machine.handle(up(1, 70, 64));
+    expect(spies.onTap).not.toHaveBeenCalled();
+  });
+
+  it("wheel zooms when ctrl is held and pans otherwise", () => {
+    const { machine, spies } = machineWithSpies();
+    machine.handle({ type: "wheel", x: 80, y: 40, deltaX: 10, deltaY: 20, ctrlKey: false });
+    expect(spies.onPan).toHaveBeenCalledWith([-10, -20]);
+    expect(spies.onZoom).not.toHaveBeenCalled();
+    machine.handle({ type: "wheel", x: 80, y: 40, deltaX: 0, deltaY: -20, ctrlKey: true });
+    expect(spies.onZoom).toHaveBeenCalledTimes(1);
+    const zoom = spies.onZoom.mock.calls[0][0];
+    expect(zoom.center).toEqual([80, 40]);
+    expect(zoom.factor).toBeGreaterThan(1);
+  });
+
   it("a second pointer during Placing switches to Panning without a tap", () => {
     const { machine, spies } = machineWithSpies();
     machine.setTool("label");
