@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#1b1b1f" />
+    <title>Haunted House Layout</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="map-view" class="view">
+        <canvas id="map-canvas" aria-label="Gym floor plan"></canvas>
+        <div id="toolbar" class="toolbar"></div>
+        <input id="label-input" class="label-input" type="text" maxlength="40" hidden autocomplete="off" />
+      </section>
+      <section id="walk-view" class="view" hidden>
+        <canvas id="walk-canvas" aria-label="Walk through the gym"></canvas>
+        <div id="hud" class="hud"></div>
+        <div id="joystick" class="joystick"></div>
+        <div id="look" class="look"></div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

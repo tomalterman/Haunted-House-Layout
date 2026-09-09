@@ -1,0 +1,19 @@
+:root {
+  color-scheme: dark;
+  --bg: #1b1b1f;
+  --panel: #26262c;
+  --ink: #f2f2f5;
+  --muted: #a7a7b3;
+  --line: #3a3a44;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, sans-serif; overscroll-behavior: none; }
+#app { height: 100dvh; width: 100vw; position: relative; overflow: hidden; }
+.view { position: absolute; inset: 0; }
+.view[hidden] { display: none; }
+canvas { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.toolbar { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); background: var(--panel); border-top: 1px solid var(--line); }
+.label-input { position: absolute; padding: 8px 10px; font: inherit; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+.hud { position: absolute; top: max(8px, env(safe-area-inset-top)); left: 8px; right: 8px; display: flex; gap: 8px; align-items: center; pointer-events: none; }
+.joystick { position: absolute; left: 0; bottom: 0; width: 50%; height: 45%; }
+.look { position: absolute; right: 0; bottom: 0; width: 50%; height: 45%; touch-action: none; }
