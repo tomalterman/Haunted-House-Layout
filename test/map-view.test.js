@@ -239,3 +239,23 @@ describe("createMapView", () => {
     expect(Math.abs(after[0] - 0xc9)).toBeLessThan(12);
   });
 });
+
+describe("fitToBounds insets", () => {
+  it("keeps the gym clear of a bottom overlay such as the toolbar", () => {
+    const t = createViewTransform();
+    t.fitToBounds({ width: 400, height: 300 }, GYM, 20, { bottom: 100 });
+    const [, topY] = t.toPx([0, 0]);
+    const [, bottomY] = t.toPx([0, GYM.h]);
+    expect(topY, "gym top is on canvas").toBeGreaterThanOrEqual(0);
+    expect(bottomY, "gym bottom clears the toolbar").toBeLessThanOrEqual(200);
+    const midY = (topY + bottomY) / 2;
+    expect(Math.abs(midY - 100), "centered in the area above the toolbar").toBeLessThan(1);
+  });
+
+  it("with no insets behaves as before", () => {
+    const a = createViewTransform().fitToBounds({ width: 400, height: 300 }, GYM, 20);
+    const b = createViewTransform().fitToBounds({ width: 400, height: 300 }, GYM, 20, {});
+    expect(b.scale).toBeCloseTo(a.scale, 10);
+    expect(b.offset).toEqual(a.offset);
+  });
+});

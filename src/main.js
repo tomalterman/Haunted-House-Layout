@@ -294,7 +294,15 @@ export function showView(name) {
 }
 
 function layout() {
-  if (!mapView.hidden) map.resize();
+  // The toolbar floats over the map, so fitting reserves its height (U4, U5).
+  if (!mapView.hidden) {
+    const bar = document.getElementById("toolbar");
+    map.resize({
+      width: mapCanvas.clientWidth,
+      height: mapCanvas.clientHeight,
+      insets: { bottom: bar?.offsetHeight ?? 0 },
+    });
+  }
   if (!walkView.hidden && walk) {
     const { width, height } = walkSize();
     walk.view.resize(width, height);

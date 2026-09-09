@@ -53,11 +53,23 @@ export function createViewTransform({ scale = 8, offset = [0, 0] } = {}) {
       return [px / t.scale - t.offset[0], py / t.scale - t.offset[1]];
     },
 
-    /** Fit `bounds` ({ w, h } feet) inside width by height CSS px, centered. */
-    fitToBounds({ width, height }, bounds, margin = 20) {
-      const fit = Math.min((width - 2 * margin) / bounds.w, (height - 2 * margin) / bounds.h);
+    /**
+     * Fit `bounds` ({ w, h } feet) inside width by height CSS px, centered in
+     * the area left over after `insets` ({ top, right, bottom, left } CSS px),
+     * so overlays like the toolbar never cover part of the gym.
+     */
+    fitToBounds({ width, height }, bounds, margin = 20, insets = {}) {
+      const top = insets.top ?? 0;
+      const right = insets.right ?? 0;
+      const bottom = insets.bottom ?? 0;
+      const left = insets.left ?? 0;
+      const usableW = Math.max(1, width - left - right - 2 * margin);
+      const usableH = Math.max(1, height - top - bottom - 2 * margin);
+      const fit = Math.min(usableW / bounds.w, usableH / bounds.h);
       t.scale = clampScale(fit > 0 ? fit : MIN_SCALE);
-      t.offset = [width / (2 * t.scale) - bounds.w / 2, height / (2 * t.scale) - bounds.h / 2];
+      const centerX = left + (width - left - right) / 2;
+      const centerY = top + (height - top - bottom) / 2;
+      t.offset = [centerX / t.scale - bounds.w / 2, centerY / t.scale - bounds.h / 2];
       return t;
     },
 
@@ -182,7 +194,7 @@ export function createMapView({
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       if (!fitted) {
-        transform.fitToBounds({ width, height }, floorplan.bounds);
+        transform.fitToBounds({ width, height }, floorplan.bounds, 20, size?.insets);
         fitted = true;
       }
       view.requestRedraw();
