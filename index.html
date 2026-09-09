@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#1b1b1f" />
     <title>Haunted House Layout</title>
+    <!-- An empty icon stops mobile browsers requesting /favicon.ico from the Worker. -->
+    <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
@@ -20,9 +22,18 @@
       </section>
       <section id="walk-view" class="view" hidden>
         <canvas id="walk-canvas" aria-label="Walk through the gym"></canvas>
-        <div id="hud" class="hud"></div>
-        <div id="joystick" class="joystick"></div>
-        <div id="look" class="look"></div>
+        <!-- U8 HUD: clock, zone chip, and the way back to the map -->
+        <div id="hud" class="hud">
+          <span id="hud-clock" class="hud-clock" role="timer" aria-label="Time in the walk">0:00</span>
+          <span id="hud-zone" class="hud-zone is-none" role="status" aria-live="polite">No zone</span>
+          <button id="hud-map" class="hud-map" type="button">Map</button>
+        </div>
+        <!-- U8 touch controls: joystick on the left, drag-to-look on the right -->
+        <div id="joystick" class="move-zone" aria-label="Move"></div>
+        <div id="look" class="look-zone" aria-label="Look around"></div>
+        <div id="reload-overlay" class="reload-overlay" hidden>
+          <button id="reload-button" class="reload-button" type="button">The 3D view stopped. Tap to reload.</button>
+        </div>
       </section>
     </div>
     <script type="module" src="/src/main.js"></script>
