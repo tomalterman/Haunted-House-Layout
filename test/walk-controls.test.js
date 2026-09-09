@@ -158,3 +158,28 @@ describe("formatClock", () => {
     expect(formatClock(600)).toBe("10:00");
   });
 });
+
+describe("solid volumes block movement", () => {
+  it("keeps the walker off the stage platform, including around the pony wall", () => {
+    // The pony wall only fronts the stage to x=70, so a walker can round its
+    // end. At 4 foot eye height the stage top is exactly underfoot, so walking
+    // onto it reads as sliding through the platform.
+    const stage = FLOORPLAN.stage;
+    const inStage = ([x, y]) =>
+      x >= stage.x && x <= stage.x + stage.w && y >= stage.y && y <= stage.y + stage.h;
+    const walker = createWalker({ floorplan: FLOORPLAN, getZones: () => [], start: [75, 50] });
+    for (let i = 0; i < 60; i++) walker.step({ forward: -1, strafe: 0 }, 1 / 15);
+    walker.look(Math.PI / 2, 0);
+    for (let i = 0; i < 200; i++) walker.step({ forward: 1, strafe: 0 }, 1 / 15);
+    expect(inStage(walker.position), `walker ended at ${walker.position}`).toBe(false);
+  });
+
+  it("still reaches every point on the visitor path", () => {
+    const walker = createWalker({ floorplan: FLOORPLAN, getZones: () => [], start: FLOORPLAN.path[0] });
+    for (const point of FLOORPLAN.path) {
+      walker.setStart(point);
+      const [x, y] = walker.position;
+      expect(Math.hypot(x - point[0], y - point[1]), `path point ${point} stays walkable`).toBeLessThan(2);
+    }
+  });
+});

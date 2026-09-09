@@ -178,3 +178,40 @@ describe("createFloorTexture", () => {
     expect(texture.drawIfDirty()).toBe(false);
   });
 });
+
+describe("pen pressure parity with the map", () => {
+  it("paints the pressure-honoring outline, not the uniform one", () => {
+    // A pen stroke whose pressure rises along its length. The map draws it via
+    // strokeOutline(stroke); if the texture drops `pressure` the mark comes out
+    // uniformly wide, so the two renders differ pixel for pixel.
+    const feet = [
+      [10, 10, 0.05],
+      [12, 10, 0.35],
+      [14, 10, 0.8],
+      [16, 10, 1],
+    ];
+
+    const pen = setup();
+    pen.store.addStroke({ team: "garden", size: 0.6, points: feet, pointerType: "pen" });
+    pen.texture.draw();
+
+    const touch = setup();
+    touch.store.addStroke({ team: "garden", size: 0.6, points: feet, pointerType: "touch" });
+    touch.texture.draw();
+
+    // Painted height of a column 13 feet along, where the pen is pressing hard
+    // (0.78 ft wide) and the pressure-less outline has tapered (0.35 ft).
+    const paintedAt = (ctx, x) => {
+      let n = 0;
+      for (let y = 160; y <= 240; y++) if (isMarked(pixel(ctx, x, y))) n++;
+      return n;
+    };
+    const withPressure = paintedAt(pen.ctx, 13 * PX_PER_FOOT);
+    const withoutPressure = paintedAt(touch.ctx, 13 * PX_PER_FOOT);
+    expect(withoutPressure, "the stroke is painted at all").toBeGreaterThan(0);
+    expect(
+      withPressure,
+      "a hard-pressed pen stroke paints wider than the same stroke with pressure dropped",
+    ).toBeGreaterThan(withoutPressure);
+  });
+});

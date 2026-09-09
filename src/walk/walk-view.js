@@ -13,7 +13,10 @@
 // white ceiling.
 import * as THREE_MODULE from "three";
 
-export const EYE_HEIGHT_FEET = 4;
+// A third grader's eye height, shared with the walker so the camera and the
+// collision body can never disagree.
+import { DEFAULT_EYE_HEIGHT_FEET } from "./walk-controls.js";
+export const EYE_HEIGHT_FEET = DEFAULT_EYE_HEIGHT_FEET;
 export const TENT_HEIGHT_FEET = 7;
 export const TENT_LEG_SIZE_FEET = 0.2;
 export const STAGE_HEIGHT_FEET = 4;
@@ -289,6 +292,14 @@ export function createWalkView({
     return () => lostCallbacks.delete(cb);
   };
 
+  // Fires when the GPU context comes back, so a reload prompt shown during the
+  // outage can be taken down instead of covering a working scene.
+  const restoredCallbacks = new Set();
+  const onContextRestored = (cb) => {
+    restoredCallbacks.add(cb);
+    return () => restoredCallbacks.delete(cb);
+  };
+
   let wasRunning = false;
   function handleContextLost(event) {
     event.preventDefault();
@@ -308,6 +319,7 @@ export function createWalkView({
     build();
     if (wasRunning) start();
     else render();
+    for (const cb of restoredCallbacks) cb();
   }
 
   canvas.addEventListener("webglcontextlost", handleContextLost, false);
@@ -338,6 +350,7 @@ export function createWalkView({
     render,
     onFrame,
     onContextLost,
+    onContextRestored,
     dispose,
   };
 }

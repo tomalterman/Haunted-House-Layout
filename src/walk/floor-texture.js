@@ -92,7 +92,8 @@ export function createFloorTexture({
   function drawStrokes(strokes, hidden) {
     for (const stroke of strokes) {
       if (hidden.has(stroke.team)) continue;
-      const outline = strokeOutline(stroke.points, stroke.size);
+      // Pass the whole stroke so pen pressure renders here exactly as on the map.
+      const outline = strokeOutline(stroke);
       drawOutline(ctx, outline, {
         scale: PX_PER_FOOT,
         color: teamColor(stroke.team),

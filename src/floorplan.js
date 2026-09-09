@@ -59,6 +59,11 @@ export const FLOORPLAN = {
 
   stage: { x: 20, y: 56, w: 50, h: 4 },
 
+  // Solid volumes a visitor cannot walk into. The stage is a 4 foot platform,
+  // and the pony wall only fronts it as far as x=70, so without this a walker
+  // rounds the wall's end and slides through the platform at eye height.
+  solids: [{ id: "stage", x: 20, y: 56, w: 50, h: 4 }],
+
   // Door openings drawn as thin rectangles on the outer walls.
   entrance: { x: 0, y: 47, w: 1, h: 8 },
   exit: { x: 82, y: 4, w: 3, h: 6 },
@@ -100,3 +105,26 @@ export const FLOORPLAN = {
     },
   ],
 };
+
+/** Rectangle edges as wall-shaped segments, for collision. */
+function rectEdges({ id, x, y, w, h }, thickness = 0.3) {
+  const c = [
+    [x, y],
+    [x + w, y],
+    [x + w, y + h],
+    [x, y + h],
+  ];
+  return c.map((a, i) => ({ id: `${id}-edge-${i}`, a, b: c[(i + 1) % 4], thickness }));
+}
+
+/**
+ * Everything that blocks movement: the built walls plus the edges of every
+ * solid volume. The walk uses this; the map still draws `walls` alone.
+ */
+export const COLLISION_WALLS = [
+  ...FLOORPLAN.walls,
+  ...FLOORPLAN.solids.flatMap((solid) => rectEdges(solid)),
+];
+
+// Attached so any consumer holding the plan object can collide correctly.
+FLOORPLAN.collisionWalls = COLLISION_WALLS;

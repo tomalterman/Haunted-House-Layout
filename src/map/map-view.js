@@ -8,7 +8,7 @@
 //
 // Imports Layers 0 and 1 only. Never imports walk/. The only DOM object it
 // touches is the canvas handed in, so tests can pass a @napi-rs/canvas canvas.
-import { strokeOutline, drawOutline, drawLabel } from "../stroke-outline.js";
+import { strokeOutline, drawOutline, drawLabel, fontForCapHeight } from "../stroke-outline.js";
 
 export const MIN_SCALE = 2; // px per foot
 export const MAX_SCALE = 60;
@@ -31,7 +31,6 @@ const ZONE_FILL_ALPHA = 0.25;
 const ZONE_LABEL_CAP_FEET = 2;
 const IN_PROGRESS_ALPHA = 0.7;
 // Typical sans-serif cap height as a fraction of the font's pixel size.
-const CAP_HEIGHT_RATIO = 0.7;
 
 const clampScale = (s) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
 
@@ -167,6 +166,7 @@ export function createMapView({
   let width = 0;
   let height = 0;
   let fitted = false;
+  let fittedAspect = 1;
   let frame = null;
   let inProgress = null;
   let destroyed = false;
@@ -193,9 +193,13 @@ export function createMapView({
       height = Math.max(1, Math.round(size?.height ?? canvas.clientHeight ?? canvas.height));
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
-      if (!fitted) {
+      // Refit on the first sizing and whenever the viewport's shape changes
+      // materially, so rotating the phone never leaves the gym off-screen.
+      const aspect = width / height;
+      if (!fitted || Math.abs(aspect - fittedAspect) / fittedAspect > 0.2) {
         transform.fitToBounds({ width, height }, floorplan.bounds, 20, size?.insets);
         fitted = true;
+        fittedAspect = aspect;
       }
       view.requestRedraw();
     },
@@ -283,7 +287,7 @@ export function createMapView({
 
         if (zone.name) {
           const [cx, cy] = transform.toPx(centroid);
-          ctx.font = `bold ${(ZONE_LABEL_CAP_FEET / CAP_HEIGHT_RATIO) * scale}px system-ui, sans-serif`;
+          ctx.font = fontForCapHeight(ZONE_LABEL_CAP_FEET, scale);
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.lineJoin = "round";

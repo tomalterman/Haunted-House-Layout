@@ -1,11 +1,13 @@
 // Map toolbar (KTD14 Layer 2): team chips, tool buttons, undo, walk, and the
 // sync status readout, plus the glue between the input state machine and the
 // store/map view. Thin DOM code; the machine itself is tested in map-input.js.
-import { STROKE_QUANTUM } from "../store.js";
+import { encodeStrokePoints } from "../store.js";
 import { hitTestMark } from "./map-input.js";
 
 export const STROKE_SIZE_FEET = 0.6;
 export const ERASE_RADIUS_FEET = 1;
+/** Minimum erase tolerance in CSS pixels, a comfortable fingertip. */
+export const ERASE_RADIUS_PX = 22;
 const LONG_PRESS_MS = 500;
 const LABEL_MARGIN_PX = 8;
 
@@ -17,7 +19,6 @@ const TOOL_BUTTONS = [
   ["walk-from-here", "Walk here"],
 ];
 
-const STATUS_WORDS = { connecting: "connecting", live: "live", offline: "offline", local: "local" };
 
 const EYE_SVG =
   '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -36,16 +37,11 @@ function button(className, text, onClick) {
   return b;
 }
 
-/** Store-shaped in-progress stroke: flat integer twentieths of a foot. */
+/** Store-shaped in-progress stroke, encoded exactly as `addStroke` will store it. */
 function toInProgressStroke(team, points, pointerType) {
-  const flat = [];
-  const pressure = [];
-  for (const [x, y, p] of points) {
-    flat.push(Math.round(x * STROKE_QUANTUM), Math.round(y * STROKE_QUANTUM));
-    pressure.push(p ?? 0.5);
-  }
+  const { flat, pressure, sawPressure } = encodeStrokePoints(points);
   const stroke = { team, size: STROKE_SIZE_FEET, points: flat };
-  if (pointerType === "pen") stroke.pressure = pressure;
+  if (pointerType === "pen" && sawPressure) stroke.pressure = pressure;
   return stroke;
 }
 
@@ -105,7 +101,10 @@ export function createToolbar({
           case "label":
             return openLabel([x, y], feet);
           case "erase": {
-            const id = hitTestMark(store.getState(), feet, ERASE_RADIUS_FEET);
+            // The tolerance a finger feels is in pixels, so widen the foot radius
+            // when zoomed out; at fit zoom 1 ft is only ~4 px.
+            const radius = Math.max(ERASE_RADIUS_FEET, ERASE_RADIUS_PX / mapView.transform.scale);
+            const id = hitTestMark(store.getState(), feet, radius);
             if (id) store.erase(id);
             return undefined;
           }
@@ -290,7 +289,7 @@ export function createToolbar({
     }
     const s = store.status;
     dot.className = `status-dot status-${s}`;
-    word.textContent = STATUS_WORDS[s] ?? s;
+    word.textContent = s;
     warning.hidden = !store.saveError;
   }
 

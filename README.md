@@ -91,3 +91,33 @@ Cloudflare's free plan includes Durable Objects with SQLite storage and WebSocke
 ## Compound Engineering (Claude Code)
 
 Planning and implementation in this repo use the Compound Engineering plugin vendored at `.claude/skills/compound-engineering/` (loads as `compound-engineering@skills-dir` once you open the repository root and trust the workspace; no marketplace install). Commands: `/ce-brainstorm`, `/ce-plan`, `/ce-work`, `/ce-compound`. Plans live under `docs/plans/` and solutions under `docs/solutions/`. Upstream: [EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) (MIT).
+
+## Device checklist
+
+The automated tests run headless Chromium, which cannot reproduce a few iOS
+behaviors. Walk these on a real phone before build night:
+
+- **Background and return.** Open the walk, switch apps for a minute, come
+  back. The scene should redraw. If iOS dropped the GPU context and it did not
+  return, the tap-to-reload overlay appears; tapping it reloads.
+- **Low Power Mode.** Safari caps animation at 30 frames per second. Movement
+  is time-based, so walking speed should still feel like 3 feet per second,
+  just less smooth.
+- **Pinch after drawing.** Draw a stroke, then pinch to zoom starting with one
+  finger. The zoom should happen with no stray mark left behind.
+- **Portrait and landscape.** Rotate in both views. The map refits, and the
+  walk's joystick and look areas move to the lower corners.
+- **Two phones.** Open the same link on two devices and draw on one. The other
+  should show it within a few seconds, and the toolbar should read "live".
+
+### Running the browser tests locally
+
+```
+npm run e2e
+```
+
+In a sandbox that already has Chromium, point Playwright at it:
+
+```
+PW_CHROMIUM=/path/to/chrome npm run e2e
+```

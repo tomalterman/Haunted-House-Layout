@@ -85,9 +85,13 @@ export function drawOutline(ctx, outline, options = {}) {
 /**
  * CSS font string sized so the cap height is about 1.5 feet times scale.
  */
-export function labelFont(scale) {
-  const px = (LABEL_CAP_HEIGHT_FEET / CAP_HEIGHT_RATIO) * scale;
+export function fontForCapHeight(capFeet, scale) {
+  const px = (capFeet / CAP_HEIGHT_RATIO) * scale;
   return `bold ${px}px system-ui, sans-serif`;
+}
+
+export function labelFont(scale) {
+  return fontForCapHeight(LABEL_CAP_HEIGHT_FEET, scale);
 }
 
 /**
