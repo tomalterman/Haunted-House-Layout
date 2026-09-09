@@ -29,7 +29,7 @@ export default defineConfig({
       use: {
         ...devices["iPhone 13"],
         browserName: "chromium",
-        launchOptions: { args: gpuArgs },
+        launchOptions: { args: gpuArgs, executablePath: process.env.PW_CHROMIUM || undefined },
       },
     },
     {
@@ -37,7 +37,7 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 800 },
-        launchOptions: { args: gpuArgs },
+        launchOptions: { args: gpuArgs, executablePath: process.env.PW_CHROMIUM || undefined },
       },
     },
   ],
