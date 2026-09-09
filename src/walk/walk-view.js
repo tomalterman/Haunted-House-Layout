@@ -29,7 +29,7 @@ const CONTEXT_RESTORE_GRACE_MS = 2000;
 const COLORS = {
   floorBase: 0xc9a86c,
   wall: 0x0b0b0c,
-  cover: 0x0a0a0c,
+  cover: 0x161412,
   tentRoof: 0xf1ede4,
   tentLeg: 0x5b5b5e,
   stage: 0x2b2420,
@@ -206,9 +206,9 @@ function buildGym(THREE, floorplan) {
 }
 
 function buildLights(THREE, floorplan) {
-  const hemisphere = new THREE.HemisphereLight(COLORS.sky, COLORS.ground, 0.55);
+  const hemisphere = new THREE.HemisphereLight(COLORS.sky, COLORS.ground, 0.75);
   hemisphere.position.set(0, floorplan.ceiling, 0);
-  const sun = new THREE.DirectionalLight(0xe8d8b8, 0.45);
+  const sun = new THREE.DirectionalLight(0xe8d8b8, 0.7);
   sun.position.set(floorplan.bounds.w * 0.35, floorplan.wallHeight + 2, floorplan.bounds.h * 0.3);
   sun.target.position.set(floorplan.bounds.w / 2, 0, floorplan.bounds.h / 2);
   return { hemisphere, sun };

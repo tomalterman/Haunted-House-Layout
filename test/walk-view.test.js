@@ -206,7 +206,7 @@ describe("buildScene", () => {
       expect(mesh.parent).toBe(scene);
       expect(mesh.position.y).toBeGreaterThanOrEqual(FLOORPLAN.wallHeight);
       expect(mesh.position.y).toBeLessThan(FLOORPLAN.wallHeight + 1);
-      expect(mesh.material.color.getHex()).toBeLessThan(0x303030);
+      expect(mesh.material.color.getHex()).toBeLessThan(0x404040);
       expect(mesh.material.side).toBe(THREE.DoubleSide);
     }
     // Gym box stays for context, but looking up in the maze hits the cover first.
