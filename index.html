@@ -12,7 +12,11 @@
       <section id="map-view" class="view">
         <canvas id="map-canvas" aria-label="Gym floor plan"></canvas>
         <div id="toolbar" class="toolbar"></div>
-        <input id="label-input" class="label-input" type="text" maxlength="40" hidden autocomplete="off" />
+        <div id="label-bar" class="label-bar" hidden>
+          <input id="label-input" class="label-input" type="text" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="Label" aria-label="Label text" />
+          <button id="label-done" class="label-btn label-done" type="button">Done</button>
+          <button id="label-cancel" class="label-btn" type="button">Cancel</button>
+        </div>
       </section>
       <section id="walk-view" class="view" hidden>
         <canvas id="walk-canvas" aria-label="Walk through the gym"></canvas>
