@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import * as THREE from "three";
 import { FLOORPLAN } from "../src/floorplan.js";
 import { TEAMS } from "../src/teams.js";
+import { WALL_TEAM, strokeToWallSegments, hauntCoverPolygons } from "../src/stroke-walls.js";
 import { mapToWorld, buildScene } from "../src/walk/walk-view.js";
 
 // A stand-in for the floor texture canvas: three's CanvasTexture only needs
@@ -165,5 +166,51 @@ describe("buildScene", () => {
     const { r, g, b } = curtain.material.color;
     expect(b).toBeGreaterThan(r);
     expect(b).toBeGreaterThan(g);
+  });
+
+  it("extrudes black stroke walls as 8 foot panels at the stroke midpoint", () => {
+    const strokeWalls = strokeToWallSegments({
+      id: "drawn",
+      team: WALL_TEAM,
+      size: 0.8,
+      points: [
+        [10, 20],
+        [20, 20],
+      ],
+    });
+    const { strokeWallMeshes, scene } = buildScene(FLOORPLAN, TEAMS, {
+      THREE,
+      floorCanvas: fakeCanvas,
+      strokeWalls,
+    });
+    expect(strokeWallMeshes.length).toBe(strokeWalls.length);
+    for (const wall of strokeWalls) {
+      const mesh = strokeWallMeshes.find((m) => m.userData.strokeId === wall.strokeId);
+      expect(mesh, wall.id).toBeInstanceOf(THREE.Mesh);
+      expect(mesh.parent).toBe(scene.getObjectByName("stroke-walls") ?? mesh.parent);
+      expect(mesh.position.x).toBeCloseTo((wall.a[0] + wall.b[0]) / 2, 6);
+      expect(mesh.position.y).toBeCloseTo(FLOORPLAN.wallHeight / 2, 6);
+      expect(mesh.position.z).toBeCloseTo((wall.a[1] + wall.b[1]) / 2, 6);
+      expect(mesh.geometry.parameters.height).toBe(FLOORPLAN.wallHeight);
+      expect(mesh.geometry.parameters.depth).toBeCloseTo(wall.thickness, 6);
+      expect(mesh.material.color.getHex()).toBeLessThan(0x202020);
+    }
+  });
+
+  it("covers the haunt path with a low dark ceiling, not only the high gym box", () => {
+    const { covers, gym, scene } = buildScene(FLOORPLAN, TEAMS, { THREE, floorCanvas: fakeCanvas });
+    const expected = hauntCoverPolygons(FLOORPLAN);
+    expect(covers.length).toBe(expected.length);
+    expect(covers.length).toBeGreaterThan(0);
+    for (const mesh of covers) {
+      expect(mesh.parent).toBe(scene);
+      expect(mesh.position.y).toBeGreaterThanOrEqual(FLOORPLAN.wallHeight);
+      expect(mesh.position.y).toBeLessThan(FLOORPLAN.wallHeight + 1);
+      expect(mesh.material.color.getHex()).toBeLessThan(0x404040);
+      expect(mesh.material.side).toBe(THREE.DoubleSide);
+    }
+    // Gym box stays for context, but looking up in the maze hits the cover first.
+    expect(gym.geometry.parameters.height).toBe(24);
+    expect(covers[0].position.y).toBeLessThan(gym.geometry.parameters.height / 2);
   });
 });

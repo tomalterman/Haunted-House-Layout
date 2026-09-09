@@ -9,6 +9,7 @@
 // Imports Layers 0 and 1 only. Never imports walk/. The only DOM object it
 // touches is the canvas handed in, so tests can pass a @napi-rs/canvas canvas.
 import { strokeOutline, drawOutline, drawLabel, fontForCapHeight } from "../stroke-outline.js";
+import { markColor } from "../stroke-walls.js";
 
 export const MIN_SCALE = 2; // px per foot
 export const MAX_SCALE = 60;
@@ -159,8 +160,7 @@ export function createMapView({
   Path2DCtor = globalThis.Path2D,
 }) {
   const ctx = canvas.getContext("2d");
-  const teamColor = new Map(teams.map((t) => [t.id, t.color]));
-  const colorOf = (teamId) => teamColor.get(teamId) ?? COLORS.fallbackTeam;
+  const colorOf = (teamId) => markColor(teamId, teams);
 
   // CSS pixel size of the drawing surface; the backing store is this times dpr.
   let width = 0;

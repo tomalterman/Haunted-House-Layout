@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { FLOORPLAN } from "../src/floorplan.js";
 import { distancePointToSegment } from "../src/geometry.js";
+import { WALL_TEAM, strokeToWallSegments } from "../src/stroke-walls.js";
 import { createWalker, nearestFreeSpot, formatClock } from "../src/walk/walk-controls.js";
 
 const RADIUS = 0.75;
@@ -147,6 +148,41 @@ describe("nearestFreeSpot", () => {
     expect(minWallDistance(w.position)).toBeGreaterThanOrEqual(RADIUS);
     w.setStart([30, 40]); // on partition-1
     expect(minWallDistance(w.position)).toBeGreaterThanOrEqual(RADIUS);
+  });
+});
+
+describe("drawn stroke walls block the walker", () => {
+  const strokeWalls = strokeToWallSegments({
+    id: "path-wall",
+    team: WALL_TEAM,
+    size: 0.6,
+    points: [
+      [10, 20],
+      [20, 20],
+    ],
+  });
+
+  it("stops when walking into a black stroke wall and updates if the stroke is erased", () => {
+    let extra = strokeWalls;
+    const w = createWalker({
+      floorplan: FLOORPLAN,
+      start: [15, 23],
+      getExtraWalls: () => extra,
+    });
+    const { position } = w.step({ forward: 1, strafe: 0 }, 2);
+    expect(position[1]).toBeGreaterThan(20);
+    expect(distancePointToSegment(position, [10, 20], [20, 20])).toBeGreaterThanOrEqual(RADIUS + 0.3 - 1e-6);
+
+    extra = [];
+    const afterErase = w.step({ forward: 1, strafe: 0 }, 2);
+    expect(afterErase.position[1]).toBeLessThan(20);
+  });
+
+  it("nudges a start point on a stroke wall to a free spot", () => {
+    const onWall = [15, 20];
+    const free = nearestFreeSpot(onWall, FLOORPLAN, RADIUS, strokeWalls);
+    expect(distancePointToSegment(free, [10, 20], [20, 20])).toBeGreaterThanOrEqual(RADIUS);
+    expect(Math.hypot(free[0] - onWall[0], free[1] - onWall[1])).toBeLessThanOrEqual(3);
   });
 });
 

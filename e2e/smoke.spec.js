@@ -145,8 +145,9 @@ test.describe("first open", () => {
     await page.goto(roomUrl("first-open"));
 
     await expect(page.locator("#map-canvas")).toBeVisible();
-    await expect(page.locator("#toolbar .chip"), "one chip per team").toHaveCount(6);
+    await expect(page.locator("#toolbar .chip"), "six teams plus the Walls drawing color").toHaveCount(7);
     await expect(page.locator("#toolbar .chip").first()).toContainText("Poison Breakfast");
+    await expect(page.locator("#toolbar .chip").last()).toContainText("Walls");
 
     const walkBox = await page.locator("#toolbar .walk").boundingBox();
     const view = page.viewportSize();
@@ -254,6 +255,21 @@ test.describe("walk", () => {
     await expect
       .poll(() => countTeamPixels(page, TEAM_GREEN), { timeout: 5000 })
       .toBeGreaterThan(drawn / 2);
+  });
+
+  test("a Walls stroke can be drawn and Walk still opens", async ({ page, isMobile }) => {
+    const errors = watchForErrors(page);
+    await page.goto(roomUrl("walk-walls"));
+    await page.locator(".chip-select", { hasText: "Walls" }).click();
+    const start = await mapPoint(page, 0.3, 0.45);
+    const end = await mapPoint(page, 0.7, 0.45);
+    await drawStroke(page, isMobile, start, end);
+    await page.locator("#toolbar .walk").click();
+    await expect(page.locator("#walk-canvas")).toBeVisible({ timeout: 20000 });
+    await expect(page.locator("#hud-clock"), "the walk clock advances").not.toHaveText("0:00", {
+      timeout: 10000,
+    });
+    expect(errors, `unexpected page errors: ${errors.join(" | ")}`).toEqual([]);
   });
 });
 

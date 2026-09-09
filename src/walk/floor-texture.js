@@ -11,6 +11,7 @@
 // document.createElement("canvas"), Node tests pass @napi-rs/canvas's
 // createCanvas. Path2D is injected for the same reason.
 import { strokeOutline, drawOutline, drawLabel } from "../stroke-outline.js";
+import { markColor } from "../stroke-walls.js";
 
 export const PX_PER_FOOT = 20;
 
@@ -20,7 +21,6 @@ const GRID_FEET = 5;
 // Premixed 7 percent darker tan, opaque, so line crossings do not stack darker.
 const GRID_COLOR = "#BB9C64";
 const ZONE_ALPHA = 0.35;
-const UNKNOWN_TEAM_COLOR = "#888888";
 
 export function createFloorTexture({
   store,
@@ -34,8 +34,7 @@ export function createFloorTexture({
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
 
-  const colorByTeam = new Map(teams.map((team) => [team.id, team.color]));
-  const teamColor = (id) => colorByTeam.get(id) ?? UNKNOWN_TEAM_COLOR;
+  const teamColor = (id) => markColor(id, teams);
 
   let dirty = true;
   let unsubscribe = store.subscribe(() => {
