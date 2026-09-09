@@ -26,6 +26,13 @@ export function decodeStrokePoints(stroke) {
 }
 
 export function createStore({ doc, provider = null, persistence = null }) {
+  // Zone timestamps are strictly increasing within a store so two zones
+  // created in the same millisecond still sort in creation order.
+  let lastCreatedAt = 0;
+  const nextCreatedAt = () => {
+    lastCreatedAt = Math.max(Date.now(), lastCreatedAt + 1);
+    return lastCreatedAt;
+  };
   const zones = doc.getMap("zones");
   const strokes = doc.getArray("strokes");
   const labels = doc.getArray("labels");
@@ -150,7 +157,7 @@ export function createStore({ doc, provider = null, persistence = null }) {
       name,
       team,
       points: points.map(([x, y]) => [x, y]),
-      createdAt: existing ? existing.createdAt : Date.now(),
+      createdAt: existing ? existing.createdAt : nextCreatedAt(),
     });
     return zoneId;
   }
