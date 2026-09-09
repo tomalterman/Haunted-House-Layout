@@ -29,7 +29,11 @@ export function strokeOutline(pointsOrArgs, size = 0.6) {
   const { points, pressure, size: strokeSize = 0.6 } = toStrokeArgs(pointsOrArgs, size);
   if (!points || points.length < 2) return null;
 
-  const feetPoints = points.map(([x, y], i) => {
+  // The store keeps points flat ([x0, y0, x1, y1, ...]) to stay compact; older
+  // callers and tests pass [[x, y], ...] pairs. Accept both.
+  const pairs = typeof points[0] === "number" ? toPairs(points) : points;
+  if (pairs.length < 2) return null;
+  const feetPoints = pairs.map(([x, y], i) => {
     const fx = x / STORE_UNITS_PER_FOOT;
     const fy = y / STORE_UNITS_PER_FOOT;
     return pressure ? [fx, fy, pressure[i]] : [fx, fy];
@@ -43,6 +47,12 @@ export function strokeOutline(pointsOrArgs, size = 0.6) {
     simulatePressure: !pressure,
     last: true,
   });
+}
+
+function toPairs(flat) {
+  const out = [];
+  for (let i = 0; i + 1 < flat.length; i += 2) out.push([flat[i], flat[i + 1]]);
+  return out;
 }
 
 function feetToPixels([x, y], scale, offset) {

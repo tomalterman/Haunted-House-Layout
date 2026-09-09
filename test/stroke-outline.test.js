@@ -131,3 +131,16 @@ describe("strokeBounds", () => {
     });
   });
 });
+
+describe("flat point arrays", () => {
+  it("accepts the store's flat [x0, y0, x1, y1, ...] shape", () => {
+    const nested = strokeOutline([[20, 20], [60, 20], [100, 20]], 0.6);
+    const flat = strokeOutline([20, 20, 60, 20, 100, 20], 0.6);
+    expect(flat).not.toBeNull();
+    expect(flat.length).toBe(nested.length);
+  });
+  it("returns null for a flat array with fewer than 2 points", () => {
+    expect(strokeOutline([20, 20], 0.6)).toBeNull();
+  });
+});
+
