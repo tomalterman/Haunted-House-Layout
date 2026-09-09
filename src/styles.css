@@ -1,0 +1,96 @@
+:root {
+  color-scheme: dark;
+  --bg: #1b1b1f;
+  --panel: #26262c;
+  --ink: #f2f2f5;
+  --muted: #a7a7b3;
+  --line: #3a3a44;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, sans-serif; overscroll-behavior: none; }
+#app { height: 100dvh; width: 100vw; position: relative; overflow: hidden; }
+.view { position: absolute; inset: 0; }
+.view[hidden] { display: none; }
+canvas { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+
+/* ---- Map toolbar: two rows (team chips, then tools); each row scrolls sideways on narrow phones ---- */
+.toolbar { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 6px; padding: 6px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); background: var(--panel); border-top: 1px solid var(--line); }
+.toolbar .chips, .toolbar .tools { display: flex; gap: 6px; align-items: stretch; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.toolbar .chips::-webkit-scrollbar, .toolbar .tools::-webkit-scrollbar { display: none; }
+.toolbar button { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; min-height: 44px; min-width: 44px; padding: 0 12px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; white-space: nowrap; flex: 0 0 auto; }
+.toolbar button:active { filter: brightness(1.25); }
+.toolbar .tool[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.toolbar .action { color: var(--muted); }
+.toolbar .walk { color: var(--ink); border-color: var(--muted); font-weight: 600; }
+
+/* Team chip: select button (tap = draw as team, long-press = hide) plus an eye toggle */
+.chip { display: flex; flex: 0 0 auto; align-items: stretch; --team: #888; }
+.chip .chip-select { display: flex; align-items: center; gap: 8px; border-radius: 10px 0 0 10px; border-right: 0; }
+.chip .chip-select[aria-pressed="true"] { background: var(--team); color: #fff; border-color: var(--team); font-weight: 600; }
+.chip .swatch { width: 16px; height: 16px; border-radius: 50%; background: var(--team); border: 2px solid rgba(255,255,255,0.85); flex: 0 0 auto; }
+.chip .chip-select[aria-pressed="true"] .swatch { border-color: #fff; }
+.chip .chip-eye { display: flex; align-items: center; justify-content: center; padding: 0 10px; border-radius: 0 10px 10px 0; color: var(--muted); }
+.chip .chip-eye[aria-pressed="true"] { color: var(--ink); }
+.chip.is-hidden .chip-select { opacity: 0.45; }
+.chip.is-hidden .chip-name { text-decoration: line-through; }
+.chip.is-hidden .chip-eye { background: var(--line); }
+
+/* Sync status: a dot plus a word so state never relies on color alone */
+.status { display: flex; align-items: center; gap: 6px; padding: 0 8px; margin-left: auto; color: var(--muted); font-size: 13px; white-space: nowrap; flex: 0 0 auto; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; background: #888; flex: 0 0 auto; }
+.status-dot.status-live { background: #3A9D4F; }
+.status-dot.status-connecting { background: #D99A12; animation: status-pulse 1.2s ease-in-out infinite; }
+.status-dot.status-offline { background: #D8402C; }
+.status-dot.status-local { background: #a7a7b3; }
+@keyframes status-pulse { 50% { opacity: 0.35; } }
+.save-warning { color: #ffb4a8; background: rgba(216, 64, 44, 0.18); border: 1px solid rgba(216, 64, 44, 0.5); border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+.save-warning::before { content: "!"; display: inline-block; width: 16px; height: 16px; line-height: 16px; text-align: center; border-radius: 50%; margin-right: 8px; background: #D8402C; color: #fff; font-weight: 700; }
+
+/* Landscape phones: tighter rows so the map keeps most of the height */
+@media (orientation: landscape) and (max-height: 500px) {
+  .toolbar { gap: 4px; padding-top: 4px; }
+  .toolbar button { min-height: 40px; }
+}
+
+/* Label entry, anchored near the tap */
+.label-bar { position: absolute; display: flex; gap: 6px; padding: 6px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 6px 24px rgba(0,0,0,0.45); z-index: 2; }
+.label-bar[hidden] { display: none; }
+.label-input { flex: 1 1 140px; min-width: 120px; min-height: 44px; padding: 8px 10px; font: inherit; font-size: 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.label-btn { font: inherit; min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.label-done { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+/* ---- U8 walk view: gym-colored ground behind the canvas so a blank frame does not flash dark ---- */
+#walk-view { background: #e9e6df; }
+#walk-canvas { touch-action: none; }
+
+/* HUD: clock, zone chip, Map button (44 px target). Only the button takes taps. */
+.hud { position: absolute; top: max(8px, env(safe-area-inset-top)); left: max(8px, env(safe-area-inset-left)); right: max(8px, env(safe-area-inset-right)); display: flex; gap: 8px; align-items: center; pointer-events: none; z-index: 2; }
+.hud-clock { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; min-height: 44px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 10px; background: rgba(27, 27, 31, 0.8); color: var(--ink); flex: 0 0 auto; }
+.hud-zone { --zone: #6b6b74; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 10px; background: var(--zone); color: #fff; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 0 1 auto; }
+.hud-zone::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: #fff; opacity: 0.9; flex: 0 0 auto; }
+.hud-zone.is-none { --zone: #6b6b74; color: #e6e6ea; font-weight: 500; }
+.hud-zone.is-none::before { opacity: 0.4; }
+.hud-map { pointer-events: auto; margin-left: auto; font: inherit; font-weight: 600; font-size: 15px; color: var(--bg); background: var(--ink); border: 1px solid var(--ink); border-radius: 10px; min-height: 44px; min-width: 64px; padding: 0 16px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; flex: 0 0 auto; }
+.hud-map:active { filter: brightness(0.85); }
+
+/* Touch regions: the lower half split left (move) and right (look). (nipplejs names its
+   own element .joystick, so the regions use other names.) */
+.move-zone, .look-zone { position: absolute; bottom: 0; height: 45%; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.move-zone { left: 0; width: 50%; padding-bottom: env(safe-area-inset-bottom); }
+.look-zone { right: 0; width: 50%; cursor: grab; }
+.look-zone:active { cursor: grabbing; }
+/* Landscape phones: thumbs sit lower and wider apart, so the regions grow. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .move-zone, .look-zone { height: 70%; }
+  .move-zone { width: 40%; }
+  .look-zone { width: 60%; }
+}
+/* Big landscape screens (tablet, desktop): keep a look region across most of the view. */
+@media (orientation: landscape) and (min-height: 501px) {
+  .move-zone { width: 35%; height: 55%; }
+  .look-zone { width: 65%; height: 75%; }
+}
+
+/* WebGL context lost and not restored (KTD5): one tap reloads. */
+.reload-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(27, 27, 31, 0.85); z-index: 3; }
+.reload-overlay[hidden] { display: none; }
+.reload-button { font: inherit; font-size: 17px; font-weight: 600; color: var(--bg); background: var(--ink); border: 0; border-radius: 12px; min-height: 56px; padding: 0 24px; cursor: pointer; }

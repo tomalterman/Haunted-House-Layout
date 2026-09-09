@@ -16,3 +16,6 @@ __pycache__/
 .vscode/
 *.swp
 *~
+.wrangler/
+playwright-report/
+test-results/

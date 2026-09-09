@@ -1,0 +1,18 @@
+# One Worker serves the built app (dist/) and runs the shared board as a
+# Durable Object. Do not rename the class or the binding without a
+# `renamed_classes` migration: the board's storage is keyed by them.
+name = "haunted-house-layout"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[[durable_objects.bindings]]
+name = "main"
+class_name = "Board"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Board"]
