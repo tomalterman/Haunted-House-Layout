@@ -27,9 +27,9 @@ export const MEASUREMENTS = {
   // Serpentine partitions, placed by eye from the sketch.
   // "hang" partitions drop from the diagonal; "rise" partitions stand up from the pony wall.
   partitions: [
-    { id: 'P1', x: 30, kind: 'hang', end: 46.5 },
-    { id: 'P2', x: 43, kind: 'rise', end: 37.5 },
-    { id: 'P3', x: 55, kind: 'hang', end: 39.5 },
+    { id: 'P1', x: 30, kind: 'hang', end: 51.25 }, // 4.75 ft turn gap above the pony wall
+    { id: 'P2', x: 43, kind: 'rise', end: 29.85 }, // 7.65 ft turn gap below the diagonal
+    { id: 'P3', x: 55, kind: 'hang', end: 47.75 }, // 8.25 ft turn gap above the pony wall
   ],
 
   entrance: { y0: 48, y1: 54 }, // left wall, into L1
@@ -173,8 +173,9 @@ export function buildLayout(m = MEASUREMENTS) {
     { x: lane0, y: l3Open + 1 }, // drop a foot after leaving L3 so the curve clears the opening
     { x: lane0, y: underP1 },
     { x: lane1, y: underP1 },
-    { x: lane1, y: overP2 },
-    { x: lane2, y: overP2 },
+    { x: lane1, y: Math.max(overP2, diagonalYAt(lane1) + 3) }, // stay below the sloping diagonal
+    { x: P2.a.x, y: overP2 },
+    { x: lane2, y: Math.max(overP2, diagonalYAt(lane2) + 3) },
     { x: lane2, y: underP3 },
     { x: lane3, y: underP3 },
     { x: lane3, y: r3Open },

@@ -49,9 +49,16 @@ test('partitions attach to the diagonal or the pony wall', () => {
   assert.ok(near(p1.a.y, diagonalYAt(layout, p1.a.x)), 'P1 top on diagonal');
   assert.ok(near(p3.a.y, diagonalYAt(layout, p3.a.x)), 'P3 top on diagonal');
   assert.equal(p2.a.y, layout.pony.y, 'P2 base on pony wall');
-  assert.equal(p1.b.y, 46.5);
-  assert.equal(p2.b.y, 37.5);
-  assert.equal(p3.b.y, 39.5);
+  assert.equal(p1.b.y, 51.25);
+  assert.equal(p2.b.y, 29.85);
+  assert.equal(p3.b.y, 47.75);
+});
+
+test('serpentine turn gaps are half their original width', () => {
+  const [p1, p2, p3] = layout.partitions;
+  assert.equal(layout.pony.y - p1.b.y, 9.5 / 2);
+  assert.ok(Math.abs(p2.b.y - diagonalYAt(layout, p2.a.x) - 15.3 / 2) < 0.01);
+  assert.equal(layout.pony.y - p3.b.y, 16.5 / 2);
 });
 
 test('a stage depth correction keeps the corridor wall attached', () => {
