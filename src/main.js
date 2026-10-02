@@ -70,7 +70,10 @@ async function show3D() {
     }
     hideStatus();
   }
-  if (btn3d.getAttribute('aria-pressed') !== 'true') return; // user switched back while loading
+  if (btn3d.getAttribute('aria-pressed') !== 'true') {
+    view3d.hide(); // user switched back while loading: keep the hidden loop stopped
+    return;
+  }
   view3d.show();
   resetBtn.hidden = false;
 }

@@ -3,54 +3,82 @@ import assert from 'node:assert/strict';
 import { MEASUREMENTS, buildLayout, layout } from '../src/layout.js';
 import { reachableFrom } from '../src/barriers.js';
 
-const ENTRANCE = { x: 0.5, y: 51 };
-const EXIT = { x: 84.6, y: 8 };
-const OFF_ROUTE = {
+// Probes sit just outside each door, so the fill must pass through the real door gaps.
+const probes = (l) => ({
+  entrance: { x: -0.5, y: (l.doors.entrance.y0 + l.doors.entrance.y1) / 2 },
+  exit: { x: l.room.width + 0.5, y: (l.doors.exit.y0 + l.doors.exit.y1) / 2 },
+});
+const fill = (l, barriers = l.barriers) =>
+  reachableFrom(barriers, l.room, probes(l).entrance, { doors: Object.values(l.doors) });
+
+const offRoute = (l) => ({
   'above the diagonal': { x: 5, y: 20 },
   'right of the corridor wall': { x: 75, y: 40 },
-  'on the stage': { x: 45, y: 58 },
-  'above the right tents': { x: 80, y: 1 },
+  'on the stage': { x: 45, y: l.stage.y + l.stage.depth / 2 },
+  'above the right tents': { x: 80, y: l.tents.find((t) => t.id === 'R2').y / 2 },
   'beside the entrance tents': { x: 5, y: 40 },
-};
+});
 
-test('the entrance reaches the exit', () => {
-  const reach = reachableFrom(layout.barriers, layout.room, ENTRANCE);
-  assert.ok(reach(EXIT));
+test('the entrance reaches the exit through the door gaps', () => {
+  assert.ok(fill(layout)(probes(layout).exit));
 });
 
 test('no off-route area is reachable', () => {
-  const reach = reachableFrom(layout.barriers, layout.room, ENTRANCE);
-  for (const [name, p] of Object.entries(OFF_ROUTE)) {
+  const reach = fill(layout);
+  for (const [name, p] of Object.entries(offRoute(layout))) {
     assert.equal(reach(p), false, `${name} should be sealed off`);
   }
 });
 
-test('every route waypoint inside the room is reachable', () => {
-  const reach = reachableFrom(layout.barriers, layout.room, ENTRANCE);
+test('every route waypoint is reachable', () => {
+  const reach = fill(layout);
   for (const p of layout.route) {
-    if (p.x <= 0 || p.x >= 85) continue;
-    assert.ok(reach(p), `waypoint ${p.x},${p.y}`);
+    const q = { x: Math.min(Math.max(p.x, -0.5), layout.room.width + 0.5), y: p.y };
+    assert.ok(reach(q), `waypoint ${p.x},${p.y}`);
   }
 });
 
-test('removing the corridor wall opens a leak the check detects', () => {
-  const leaky = layout.barriers.filter((s) => s.id !== 'corridor');
-  const reach = reachableFrom(leaky, layout.room, ENTRANCE);
-  assert.ok(reach(OFF_ROUTE['right of the corridor wall']));
+test('closing either door gap makes the exit unreachable', () => {
+  const { entrance, exit } = layout.doors;
+  const closeEntrance = { id: 'test-close', a: { x: 0, y: entrance.y0 }, b: { x: 0, y: entrance.y1 } };
+  const closeExit = { id: 'test-close', a: { x: 85, y: exit.y0 }, b: { x: 85, y: exit.y1 } };
+  assert.equal(fill(layout, [...layout.barriers, closeEntrance])(probes(layout).exit), false);
+  assert.equal(fill(layout, [...layout.barriers, closeExit])(probes(layout).exit), false);
+});
+
+test('removing the corridor wall or the diagonal opens a leak the check detects', () => {
+  const pts = offRoute(layout);
+  const noCorridor = layout.barriers.filter((s) => s.id !== 'corridor');
+  assert.ok(fill(layout, noCorridor)(pts['right of the corridor wall']));
+  const noDiagonal = layout.barriers.filter((s) => s.id !== 'diagonal');
+  assert.ok(fill(layout, noDiagonal)(pts['above the diagonal']));
 });
 
 test('removing a closed tent side opens a leak the check detects', () => {
   const leaky = layout.barriers.filter((s) => s.id !== 'tent-L1-top');
-  const reach = reachableFrom(leaky, layout.room, ENTRANCE);
-  assert.ok(reach(OFF_ROUTE['beside the entrance tents']));
+  assert.ok(fill(layout, leaky)(offRoute(layout)['beside the entrance tents']));
+});
+
+test('each serpentine partition forces the S-route', () => {
+  const full = fill(layout).distance(probes(layout).exit);
+  for (const id of ['P1', 'P2', 'P3']) {
+    const without = fill(layout, layout.barriers.filter((s) => s.id !== id)).distance(probes(layout).exit);
+    assert.ok(full - without > 2, `removing ${id} should shorten the walk (was ${full} ft, now ${without} ft)`);
+  }
 });
 
 test('corrected measurements stay leak-free', () => {
   for (const m of [{ stageDepth: 3 }, { diagonalDropOnR1: 8 }, { rightTopGap: 3 }]) {
     const l = buildLayout({ ...MEASUREMENTS, ...m });
-    const reach = reachableFrom(l.barriers, l.room, ENTRANCE);
-    assert.ok(reach({ x: 84.6, y: l.doors.exit.y0 + 2 }), JSON.stringify(m));
-    assert.equal(reach({ x: 5, y: 20 }), false, JSON.stringify(m));
-    assert.equal(reach({ x: 75, y: 40 }), false, JSON.stringify(m));
+    const reach = fill(l);
+    assert.ok(reach(probes(l).exit), JSON.stringify(m));
+    for (const [name, p] of Object.entries(offRoute(l))) {
+      assert.equal(reach(p), false, `${name} with ${JSON.stringify(m)}`);
+    }
   }
+});
+
+test('a door that runs past its tent side is rejected', () => {
+  assert.throws(() => buildLayout({ ...MEASUREMENTS, stageDepth: 8 }), /Entrance door/);
+  assert.throws(() => buildLayout({ ...MEASUREMENTS, exit: { y0: 12, y1: 16 } }), /Exit door/);
 });

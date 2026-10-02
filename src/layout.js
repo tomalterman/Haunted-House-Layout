@@ -84,6 +84,12 @@ export function buildLayout(m = MEASUREMENTS) {
     exit: { side: 'right', x: W, y0: m.exit.y0, y1: m.exit.y1 },
   };
 
+  // Each door opens through a tent side; a door that runs past that side would leave a gap
+  // in the wall beside the tent.
+  const within = (door, lo, hi) => door.y0 >= lo && door.y1 <= hi;
+  if (!within(doors.entrance, T.L1.y, T.L1.y + S)) throw new Error('Entrance door must stay within the side of tent L1');
+  if (!within(doors.exit, T.R2.y, T.R2.y + S)) throw new Error('Exit door must stay within the side of tent R2');
+
   const h = m.wallHeight;
   const walls = [
     { id: 'outer-top', a: { x: 0, y: 0 }, b: { x: W, y: 0 }, height: h },
@@ -98,9 +104,17 @@ export function buildLayout(m = MEASUREMENTS) {
     ...partitions.map((p) => ({ id: p.id, a: p.a, b: p.b, height: h })),
   ];
 
+  // Each tent side as a fixed coordinate plus the span it covers along the other axis.
+  const sidesOf = (t) => ({
+    top: { fixed: t.y, axis: 'x', span: [t.x, t.x + S] },
+    bottom: { fixed: t.y + S, axis: 'x', span: [t.x, t.x + S] },
+    left: { fixed: t.x, axis: 'y', span: [t.y, t.y + S] },
+    right: { fixed: t.x + S, axis: 'y', span: [t.y, t.y + S] },
+  });
+
   // Tent sides are closed (sidewalls) except where the route passes.
   // Openings are [from, to] intervals along each side, in absolute feet.
-  const full = (t, side) => (side === 'top' || side === 'bottom' ? [t.x, t.x + S] : [t.y, t.y + S]);
+  const full = (t, side) => sidesOf(t)[side].span;
   const openings = {
     'L1-left': [[doors.entrance.y0, doors.entrance.y1]],
     'L1-right': [full(T.L1, 'right')],
@@ -118,13 +132,7 @@ export function buildLayout(m = MEASUREMENTS) {
 
   const tentSides = [];
   for (const t of tents) {
-    const sides = {
-      top: { fixed: t.y, axis: 'x', span: [t.x, t.x + S] },
-      bottom: { fixed: t.y + S, axis: 'x', span: [t.x, t.x + S] },
-      left: { fixed: t.x, axis: 'y', span: [t.y, t.y + S] },
-      right: { fixed: t.x + S, axis: 'y', span: [t.y, t.y + S] },
-    };
-    for (const [side, s] of Object.entries(sides)) {
+    for (const [side, s] of Object.entries(sidesOf(t))) {
       const open = (openings[`${t.id}-${side}`] || []).slice().sort((p, q) => p[0] - q[0]);
       let cursor = s.span[0];
       const pieces = [];
@@ -159,10 +167,10 @@ export function buildLayout(m = MEASUREMENTS) {
   const underP3 = mid(P3.b.y, ponyY);
   const route = [
     { x: -1.5, y: enterMid },
-    { x: 5, y: enterMid },
-    { x: 15, y: ponyY - S / 2 },
-    { x: 15, y: l3Open },
-    { x: lane0, y: l3Open + 1 },
+    { x: T.L1.x + S / 2, y: enterMid },
+    { x: T.L2.x + S / 2, y: T.L2.y + S / 2 },
+    { x: T.L3.x + S / 2, y: l3Open },
+    { x: lane0, y: l3Open + 1 }, // drop a foot after leaving L3 so the curve clears the opening
     { x: lane0, y: underP1 },
     { x: lane1, y: underP1 },
     { x: lane1, y: overP2 },
