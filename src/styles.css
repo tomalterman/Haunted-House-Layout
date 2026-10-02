@@ -1,0 +1,148 @@
+/* Layout: one header bar, a legend strip, and a single view area that fills the rest. */
+:root {
+  --bg: #f2f0eb;
+  --surface: #fbfaf7;
+  --ink: #1f1e1c;
+  --muted: #625e56;
+  --line: #d6d2c8;
+  --accent: #8a4fd1;
+  --door: #2f7d5b;
+
+  --plan-floor: #efe6d2;
+  --plan-off: #d9d6cf;
+  --plan-stage: #c9c3b8;
+  --plan-tent: #f7f1e3;
+  --plan-tent-side: #8a8578;
+  --plan-wall: #17171a;
+  --plan-route: var(--accent);
+  --plan-door: var(--door);
+  --plan-text: #2b2a27;
+  --plan-muted: #5c5850;
+  --plan-dim: #6b6760;
+
+  --scene-bg: #e8e5de;
+  --scene-floor: #d8c6a0;
+  --scene-stage: #9c8f7c;
+  --scene-wall: #1c1c21;
+  --scene-tent: #f4efe2;
+  --scene-route: #8a4fd1;
+  --scene-door: #2f7d5b;
+
+  --font: "Inter Tight", "Segoe UI", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a;
+    --surface: #202024;
+    --ink: #ecebe7;
+    --muted: #a7a39a;
+    --line: #38373b;
+    --accent: #b88cf0;
+    --door: #5cc497;
+    --plan-floor: #3a352b;
+    --plan-off: #26262a;
+    --plan-stage: #4a463f;
+    --plan-tent: #4d4738;
+    --plan-tent-side: #a39c8a;
+    --plan-wall: #f3f1ea;
+    --plan-text: #ecebe7;
+    --plan-muted: #c4bfb3;
+    --plan-dim: #9b968c;
+    --scene-bg: #1d1d21;
+    --scene-floor: #8c7a5a;
+    --scene-stage: #5a5246;
+    --scene-wall: #121215;
+    --scene-tent: #f4efe2;
+    --scene-route: #c89cff;
+    --scene-door: #5cc497;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.4 var(--font);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.title h1 { margin: 0; font-size: 1.15rem; letter-spacing: 0.01em; }
+.title p { margin: 0; color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.segmented button, .plain {
+  min-height: 44px;
+  min-width: 52px;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.95rem var(--font);
+  cursor: pointer;
+}
+.segmented button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.plain { border: 1px solid var(--line); border-radius: 8px; }
+.check { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 8px; cursor: pointer; font-weight: 600; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
+button:focus-visible, .check input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 6px 16px;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 18px; height: 10px; border-radius: 2px; }
+.sw-wall { background: var(--plan-wall); height: 5px; }
+.sw-tent { background: var(--plan-tent); border: 1px solid var(--plan-tent-side); }
+.sw-route { height: 0; border-top: 3px dashed var(--plan-route); border-radius: 0; }
+.sw-off { background: var(--plan-off); border: 1px solid var(--line); }
+
+.views { position: relative; flex: 1; min-height: 320px; display: flex; }
+.view { flex: 1; min-width: 0; }
+#plan-2d { display: flex; align-items: center; justify-content: center; padding: 8px 16px 16px; overflow: auto; }
+#plan-2d svg { width: 100%; height: 100%; max-height: 100%; display: block; }
+#plan-3d { position: relative; overflow: hidden; }
+.view3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.view[hidden] { display: none !important; }
+
+.status {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 12px 16px;
+  max-width: calc(100% - 32px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 600;
+  text-align: center;
+}
+.status[hidden] { display: none; }
+.status.error { top: auto; bottom: 16px; transform: translateX(-50%); }
