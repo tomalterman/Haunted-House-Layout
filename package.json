@@ -1,0 +1,11 @@
+{
+  "name": "haunted-house-layout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "To-scale 2D and 3D viewer of the gym haunted house layout",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "serve": "python3 -m http.server 8000"
+  }
+}
