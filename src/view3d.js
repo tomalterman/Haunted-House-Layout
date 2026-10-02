@@ -34,6 +34,14 @@ function textSprite(text, color) {
   return sprite;
 }
 
+// Center a mesh on segment a-b at height y and turn it to run along the segment.
+function placeOnSegment(mesh, a, b, y) {
+  mesh.position.set((a.x + b.x) / 2, y, (a.y + b.y) / 2);
+  mesh.rotation.y = -Math.atan2(b.y - a.y, b.x - a.x);
+}
+
+const segmentLength = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
+
 function buildScene(layout, colors) {
   const W = layout.room.width;
   const D = layout.room.depth;
@@ -67,12 +75,9 @@ function buildScene(layout, colors) {
 
   const wallMat = new THREE.MeshStandardMaterial({ color: colors.wall, roughness: 0.9 });
   for (const w of layout.walls) {
-    const dx = w.b.x - w.a.x;
-    const dz = w.b.y - w.a.y;
-    const len = Math.hypot(dx, dz) + WALL_THICKNESS;
+    const len = segmentLength(w.a, w.b) + WALL_THICKNESS;
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(len, w.height, WALL_THICKNESS), wallMat);
-    mesh.position.set((w.a.x + w.b.x) / 2, w.height / 2, (w.a.y + w.b.y) / 2);
-    mesh.rotation.y = -Math.atan2(dz, dx);
+    placeOnSegment(mesh, w.a, w.b, w.height / 2);
     mesh.name = w.id;
     root.add(mesh);
   }
@@ -82,28 +87,27 @@ function buildScene(layout, colors) {
   const roofMat = new THREE.MeshBasicMaterial({ color: colors.tent, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide });
   const sideMat = new THREE.MeshBasicMaterial({ color: colors.tent, transparent: true, opacity: 0.28, depthWrite: false, side: THREE.DoubleSide });
   const legMat = new THREE.MeshStandardMaterial({ color: colors.tentLeg });
+  const legGeo = new THREE.BoxGeometry(0.2, TENT_ROOF, 0.2);
   for (const t of layout.tents) {
     const s = t.size;
-    const roof = new THREE.Mesh(new THREE.PlaneGeometry(s, s), roofMat);
+    const roofGeo = new THREE.PlaneGeometry(s, s);
+    const roof = new THREE.Mesh(roofGeo, roofMat);
     roof.rotation.x = -Math.PI / 2;
     roof.position.set(t.x + s / 2, TENT_ROOF, t.y + s / 2);
     root.add(roof);
-    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(s, s)), outlineMat);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(roofGeo), outlineMat);
     edges.rotation.x = -Math.PI / 2;
     edges.position.copy(roof.position);
     root.add(edges);
     for (const [lx, lz] of [[0, 0], [s, 0], [0, s], [s, s]]) {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.2, TENT_ROOF, 0.2), legMat);
+      const leg = new THREE.Mesh(legGeo, legMat);
       leg.position.set(t.x + lx, TENT_ROOF / 2, t.y + lz);
       root.add(leg);
     }
   }
   for (const side of layout.tentSides) {
-    const dx = side.b.x - side.a.x;
-    const dz = side.b.y - side.a.y;
-    const panel = new THREE.Mesh(new THREE.PlaneGeometry(Math.hypot(dx, dz), TENT_ROOF), sideMat);
-    panel.position.set((side.a.x + side.b.x) / 2, TENT_ROOF / 2, (side.a.y + side.b.y) / 2);
-    panel.rotation.y = -Math.atan2(dz, dx);
+    const panel = new THREE.Mesh(new THREE.PlaneGeometry(segmentLength(side.a, side.b), TENT_ROOF), sideMat);
+    placeOnSegment(panel, side.a, side.b, TENT_ROOF / 2);
     root.add(panel);
   }
 
@@ -129,8 +133,9 @@ function buildScene(layout, colors) {
   const pts = layout.route.map((p) => new THREE.Vector3(p.x, 0.25, p.y));
   const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal');
   routeGroup.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 400, 0.18, 6, false), routeMat));
+  const coneGeo = new THREE.ConeGeometry(0.55, 1.4, 12);
   for (const u of [0.12, 0.3, 0.48, 0.66, 0.84]) {
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.4, 12), routeMat);
+    const cone = new THREE.Mesh(coneGeo, routeMat);
     cone.position.copy(curve.getPointAt(u));
     cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), curve.getTangentAt(u).normalize());
     routeGroup.add(cone);
@@ -141,17 +146,18 @@ function buildScene(layout, colors) {
   return { scene, routeGroup };
 }
 
-export function hasWebGL() {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
+function disposeScene(scene) {
+  scene.traverse((obj) => {
+    obj.geometry?.dispose();
+    const mats = Array.isArray(obj.material) ? obj.material : obj.material ? [obj.material] : [];
+    for (const m of mats) {
+      m.map?.dispose();
+      m.dispose();
+    }
+  });
 }
 
 export function mountView3D(container, layout, { showRoute = true } = {}) {
-  if (!hasWebGL()) throw new Error('WebGL is not available');
 
   const colors = {
     background: cssColor(container, '--scene-bg', '#e8e5de'),
@@ -164,7 +170,12 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
     route: cssColor(container, '--scene-route', '#8a4fd1'),
   };
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+  } catch (err) {
+    throw new Error(`WebGL is not available: ${err.message}`);
+  }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.domElement.className = 'view3d-canvas';
   container.appendChild(renderer.domElement);
@@ -173,36 +184,41 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
   routeGroup.visible = showRoute;
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.5, 900);
-  const start = new THREE.Vector3();
   let userMoved = false;
+  let dirty = true;
+  const requestRender = () => {
+    dirty = true;
+  };
 
   // Frame the whole room for the current screen shape. Landscape looks in from the
   // entrance corner; portrait looks in from the entrance wall so the long side runs away.
   const fitStart = (aspect) => {
     const portrait = aspect < 1;
     const dir = portrait ? new THREE.Vector3(-1, 0.95, 0.3) : new THREE.Vector3(-0.55, 0.62, 0.6);
-    const halfExtent = portrait ? layout.room.depth * 0.62 : layout.room.width * 0.6;
-    const halfFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect);
-    const distance = Math.max(80, halfExtent / Math.tan(halfFov));
-    start.copy(dir.normalize().multiplyScalar(distance));
-    return distance;
+    // Room extents as seen across and up the screen from that direction, with some margin.
+    const across = portrait ? layout.room.depth * 0.72 : layout.room.width * 0.6;
+    const up = portrait ? layout.room.width * 0.5 : layout.room.depth * 0.82;
+    const tanHalfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const distance = Math.max(across / (tanHalfV * aspect), up / tanHalfV);
+    return { position: dir.normalize().multiplyScalar(distance), distance };
   };
 
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.target.set(0, 0, 0);
   controls.enableDamping = true;
   controls.maxPolarAngle = Math.PI / 2 - 0.08; // stay above the floor
   controls.minDistance = 20;
   controls.addEventListener('start', () => {
     userMoved = true;
   });
+  controls.addEventListener('change', requestRender);
 
   const applyStart = () => {
-    const distance = fitStart(camera.aspect);
+    const { position, distance } = fitStart(camera.aspect);
     controls.maxDistance = distance * 1.6;
-    camera.position.copy(start);
+    camera.position.copy(position);
     controls.target.set(0, 0, 0);
     controls.update();
+    requestRender();
   };
 
   const resize = () => {
@@ -212,19 +228,25 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     if (!userMoved) applyStart();
+    requestRender();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(container);
   resize();
 
+  // The scene is static, so draw only when the camera moves or something changes.
   let running = false;
   const frame = () => {
-    controls.update();
-    renderer.render(scene, camera);
+    const moving = controls.update(); // keeps damping going after a drag ends
+    if (moving || dirty) {
+      dirty = false;
+      renderer.render(scene, camera);
+    }
   };
   const startLoop = () => {
     if (!running) {
       running = true;
+      requestRender();
       renderer.setAnimationLoop(frame);
     }
   };
@@ -245,9 +267,9 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
   startLoop();
 
   return {
-    canvas,
     setRouteVisible(v) {
       routeGroup.visible = v;
+      requestRender();
     },
     resetView() {
       userMoved = false;
@@ -266,6 +288,7 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
       canvas.removeEventListener('webglcontextlost', onLost);
       canvas.removeEventListener('webglcontextrestored', onRestored);
       controls.dispose();
+      disposeScene(scene);
       renderer.dispose();
       canvas.remove();
     },

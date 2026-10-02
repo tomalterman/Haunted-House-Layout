@@ -25,8 +25,9 @@
   --scene-stage: #9c8f7c;
   --scene-wall: #1c1c21;
   --scene-tent: #f4efe2;
-  --scene-route: #8a4fd1;
-  --scene-door: #2f7d5b;
+  --scene-tent-leg: #b9b2a2;
+  --scene-route: var(--accent);
+  --scene-door: var(--door);
 
   --font: "Inter Tight", "Segoe UI", system-ui, -apple-system, sans-serif;
   color-scheme: light;
@@ -55,8 +56,7 @@
     --scene-stage: #5a5246;
     --scene-wall: #121215;
     --scene-tent: #f4efe2;
-    --scene-route: #c89cff;
-    --scene-door: #5cc497;
+    --scene-tent-leg: #7d776b;
     color-scheme: dark;
   }
 }

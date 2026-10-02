@@ -6,6 +6,10 @@ export const PLAN_STYLE = {
   tentSide: 0.2,
   route: 0.4,
   label: 2.6, // font size in feet: about 10.5 px when the plan is 390 px wide
+  dimY: -3.2, // top dimension line, in the margin above the room
+  dimGap: 4.6, // half-width of the break in the dimension line around its label
+  doorLabelOffset: 2.4, // door labels sit this far outside the outer wall
+  doorMarkOffset: 0.6, // door markers sit just outside the outer wall
 };
 
 const CHAR_WIDTH = 0.6; // conservative average glyph width, as a share of font size
@@ -31,7 +35,7 @@ export function planLabels(l) {
 
   const W = l.room.width;
   const D = l.room.depth;
-  add(`${fmt(W)} ft`, W / 2, -3.2, 0, 'dim');
+  add(`${fmt(W)} ft`, W / 2, PLAN_STYLE.dimY, 0, 'dim');
   add(`${fmt(D)} ft`, -4.6, D * 0.35, -90, 'dim');
 
   const d = l.diagonal;
@@ -39,11 +43,11 @@ export function planLabels(l) {
   const dy = d.b.y - d.a.y;
   const len = Math.hypot(dx, dy);
   const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const off = 2.2; // offset toward the off-route side above the wall
+  const lift = 2.2; // offset toward the off-route side above the wall
   add(
     `Diagonal ${d.length.toFixed(1)} ft · ${d.panels} panels`,
-    (d.a.x + d.b.x) / 2 + (dy / len) * off,
-    (d.a.y + d.b.y) / 2 - (dx / len) * off,
+    (d.a.x + d.b.x) / 2 + (dy / len) * lift,
+    (d.a.y + d.b.y) / 2 - (dx / len) * lift,
     angle,
   );
 
@@ -54,10 +58,11 @@ export function planLabels(l) {
 
   for (const t of l.tents) add(`${fmt(t.size)}×${fmt(t.size)}`, t.x + t.size / 2, t.y + 2.4, 0, 'tent-label');
 
-  const e = l.doors.entrance;
-  add('Entrance', -2.4, (e.y0 + e.y1) / 2, -90, 'door-label');
-  const x = l.doors.exit;
-  add('Exit', W + 2.4, (x.y0 + x.y1) / 2, 90, 'door-label');
+  const entrance = l.doors.entrance;
+  const exitDoor = l.doors.exit;
+  const off = PLAN_STYLE.doorLabelOffset;
+  add('Entrance', -off, (entrance.y0 + entrance.y1) / 2, -90, 'door-label');
+  add('Exit', W + off, (exitDoor.y0 + exitDoor.y1) / 2, 90, 'door-label');
   return out;
 }
 
@@ -137,13 +142,15 @@ export function renderPlan2D(l) {
   for (const s of l.tentSides) parts.push(line('tent-side', s.a, s.b));
 
   // Dimension lines in the margin.
-  parts.push(line('dim-line', { x: 0, y: -3.2 }, { x: W / 2 - 4.6, y: -3.2 }));
-  parts.push(line('dim-line', { x: W / 2 + 4.6, y: -3.2 }, { x: W, y: -3.2 }));
-  parts.push(line('dim-line', { x: 0, y: -4.2 }, { x: 0, y: -2.2 }));
-  parts.push(line('dim-line', { x: W, y: -4.2 }, { x: W, y: -2.2 }));
+  const dy = S.dimY;
+  parts.push(line('dim-line', { x: 0, y: dy }, { x: W / 2 - S.dimGap, y: dy }));
+  parts.push(line('dim-line', { x: W / 2 + S.dimGap, y: dy }, { x: W, y: dy }));
+  parts.push(line('dim-line', { x: 0, y: dy - 1 }, { x: 0, y: dy + 1 }));
+  parts.push(line('dim-line', { x: W, y: dy - 1 }, { x: W, y: dy + 1 }));
 
   const route = l.route;
-  const arrows = [2, 5, 8, 11, 14, 17].filter((i) => i < route.length - 1).map((i) => arrow(route[i], route[i + 1]));
+  const arrows = [];
+  for (let i = 2; i < route.length - 1; i += 3) arrows.push(arrow(route[i], route[i + 1])); // every third segment
   parts.push(`<g id="route"><path class="route-line" d="${smoothPath(route)}"/>${arrows.join('')}</g>`);
 
   for (const w of l.walls) {
@@ -151,10 +158,11 @@ export function renderPlan2D(l) {
     parts.push(line('wall', w.a, w.b, ` data-id="${w.id}"${short}`));
   }
 
-  const e = l.doors.entrance;
-  const x = l.doors.exit;
-  parts.push(line('door', { x: -0.6, y: e.y0 }, { x: -0.6, y: e.y1 }));
-  parts.push(line('door', { x: W + 0.6, y: x.y0 }, { x: W + 0.6, y: x.y1 }));
+  const entrance = l.doors.entrance;
+  const exitDoor = l.doors.exit;
+  const m = S.doorMarkOffset;
+  parts.push(line('door', { x: -m, y: entrance.y0 }, { x: -m, y: entrance.y1 }));
+  parts.push(line('door', { x: W + m, y: exitDoor.y0 }, { x: W + m, y: exitDoor.y1 }));
 
   for (const lb of planLabels(l)) {
     const rot = lb.angle ? ` transform="rotate(${lb.angle} ${lb.x} ${lb.y})"` : '';
