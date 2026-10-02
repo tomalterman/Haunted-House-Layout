@@ -1,7 +1,7 @@
 // Top-down 2D plan as an SVG string. The viewBox is in feet, so the drawing is to scale.
 
 export const PLAN_STYLE = {
-  viewBox: [-7, -6, 97, 70], // x, y, width, height in feet, with margins for labels
+  viewBox: [-7, -6, 99, 70], // x, y, width, height in feet, with margins for labels
   wall: 0.7,
   tentSide: 0.2,
   route: 0.4,
@@ -10,6 +10,7 @@ export const PLAN_STYLE = {
   dimGap: 4.6, // half-width of the break in the dimension line around its label
   doorLabelOffset: 2.4, // door labels sit this far outside the outer wall
   doorMarkOffset: 0.6, // door markers sit just outside the outer wall
+  sideWallLabelOffset: 5.2, // side-wall length labels sit this far outside the room
 };
 
 const CHAR_WIDTH = 0.6; // conservative average glyph width, as a share of font size
@@ -27,40 +28,60 @@ function labelBox(x, y, text, angleDeg, size) {
   return { x0: x - bw / 2, x1: x + bw / 2, y0: y - bh / 2, y1: y + bh / 2 };
 }
 
+// Every label on the plan. Labels carrying `wall` are wall lengths; the page can hide them.
 export function planLabels(l) {
-  const L = PLAN_STYLE.label;
+  const S = PLAN_STYLE;
   const out = [];
-  const add = (text, x, y, angle = 0, cls = 'label') =>
-    out.push({ text, x: num(x), y: num(y), angle: num(angle), cls, box: labelBox(x, y, text, angle, L) });
+  const add = (text, x, y, angle = 0, cls = 'label', wall = null) =>
+    out.push({ text, x: num(x), y: num(y), angle: num(angle), cls, wall, box: labelBox(x, y, text, angle, S.label) });
 
   const W = l.room.width;
   const D = l.room.depth;
-  add(`${fmt(W)} ft`, W / 2, PLAN_STYLE.dimY, 0, 'dim');
-  add(`${fmt(D)} ft`, -4.6, D * 0.35, -90, 'dim');
+  const wall = Object.fromEntries(l.walls.map((w) => [w.id, w]));
+  const ft = (id) => `${fmt(wall[id].length)} ft`;
+  const midY = (id) => (wall[id].a.y + wall[id].b.y) / 2;
 
+  // Outer walls, in the margins.
+  add(ft('outer-top'), W / 2, S.dimY, 0, 'measure', 'outer-top');
+  add(ft('outer-bottom'), W / 2, D + 2.4, 0, 'measure', 'outer-bottom');
+  for (const id of ['outer-left-upper', 'outer-left-lower']) add(ft(id), -S.sideWallLabelOffset, midY(id), -90, 'measure', id);
+  for (const id of ['outer-right-upper', 'outer-right-lower']) add(ft(id), W + S.sideWallLabelOffset, midY(id), 90, 'measure', id);
+
+  // Diagonal, offset toward the off-route side above it.
   const d = l.diagonal;
   const dx = d.b.x - d.a.x;
   const dy = d.b.y - d.a.y;
   const len = Math.hypot(dx, dy);
-  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-  const lift = 2.2; // offset toward the off-route side above the wall
+  const lift = 2.2;
   add(
     `Diagonal ${d.length.toFixed(1)} ft · ${d.panels} panels`,
     (d.a.x + d.b.x) / 2 + (dy / len) * lift,
     (d.a.y + d.b.y) / 2 - (dx / len) * lift,
-    angle,
+    (Math.atan2(dy, dx) * 180) / Math.PI,
+    'measure',
+    'diagonal',
   );
 
   const c = l.corridor;
-  add(`${fmt(c.length)} ft · ${c.panels} panels`, c.a.x + 1.9, (c.a.y + c.b.y) / 2, 90);
+  add(`${fmt(c.length)} ft · ${c.panels} panels`, c.a.x + 1.9, midY('corridor'), 90, 'measure', 'corridor');
 
-  add(`Stage · pony wall ${fmt(l.pony.length)} ft`, (l.pony.a.x + l.pony.b.x) / 2, l.stage.y + l.stage.depth / 2 + 0.2, 0, 'stage-label');
+  const stageY = l.stage.y + l.stage.depth / 2 + 0.2;
+  add('Stage', 10, stageY, 0, 'stage-label');
+  add(`Pony wall ${ft('pony')}`, (l.pony.a.x + l.pony.b.x) / 2, stageY, 0, 'measure', 'pony');
+
+  // Partitions: beside the wall, near its lower end, clear of the diagonal label.
+  for (const p of l.partitions) {
+    const text = `${p.length.toFixed(1)} ft`;
+    const half = (text.length * CHAR_WIDTH * S.label) / 2;
+    const lowEnd = Math.max(p.a.y, p.b.y);
+    add(text, p.a.x + 1.6, lowEnd - half - 1, 90, 'measure', p.id);
+  }
 
   for (const t of l.tents) add(`${fmt(t.size)}×${fmt(t.size)}`, t.x + t.size / 2, t.y + 2.4, 0, 'tent-label');
 
   const entrance = l.doors.entrance;
   const exitDoor = l.doors.exit;
-  const off = PLAN_STYLE.doorLabelOffset;
+  const off = S.doorLabelOffset;
   add('Entrance', -off, (entrance.y0 + entrance.y1) / 2, -90, 'door-label');
   add('Exit', W + off, (exitDoor.y0 + exitDoor.y1) / 2, 90, 'door-label');
   return out;
@@ -130,7 +151,7 @@ export function renderPlan2D(l) {
       `text{font-family:var(--plan-font,system-ui,sans-serif);font-size:${S.label}px;fill:var(--plan-text,#2b2a27);text-anchor:middle;dominant-baseline:central}` +
       `.dim,.tent-label,.stage-label{fill:var(--plan-muted,#5c5850)}` +
       `.door-label{fill:var(--plan-door,#2f7d5b);font-weight:600}` +
-      `.label{font-weight:600}` +
+      `.label,.measure{font-weight:600}` +
       `</style>`,
   );
 
@@ -140,13 +161,6 @@ export function renderPlan2D(l) {
 
   for (const t of l.tents) parts.push(`<rect class="tent" x="${t.x}" y="${t.y}" width="${t.size}" height="${t.size}"/>`);
   for (const s of l.tentSides) parts.push(line('tent-side', s.a, s.b));
-
-  // Dimension lines in the margin.
-  const dy = S.dimY;
-  parts.push(line('dim-line', { x: 0, y: dy }, { x: W / 2 - S.dimGap, y: dy }));
-  parts.push(line('dim-line', { x: W / 2 + S.dimGap, y: dy }, { x: W, y: dy }));
-  parts.push(line('dim-line', { x: 0, y: dy - 1 }, { x: 0, y: dy + 1 }));
-  parts.push(line('dim-line', { x: W, y: dy - 1 }, { x: W, y: dy + 1 }));
 
   const route = l.route;
   const arrows = [];
@@ -164,10 +178,23 @@ export function renderPlan2D(l) {
   parts.push(line('door', { x: -m, y: entrance.y0 }, { x: -m, y: entrance.y1 }));
   parts.push(line('door', { x: W + m, y: exitDoor.y0 }, { x: W + m, y: exitDoor.y1 }));
 
-  for (const lb of planLabels(l)) {
+  const text = (lb) => {
     const rot = lb.angle ? ` transform="rotate(${lb.angle} ${lb.x} ${lb.y})"` : '';
-    parts.push(`<text class="${lb.cls}" x="${lb.x}" y="${lb.y}"${rot}>${esc(lb.text)}</text>`);
-  }
+    const tag = lb.wall ? ` data-wall="${lb.wall}"` : '';
+    return `<text class="${lb.cls}" x="${lb.x}" y="${lb.y}"${rot}${tag}>${esc(lb.text)}</text>`;
+  };
+  const labels = planLabels(l);
+  for (const lb of labels) if (!lb.wall) parts.push(text(lb));
+
+  // Wall lengths in one group the page can show or hide, with the top dimension line.
+  const dy = S.dimY;
+  const dims = [
+    line('dim-line', { x: 0, y: dy }, { x: W / 2 - S.dimGap, y: dy }),
+    line('dim-line', { x: W / 2 + S.dimGap, y: dy }, { x: W, y: dy }),
+    line('dim-line', { x: 0, y: dy - 1 }, { x: 0, y: dy + 1 }),
+    line('dim-line', { x: W, y: dy - 1 }, { x: W, y: dy + 1 }),
+  ];
+  parts.push(`<g id="measurements">${dims.join('')}${labels.filter((lb) => lb.wall).map(text).join('')}</g>`);
 
   const vb = S.viewBox.join(' ');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-labelledby="plan-title" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;

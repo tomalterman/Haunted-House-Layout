@@ -30,10 +30,10 @@ test('route sits in its own group with a stable id and direction markers', () =>
 test('labels read their numbers from the layout', () => {
   const texts = planLabels(layout).map((l) => l.text);
   assert.ok(texts.includes('85 ft'));
-  assert.ok(texts.includes('60 ft'));
+  assert.ok(texts.includes('48 ft'));
   assert.ok(texts.some((t) => t.startsWith('Diagonal 52.5 ft')));
   assert.ok(texts.some((t) => t.startsWith('32 ft')));
-  assert.ok(texts.some((t) => t.includes('pony wall 50 ft')));
+  assert.ok(texts.includes('Pony wall 50 ft'));
   assert.ok(texts.includes('10×10'));
 });
 
@@ -78,4 +78,16 @@ test('the SVG has an accessible title and description', () => {
   assert.match(svg, /<title id="plan-title">/);
   assert.match(svg, /<desc>/);
   assert.match(svg, /role="img"/);
+});
+
+test('every wall has a length label inside the measurements group', () => {
+  const measured = planLabels(layout).filter((lb) => lb.wall);
+  assert.deepEqual(measured.map((lb) => lb.wall).sort(), layout.walls.map((w) => w.id).sort());
+  const svg = renderPlan2D(layout);
+  const group = svg.slice(svg.indexOf('<g id="measurements"'), svg.indexOf('</g>', svg.indexOf('<g id="measurements"')));
+  assert.equal(count(group, /data-wall=/g), layout.walls.length);
+  for (const id of ['P1', 'P2', 'P3']) {
+    const w = layout.walls.find((x) => x.id === id);
+    assert.ok(measured.find((lb) => lb.wall === id).text.startsWith(w.length.toFixed(1)), id);
+  }
 });

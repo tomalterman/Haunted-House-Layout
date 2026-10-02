@@ -7,6 +7,7 @@ const plan3d = $('plan-3d');
 const btn2d = $('view-2d');
 const btn3d = $('view-3d');
 const routeBox = $('show-route');
+const measureBox = $('show-measurements');
 const resetBtn = $('reset-view');
 const status = $('status');
 
@@ -32,6 +33,13 @@ function applyRoute() {
   if (view3d) view3d.setRouteVisible(visible);
 }
 
+function applyMeasurements() {
+  const visible = measureBox.checked;
+  const g = plan2d.querySelector('#measurements');
+  if (g) g.style.display = visible ? '' : 'none';
+  if (view3d) view3d.setMeasurementsVisible(visible);
+}
+
 function setPressed(is3d) {
   btn2d.setAttribute('aria-pressed', String(!is3d));
   btn3d.setAttribute('aria-pressed', String(is3d));
@@ -54,7 +62,7 @@ async function show3D() {
       showStatus('Loading 3D…');
       loading = import('./view3d.js')
         .then((m) => {
-          view3d = m.mountView3D(plan3d, layout, { showRoute: routeBox.checked });
+          view3d = m.mountView3D(plan3d, layout, { showRoute: routeBox.checked, showMeasurements: measureBox.checked });
         })
         .finally(() => {
           loading = null;
@@ -86,6 +94,8 @@ btn3d.addEventListener('click', () => {
   show3D();
 });
 routeBox.addEventListener('change', applyRoute);
+measureBox.addEventListener('change', applyMeasurements);
 resetBtn.addEventListener('click', () => view3d && view3d.resetView());
 
 applyRoute();
+applyMeasurements();

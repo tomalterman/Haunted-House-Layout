@@ -90,3 +90,18 @@ test('every wall has a height, with a short pony wall', () => {
   assert.equal(layout.walls.find((w) => w.id === 'pony').height, 4);
   assert.equal(layout.walls.find((w) => w.id === 'diagonal').height, 8);
 });
+
+test('every wall carries its length in feet', () => {
+  const byId = Object.fromEntries(layout.walls.map((w) => [w.id, w.length]));
+  assert.equal(byId['outer-top'], 85);
+  assert.equal(byId['outer-left-upper'], 48);
+  assert.equal(byId['outer-left-lower'], 6);
+  assert.equal(byId['outer-right-upper'], 6);
+  assert.equal(byId['outer-right-lower'], 50);
+  assert.equal(byId.pony, 50);
+  assert.equal(byId.corridor, 32);
+  assert.equal(byId.diagonal, layout.diagonal.length);
+  assert.equal(byId.P1, 21.25);
+  assert.equal(byId.P2, 26.15);
+  assert.equal(byId.P3, 32.75);
+});

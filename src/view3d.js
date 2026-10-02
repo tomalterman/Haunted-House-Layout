@@ -13,7 +13,7 @@ function cssColor(el, name, fallback) {
   return new THREE.Color(v || fallback);
 }
 
-function textSprite(text, color) {
+function textSprite(text, color, height = 2.6) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const font = '600 64px system-ui, sans-serif';
@@ -29,7 +29,7 @@ function textSprite(text, color) {
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false }));
-  sprite.scale.set((canvas.width / canvas.height) * 2.6, 2.6, 1);
+  sprite.scale.set((canvas.width / canvas.height) * height, height, 1);
   sprite.renderOrder = 10;
   return sprite;
 }
@@ -143,7 +143,24 @@ function buildScene(layout, colors) {
   routeGroup.name = 'route';
   root.add(routeGroup);
 
-  return { scene, routeGroup };
+  // Wall lengths: a tag floating just above the middle of each wall.
+  const measureGroup = new THREE.Group();
+  const measureColor = `#${colors.wall.getHexString()}`;
+  // The bottom wall's midpoint lines up with the pony wall's from most angles, so its tag
+  // sits toward the open stage corner instead.
+  const along = { 'outer-bottom': 0.12 };
+  for (const w of layout.walls) {
+    const ft = Number.isInteger(w.length) ? w.length : w.length.toFixed(1);
+    const tag = textSprite(`${ft} ft`, measureColor, 2);
+    const t = along[w.id] ?? 0.5;
+    tag.position.set(w.a.x + (w.b.x - w.a.x) * t, w.height + 1.6, w.a.y + (w.b.y - w.a.y) * t);
+    tag.name = `length-${w.id}`;
+    measureGroup.add(tag);
+  }
+  measureGroup.name = 'measurements';
+  root.add(measureGroup);
+
+  return { scene, routeGroup, measureGroup };
 }
 
 function disposeScene(scene) {
@@ -157,7 +174,7 @@ function disposeScene(scene) {
   });
 }
 
-export function mountView3D(container, layout, { showRoute = true } = {}) {
+export function mountView3D(container, layout, { showRoute = true, showMeasurements = true } = {}) {
 
   const colors = {
     background: cssColor(container, '--scene-bg', '#e8e5de'),
@@ -180,8 +197,9 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
   renderer.domElement.className = 'view3d-canvas';
   container.appendChild(renderer.domElement);
 
-  const { scene, routeGroup } = buildScene(layout, colors);
+  const { scene, routeGroup, measureGroup } = buildScene(layout, colors);
   routeGroup.visible = showRoute;
+  measureGroup.visible = showMeasurements;
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.5, 900);
   let userMoved = false;
@@ -269,6 +287,10 @@ export function mountView3D(container, layout, { showRoute = true } = {}) {
   return {
     setRouteVisible(v) {
       routeGroup.visible = v;
+      requestRender();
+    },
+    setMeasurementsVisible(v) {
+      measureGroup.visible = v;
       requestRender();
     },
     resetView() {

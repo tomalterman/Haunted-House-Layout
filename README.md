@@ -1,6 +1,6 @@
 # Gym Haunted House Layout
 
-A to-scale view of the gym haunted house: the walls that funnel visitors from the entrance, through the tents and the S-shaped serpentine, to the exit. Switch between a flat 2D plan and a 3D model you can spin and zoom.
+A to-scale view of the gym haunted house: the walls that funnel visitors from the entrance, through the tents and the S-shaped serpentine, to the exit. Switch between a flat 2D plan and a 3D model you can spin and zoom, and turn the visitor route and the wall-length measurements on or off in either view.
 
 ## Open it
 

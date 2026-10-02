@@ -102,7 +102,7 @@ export function buildLayout(m = MEASUREMENTS) {
     { id: 'diagonal', a: diagonal.a, b: diagonal.b, height: h },
     { id: 'corridor', a: corridor.a, b: corridor.b, height: h },
     ...partitions.map((p) => ({ id: p.id, a: p.a, b: p.b, height: h })),
-  ];
+  ].map((w) => ({ ...w, length: round2(dist(w.a, w.b)) }));
 
   // Each tent side as a fixed coordinate plus the span it covers along the other axis.
   const sidesOf = (t) => ({
