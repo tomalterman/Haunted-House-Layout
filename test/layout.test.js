@@ -105,3 +105,43 @@ test('every wall carries its length in feet', () => {
   assert.equal(byId.P2, 26.15);
   assert.equal(byId.P3, 32.75);
 });
+
+test('six group areas follow the route in order', () => {
+  assert.equal(layout.groups.length, 6);
+  assert.deepEqual(layout.groups.map((g) => g.n), [1, 2, 3, 4, 5, 6]);
+  const area = Object.fromEntries(layout.groups.map((g) => [g.n, g.area]));
+  assert.equal(area[1], 300); // three 10x10 tents
+  assert.equal(area[6], 300);
+  assert.equal(area[2], 230); // 10 ft wide lane, 20 ft deep at the tents, 26 ft at the first partition
+  for (const g of layout.groups) assert.ok(g.area > 0 && g.points.length >= 4, `group ${g.n}`);
+});
+
+test('lane widths come from the partition spacing', () => {
+  const width = Object.fromEntries(layout.groups.map((g) => [g.n, g.width]));
+  assert.deepEqual([width[2], width[3], width[4], width[5]], [10, 13, 12, 10]);
+});
+
+test('every doorway between groups has its width', () => {
+  const w = Object.fromEntries(layout.openings.map((o) => [o.id, o.width]));
+  assert.deepEqual(w, { entrance: 6, 'g1-g2': 4, 'g2-g3': 4.75, 'g3-g4': 7.65, 'g4-g5': 8.25, 'g5-g6': 7, exit: 4 });
+});
+
+test('each group is entered where the previous group leaves', () => {
+  const [first, ...rest] = layout.groups;
+  assert.equal(first.in, 'entrance');
+  for (const [i, g] of rest.entries()) assert.equal(g.in, layout.groups[i].out);
+  assert.equal(layout.groups[5].out, 'exit');
+});
+
+test('group badges sit inside their own area', () => {
+  const inside = (p, pts) => {
+    let hit = false;
+    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+      const a = pts[i];
+      const b = pts[j];
+      if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) hit = !hit;
+    }
+    return hit;
+  };
+  for (const g of layout.groups) assert.ok(inside(g.at, g.points), `group ${g.n}`);
+});

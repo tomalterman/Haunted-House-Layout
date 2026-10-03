@@ -30,6 +30,10 @@
           <input type="checkbox" id="show-measurements" checked />
           <span>Measurements</span>
         </label>
+        <label class="check" for="show-groups">
+          <input type="checkbox" id="show-groups" />
+          <span>Groups</span>
+        </label>
         <button type="button" id="reset-view" class="plain" hidden>Reset view</button>
       </div>
     </header>
@@ -39,6 +43,7 @@
       <li><i class="sw sw-route"></i>Visitor route</li>
       <li><i class="sw sw-off"></i>Off route</li>
     </ul>
+    <ul id="group-panel" class="group-panel" aria-label="Group areas" hidden></ul>
     <main class="views">
       <section id="plan-2d" class="view" aria-label="2D plan"></section>
       <section id="plan-3d" class="view" aria-label="3D model" hidden></section>

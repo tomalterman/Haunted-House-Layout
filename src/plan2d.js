@@ -1,5 +1,7 @@
 // Top-down 2D plan as an SVG string. The viewBox is in feet, so the drawing is to scale.
 
+import { GROUP_COLORS } from './layout.js';
+
 export const PLAN_STYLE = {
   viewBox: [-7, -6, 99, 70], // x, y, width, height in feet, with margins for labels
   wall: 0.7,
@@ -11,6 +13,7 @@ export const PLAN_STYLE = {
   doorLabelOffset: 2.4, // door labels sit this far outside the outer wall
   doorMarkOffset: 0.6, // door markers sit just outside the outer wall
   sideWallLabelOffset: 5.2, // side-wall length labels sit this far outside the room
+  badgeRadius: 2.9, // group number badges
 };
 
 const CHAR_WIDTH = 0.6; // conservative average glyph width, as a share of font size
@@ -19,21 +22,23 @@ const fmt = (n) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const num = (n) => Math.round(n * 100) / 100;
 
-function labelBox(x, y, text, angleDeg, size) {
-  const w = text.length * CHAR_WIDTH * size;
-  const h = size;
+function labelBox(x, y, w, h, angleDeg) {
   const t = (angleDeg * Math.PI) / 180;
   const bw = Math.abs(w * Math.cos(t)) + Math.abs(h * Math.sin(t));
   const bh = Math.abs(w * Math.sin(t)) + Math.abs(h * Math.cos(t));
   return { x0: x - bw / 2, x1: x + bw / 2, y0: y - bh / 2, y1: y + bh / 2 };
 }
 
-// Every label on the plan. Labels carrying `wall` are wall lengths; the page can hide them.
+// Every label on the plan, with its size in feet. Labels carrying `wall` are wall lengths and
+// labels carrying `group` belong to the group layer; the page can hide either set.
 export function planLabels(l) {
   const S = PLAN_STYLE;
   const out = [];
-  const add = (text, x, y, angle = 0, cls = 'label', wall = null) =>
-    out.push({ text, x: num(x), y: num(y), angle: num(angle), cls, wall, box: labelBox(x, y, text, angle, S.label) });
+  const add = (text, x, y, angle = 0, cls = 'label', wall = null, group = false, size = null) => {
+    const w = size ? size.w : text.length * CHAR_WIDTH * S.label;
+    const h = size ? size.h : S.label;
+    out.push({ text, x: num(x), y: num(y), angle: num(angle), cls, wall, group, w, h, box: labelBox(x, y, w, h, angle) });
+  };
 
   const W = l.room.width;
   const D = l.room.depth;
@@ -84,8 +89,24 @@ export function planLabels(l) {
   const off = S.doorLabelOffset;
   add('Entrance', -off, (entrance.y0 + entrance.y1) / 2, -90, 'door-label');
   add('Exit', W + off, (exitDoor.y0 + exitDoor.y1) / 2, 90, 'door-label');
+
+  // Group layer: a numbered badge per area and the width of every doorway on the route.
+  const d2 = 2 * S.badgeRadius;
+  for (const g of l.groups) add(String(g.n), g.at.x, g.at.y, 0, 'badge', null, true, { w: d2, h: d2 });
+  const place = {
+    entrance: { dx: 2, angle: -90 },
+    'g1-g2': { dx: -1.8, angle: -90 },
+    'g5-g6': { dx: 1.8, angle: 90 },
+    exit: { dx: -2, angle: 90 },
+  };
+  for (const o of l.openings) {
+    const p = place[o.id] || { dx: 0, angle: 0 }; // gaps beside partitions read across the lane
+    add(`${fmtWidth(o.width)} ft`, o.x + p.dx, (o.y0 + o.y1) / 2, p.angle, 'door-width', null, true);
+  }
   return out;
 }
+
+const fmtWidth = (n) => String(Math.round(n * 100) / 100);
 
 function offRouteAreas(l) {
   const T = Object.fromEntries(l.tents.map((t) => [t.id, t]));
@@ -152,6 +173,13 @@ export function renderPlan2D(l) {
       `.dim,.tent-label,.stage-label{fill:var(--plan-muted,#5c5850)}` +
       `.door-label{fill:var(--plan-door,#2f7d5b);font-weight:600}` +
       `.label,.measure{font-weight:600}` +
+      `svg:not(.groups-on) .grp{display:none}` +
+      `svg.groups-on .tent-label{display:none}` +
+      `.group-area{fill-opacity:0.42;stroke-width:0.35}` +
+      `.opening{stroke:var(--plan-text,#2b2a27);stroke-width:0.3;stroke-dasharray:0.6 0.5}` +
+      `.badge-ring{fill:#fff;stroke-width:0.8}` +
+      `.badge{font-size:3.6px;font-weight:700;fill:#17171a}` +
+      `.door-width{font-weight:700;fill:var(--plan-text,#2b2a27);paint-order:stroke;stroke:var(--plan-halo,#fffdf8);stroke-width:0.7px}` +
       `</style>`,
   );
 
@@ -160,6 +188,13 @@ export function renderPlan2D(l) {
   parts.push(`<rect class="stage" x="${l.stage.x}" y="${l.stage.y}" width="${l.stage.width}" height="${l.stage.depth}"/>`);
 
   for (const t of l.tents) parts.push(`<rect class="tent" x="${t.x}" y="${t.y}" width="${t.size}" height="${t.size}"/>`);
+  const poly = (pts) => pts.map((p) => `${num(p.x)},${num(p.y)}`).join(' ');
+  const areas = l.groups.map((g) => {
+    const c = GROUP_COLORS[g.n - 1];
+    return `<polygon class="group-area" data-group="${g.n}" points="${poly(g.points)}" fill="${c}" stroke="${c}"/>`;
+  });
+  parts.push(`<g id="groups" class="grp">${areas.join('')}</g>`);
+
   for (const s of l.tentSides) parts.push(line('tent-side', s.a, s.b));
 
   const route = l.route;
@@ -184,7 +219,7 @@ export function renderPlan2D(l) {
     return `<text class="${lb.cls}" x="${lb.x}" y="${lb.y}"${rot}${tag}>${esc(lb.text)}</text>`;
   };
   const labels = planLabels(l);
-  for (const lb of labels) if (!lb.wall) parts.push(text(lb));
+  for (const lb of labels) if (!lb.wall && !lb.group) parts.push(text(lb));
 
   // Wall lengths in one group the page can show or hide, with the top dimension line.
   const dy = S.dimY;
@@ -195,6 +230,15 @@ export function renderPlan2D(l) {
     line('dim-line', { x: W, y: dy - 1 }, { x: W, y: dy + 1 }),
   ];
   parts.push(`<g id="measurements">${dims.join('')}${labels.filter((lb) => lb.wall).map(text).join('')}</g>`);
+
+  // Group numbers and doorway widths sit on top of everything.
+  const marks = l.openings.map((o) => line('opening', { x: o.x, y: o.y0 }, { x: o.x, y: o.y1 }));
+  const badges = labels.filter((lb) => lb.cls === 'badge').map((lb) => {
+    const c = GROUP_COLORS[Number(lb.text) - 1];
+    return `<circle class="badge-ring" cx="${lb.x}" cy="${lb.y}" r="${S.badgeRadius}" stroke="${c}"/>${text(lb)}`;
+  });
+  const widths = labels.filter((lb) => lb.cls === 'door-width').map(text);
+  parts.push(`<g id="group-labels" class="grp">${marks.join('')}${badges.join('')}${widths.join('')}</g>`);
 
   const vb = S.viewBox.join(' ');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" role="img" aria-labelledby="plan-title" preserveAspectRatio="xMidYMid meet">${parts.join('')}</svg>`;
