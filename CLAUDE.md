@@ -1,6 +1,6 @@
 # Haunted House Layout
 
-Use the in-repo Compound Engineering plugin for planning and work. It is vendored at `.claude/skills/compound-engineering/` and loads as `compound-engineering@skills-dir` after you open the repo root and trust the workspace. Do not install CE from a marketplace.
+Use the in-repo Compound Engineering skills for planning and work. They are vendored as plain project skills at `.claude/skills/ce-*/` (plus `lfg`), so they load with no plugin or marketplace install. Upstream license and refresh notes are in `.claude/vendor/compound-engineering/`. Do not install CE from a marketplace.
 
 Typical commands:
 
