@@ -71,3 +71,10 @@ test('no input means no movement', () => {
   assert.equal(moved, false);
   assert.deepEqual(state, start);
 });
+
+test('two-finger slide and lift move by their distance, independent of speed and frame time', () => {
+  const { state } = stepFly(start, input({ slide: 2, lift: 1.5 }), 0, { bounds, speed: 99 });
+  close(state.x, 2, 'x');
+  close(state.y, 6.5, 'height');
+  close(state.z, 0, 'z');
+});

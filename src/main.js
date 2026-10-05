@@ -119,7 +119,7 @@ async function show3D() {
             showGroups: groupsBox.checked,
             lights: lightsSelect.value,
           });
-          sceneSelect.innerHTML = view3d.scenes.map((s) => `<option value="${s.id}">${s.name}</option>`).join('');
+          sceneSelect.replaceChildren(...view3d.scenes.map((s) => new Option(s.name, s.id)));
           sceneSelect.value = view3d.snapshot().scene;
           window.__sandbox = { snapshot: () => view3d.snapshot() }; // read-only hook for tests
         })

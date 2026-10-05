@@ -51,11 +51,13 @@ export function gymFloor(widthFt, depthFt, pxPerFt = 24) {
   // Varnish sheen variation.
   for (let i = 0; i < 60; i++) {
     const r = pxPerFt * (4 + rand() * 10);
-    const grad = g.createRadialGradient(rand() * W, rand() * H, 0, rand() * W, rand() * H, r);
+    const x = rand() * W;
+    const y = rand() * H;
+    const grad = g.createRadialGradient(x, y, 0, x, y, r);
     grad.addColorStop(0, 'rgba(255,240,210,0.06)');
     grad.addColorStop(1, 'rgba(255,240,210,0)');
     g.fillStyle = grad;
-    g.fillRect(0, 0, W, H);
+    g.fillRect(x - r, y - r, 2 * r, 2 * r);
   }
   // Basketball court lines, centered (84 x 50 ft court).
   const ft = (v) => v * pxPerFt;

@@ -125,7 +125,6 @@ function buildGym(layout, quality) {
     fabric: new THREE.MeshStandardMaterial({ map: fabric(), roughness: 0.9, side: THREE.DoubleSide }),
     metal: new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.35, metalness: 0.85 }),
   };
-  mats.pine.map.repeat.set(1, 1);
 
   const floor = shadowed(
     new THREE.Mesh(
@@ -309,6 +308,7 @@ export function mountView3D(
   renderer.toneMappingExposure = 1;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.autoUpdate = false; // the gym is static; redraw shadows only when props or lights change
   const canvas = renderer.domElement;
   canvas.className = 'view3d-canvas';
   canvas.tabIndex = 0;
@@ -360,6 +360,7 @@ export function mountView3D(
     moon.visible = p.moon > 0;
     scene.environmentIntensity = p.env;
     scene.fog = p.fog ? new THREE.FogExp2(p.background, p.fog) : null;
+    renderer.shadowMap.needsUpdate = true;
   };
   applyLights();
 
@@ -404,6 +405,7 @@ export function mountView3D(
     requestRender();
   };
   const syncProps = () => {
+    renderer.shadowMap.needsUpdate = true;
     for (const p of current.physics.poses()) {
       const mesh = current.meshes.get(p.id);
       mesh.position.set(p.x, p.height, p.y);
@@ -466,7 +468,7 @@ export function mountView3D(
   const frame = (now = performance.now()) => {
     const dt = Math.min((now - last) / 1000, 0.1);
     last = now;
-    const step = stepFly(fly, input.take(dt), dt, { bounds });
+    const step = stepFly(fly, input.take(), dt, { bounds });
     if (step.moved) {
       fly = step.state;
       applyCamera();

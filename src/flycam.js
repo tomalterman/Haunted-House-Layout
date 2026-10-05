@@ -11,7 +11,9 @@ export const FLY_DEFAULTS = {
   maxPitch: 1.45,
 };
 
-export const emptyInput = () => ({ forward: 0, right: 0, up: 0, turn: 0, lookX: 0, lookY: 0, dolly: 0, fast: false });
+// Axes are -1..1 at flying speed; lookX/lookY are pixels dragged; dolly, slide, and lift are
+// one-off distances in feet from the wheel and two-finger gestures.
+export const emptyInput = () => ({ forward: 0, right: 0, up: 0, turn: 0, lookX: 0, lookY: 0, dolly: 0, slide: 0, lift: 0, fast: false });
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -26,10 +28,10 @@ export function stepFly(state, input, dt, { bounds, ...opts } = {}) {
   const fwd = { x: -Math.sin(yaw) * cp, y: Math.sin(pitch), z: -Math.cos(yaw) * cp };
   const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
   const along = input.forward * speed * dt + input.dolly;
-  const side = input.right * speed * dt;
+  const side = input.right * speed * dt + input.slide;
 
   let x = state.x + fwd.x * along + right.x * side;
-  let y = state.y + fwd.y * along + input.up * speed * dt;
+  let y = state.y + fwd.y * along + input.up * speed * dt + input.lift;
   let z = state.z + fwd.z * along + right.z * side;
   if (bounds) {
     x = clamp(x, bounds.min.x, bounds.max.x);
@@ -58,7 +60,7 @@ export function attachFlyInput(el, onChange = () => {}) {
   let lookY = 0;
   let dolly = 0;
   let slide = 0;
-  let rise = 0;
+  let lift = 0;
   const pointers = new Map();
   let pair = null; // last two-finger centroid and spread
 
@@ -107,7 +109,7 @@ export function attachFlyInput(el, onChange = () => {}) {
       const big = Math.max(Math.abs(d.spread), Math.abs(d.cx), Math.abs(d.cy));
       if (big === Math.abs(d.spread)) dolly += d.spread * 0.08;
       else if (big === Math.abs(d.cx)) slide -= d.cx * 0.05;
-      else rise += d.cy * 0.05;
+      else lift += d.cy * 0.05;
       pair = now;
     }
     onChange();
@@ -134,9 +136,8 @@ export function attachFlyInput(el, onChange = () => {}) {
   return {
     // True while a movement key is held, so the caller keeps animating.
     active: () => held.size > 0,
-    // Collects the input since the last call. Two-finger slides and rises are one-off offsets
-    // folded into strafe/up as distances (seconds of travel at base speed).
-    take(dt) {
+    // Collects the input since the last call.
+    take() {
       const input = emptyInput();
       for (const code of held) {
         const [axis, dir] = KEYS[code];
@@ -146,11 +147,9 @@ export function attachFlyInput(el, onChange = () => {}) {
       input.lookX = lookX;
       input.lookY = lookY;
       input.dolly = dolly;
-      if (dt > 0) {
-        input.right += slide / (FLY_DEFAULTS.speed * dt);
-        input.up += rise / (FLY_DEFAULTS.speed * dt);
-      }
-      lookX = lookY = dolly = slide = rise = 0;
+      input.slide = slide;
+      input.lift = lift;
+      lookX = lookY = dolly = slide = lift = 0;
       return input;
     },
     dispose() {

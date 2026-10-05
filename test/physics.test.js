@@ -53,7 +53,7 @@ test('a 6.5 ft ball dropped into the group 4 lane comes to rest on the floor wit
 });
 
 test('the ball bounces lower each time', () => {
-  const physics = createPhysics(layout, sceneOf(ball({ start: { x: 49, height: 20, y: 37 } })));
+  const physics = createPhysics(layout, sceneOf(ball()));
   const peaks = [];
   let last = 20;
   let rising = false;
@@ -125,7 +125,7 @@ test('reset puts every prop back at its start and restarts the drop clock', () =
 });
 
 test('everything is asleep after 20 s of simulated time', () => {
-  const box = { ...ball({ id: 'box', shape: 'box', size: { width: 4, height: 4, depth: 4 }, mass: 10, drag: 1.05, start: { x: 49, height: 2, y: 45 } }) };
+  const box = ball({ id: 'box', shape: 'box', size: { width: 4, height: 4, depth: 4 }, mass: 10, drag: 1.05, start: { x: 49, height: 2, y: 45 } });
   const physics = createPhysics(layout, sceneOf(ball(), box));
   run(physics, 20);
   assert.equal(physics.isActive(), false);

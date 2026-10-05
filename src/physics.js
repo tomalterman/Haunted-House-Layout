@@ -93,6 +93,7 @@ export function createPhysics(layout, scene) {
     p.body.wakeUp();
   };
 
+  let accumulator = 0;
   const api = {
     time: 0,
     reset() {
@@ -119,10 +120,13 @@ export function createPhysics(layout, scene) {
       while (accumulator >= FIXED_STEP && n < MAX_SUBSTEPS) {
         for (const p of props) {
           if (p.pending && api.time >= p.spec.dropDelay) release(p);
-          const v = p.body.velocity;
-          const speed = v.length();
-          if (!p.pending && p.dragK > 0 && speed > 0) {
-            p.body.applyForce(new CANNON.Vec3(-p.dragK * speed * v.x, -p.dragK * speed * v.y, -p.dragK * speed * v.z));
+          if (!p.pending && p.dragK > 0) {
+            // Quadratic air drag at the center of mass, opposing motion.
+            const v = p.body.velocity;
+            const k = -p.dragK * v.length();
+            p.body.force.x += k * v.x;
+            p.body.force.y += k * v.y;
+            p.body.force.z += k * v.z;
           }
         }
         world.step(FIXED_STEP);
@@ -147,7 +151,6 @@ export function createPhysics(layout, scene) {
       }));
     },
   };
-  let accumulator = 0;
   api.reset();
   return api;
 }
