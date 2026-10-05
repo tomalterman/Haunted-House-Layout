@@ -98,6 +98,7 @@ export function createPhysics(layout, scene) {
     time: 0,
     reset() {
       api.time = 0;
+      world.time = 0; // sleep timers run on the world clock; a stale clock makes replays drift
       accumulator = 0;
       for (const p of props) {
         const { body, spec } = p;

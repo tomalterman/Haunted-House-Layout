@@ -66,7 +66,9 @@ export function attachFlyInput(el, onChange = () => {}) {
 
   const onKey = (down) => (e) => {
     if (e.key === 'Shift') fast = down;
-    if (!KEYS[e.code] || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (!KEYS[e.code]) return;
+    // Shortcuts like Cmd+W never start movement, but a release always stops it.
+    if (down && (e.altKey || e.ctrlKey || e.metaKey)) return;
     e.preventDefault();
     if (down) held.add(e.code);
     else held.delete(e.code);

@@ -78,3 +78,18 @@ test('two-finger slide and lift move by their distance, independent of speed and
   close(state.y, 6.5, 'height');
   close(state.z, 0, 'z');
 });
+
+test('a fly key released while a modifier is held does not stay stuck', async () => {
+  const { attachFlyInput } = await import('../src/flycam.js');
+  const el = new EventTarget();
+  el.focus = () => {};
+  const key = (type, code, mods = {}) => el.dispatchEvent(Object.assign(new Event(type), { code, key: code, preventDefault() {}, ...mods }));
+  const fly = attachFlyInput(el);
+  key('keydown', 'KeyW');
+  assert.equal(fly.active(), true);
+  key('keyup', 'KeyW', { ctrlKey: true });
+  assert.equal(fly.active(), false);
+  key('keydown', 'KeyW', { metaKey: true }); // shortcuts like Cmd+W never start movement
+  assert.equal(fly.active(), false);
+  fly.dispose();
+});

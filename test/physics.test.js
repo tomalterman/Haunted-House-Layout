@@ -137,3 +137,16 @@ test('an empty scene has no props and is never active', () => {
   assert.deepEqual(physics.poses(), []);
   assert.equal(physics.isActive(), false);
 });
+
+test('replay repeats the first run exactly', async () => {
+  const { sceneById, DEFAULT_SCENE_ID } = await import('../src/scenes/index.js');
+  const trace = (physics) => {
+    const out = [];
+    run(physics, 12, (poses) => out.push(poses.map((p) => [p.x, p.height, p.y])));
+    return out;
+  };
+  const physics = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
+  const first = trace(physics);
+  physics.reset();
+  assert.deepEqual(trace(physics), first);
+});
