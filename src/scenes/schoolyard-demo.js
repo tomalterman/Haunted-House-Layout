@@ -60,12 +60,12 @@ export default {
     {
       type: 'spot',
       color: '#ff3b30',
-      intensity: 1500,
+      intensity: 6000,
       angle: 32,
       position: { x: 49, height: 18, y: 44 },
       target: { x: 49, height: 0, y: 40 },
       castShadow: true,
     },
-    { type: 'point', color: '#6aa8ff', intensity: 120, position: { x: 44, height: 7, y: 52 } },
+    { type: 'point', color: '#6aa8ff', intensity: 400, position: { x: 44, height: 7, y: 52 } },
   ],
 };

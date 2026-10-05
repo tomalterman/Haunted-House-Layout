@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Gym Haunted House Layout</title>
-    <meta name="description" content="To-scale 2D and 3D layout of the gym haunted house walls, tents, and visitor route." />
+    <meta name="description" content="To-scale 2D plan and a realistic 3D physics sandbox of the gym haunted house." />
     <link rel="stylesheet" href="src/styles.css" />
     <script type="importmap">
       { "imports": { "three": "./vendor/three/three.module.js" } }
@@ -34,7 +34,21 @@
           <input type="checkbox" id="show-groups" />
           <span>Groups</span>
         </label>
-        <button type="button" id="reset-view" class="plain" hidden>Reset view</button>
+        <span id="sandbox-controls" class="sandbox-controls" hidden>
+          <label class="pick" for="scene-select">
+            <span>Scene</span>
+            <select id="scene-select"></select>
+          </label>
+          <label class="pick" for="lights-select">
+            <span>Lights</span>
+            <select id="lights-select">
+              <option value="work">Work lights</option>
+              <option value="show">Show (dark)</option>
+            </select>
+          </label>
+          <button type="button" id="replay" class="plain">Replay</button>
+          <button type="button" id="reset-view" class="plain">Reset view</button>
+        </span>
       </div>
     </header>
     <ul class="legend" aria-label="Legend">
@@ -46,7 +60,11 @@
     <ul id="group-panel" class="group-panel" aria-label="Group areas" hidden></ul>
     <main class="views">
       <section id="plan-2d" class="view" aria-label="2D plan"></section>
-      <section id="plan-3d" class="view" aria-label="3D model" hidden></section>
+      <section id="plan-3d" class="view" aria-label="3D sandbox" hidden></section>
+      <p id="fly-hint" class="fly-hint" hidden>
+        <span id="fly-hint-text"></span>
+        <button type="button" id="fly-hint-close" class="hint-close" aria-label="Hide controls hint">×</button>
+      </p>
       <p id="status" class="status" role="status" hidden></p>
     </main>
   </body>
