@@ -11,6 +11,11 @@ const measureBox = $('show-measurements');
 const groupsBox = $('show-groups');
 const groupPanel = $('group-panel');
 const resetBtn = $('reset-view');
+const sandboxControls = $('sandbox-controls');
+const sceneSelect = $('scene-select');
+const lightsSelect = $('lights-select');
+const replayBtn = $('replay');
+const flyHint = $('fly-hint');
 const status = $('status');
 
 $('subtitle').textContent = `To scale · ${layout.room.width} × ${layout.room.depth} ft`;
@@ -67,11 +72,35 @@ function setPressed(is3d) {
   btn3d.setAttribute('aria-pressed', String(is3d));
 }
 
+// Controls hint for the 3D view, worded for touch or keyboard, dismissible for good.
+const HINT_KEY = 'fly-hint-dismissed';
+const touch = window.matchMedia('(pointer: coarse)').matches;
+$('fly-hint-text').textContent = touch
+  ? 'Drag to look · pinch to fly · two-finger drag to slide or rise'
+  : 'Drag to look · W A S D to fly · E / Q up and down · Shift for speed';
+const hintDismissed = () => {
+  try {
+    return localStorage.getItem(HINT_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+$('fly-hint-close').addEventListener('click', () => {
+  flyHint.hidden = true;
+  try {
+    localStorage.setItem(HINT_KEY, '1');
+  } catch {
+    // private mode: the hint just comes back next time
+  }
+  view3d?.focus();
+});
+
 function show2D() {
   setPressed(false);
   plan3d.hidden = true;
   plan2d.hidden = false;
-  resetBtn.hidden = true;
+  sandboxControls.hidden = true;
+  flyHint.hidden = true;
   if (view3d) view3d.hide();
 }
 
@@ -84,7 +113,15 @@ async function show3D() {
       showStatus('Loading 3D…');
       loading = import('./view3d.js')
         .then((m) => {
-          view3d = m.mountView3D(plan3d, layout, { showRoute: routeBox.checked, showMeasurements: measureBox.checked, showGroups: groupsBox.checked });
+          view3d = m.mountView3D(plan3d, layout, {
+            showRoute: routeBox.checked,
+            showMeasurements: measureBox.checked,
+            showGroups: groupsBox.checked,
+            lights: lightsSelect.value,
+          });
+          sceneSelect.replaceChildren(...view3d.scenes.map((s) => new Option(s.name, s.id)));
+          sceneSelect.value = view3d.snapshot().scene;
+          window.__sandbox = { snapshot: () => view3d.snapshot() }; // read-only hook for tests
         })
         .finally(() => {
           loading = null;
@@ -105,7 +142,9 @@ async function show3D() {
     return;
   }
   view3d.show();
-  resetBtn.hidden = false;
+  sandboxControls.hidden = false;
+  flyHint.hidden = hintDismissed();
+  view3d.focus();
 }
 
 btn2d.addEventListener('click', () => {
@@ -118,7 +157,16 @@ btn3d.addEventListener('click', () => {
 routeBox.addEventListener('change', applyRoute);
 measureBox.addEventListener('change', applyMeasurements);
 groupsBox.addEventListener('change', applyGroups);
-resetBtn.addEventListener('click', () => view3d && view3d.resetView());
+// Each sandbox control hands focus back to the view so the fly keys keep working.
+const sandboxAction = (fn) => () => {
+  if (!view3d) return;
+  fn();
+  view3d.focus();
+};
+resetBtn.addEventListener('click', sandboxAction(() => view3d.resetView()));
+replayBtn.addEventListener('click', sandboxAction(() => view3d.replay()));
+sceneSelect.addEventListener('change', sandboxAction(() => view3d.setScene(sceneSelect.value)));
+lightsSelect.addEventListener('change', sandboxAction(() => view3d.setLights(lightsSelect.value)));
 
 applyRoute();
 applyMeasurements();
