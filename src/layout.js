@@ -40,6 +40,9 @@ export const MEASUREMENTS = {
   r3EntryOpening: { from: 1, to: 8 }, // R3 left side
 };
 
+// Group area colors in route order (colorblind-safe).
+export const GROUP_COLORS = ['#E69F00', '#56B4E9', '#009E73', '#F0E442', '#CC79A7', '#0072B2'];
+
 const round2 = (n) => Math.round(n * 100) / 100;
 const dist = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
 
@@ -185,6 +188,62 @@ export function buildLayout(m = MEASUREMENTS) {
     { x: W + 1.5, y: exitMid },
   ].map((p) => ({ x: round2(p.x), y: round2(p.y) }));
 
+  // Doorways between group areas, in route order. Each is a vertical span at x from y0 to y1.
+  const opening = (id, x, y0, y1) => ({ id, x, y0: round2(y0), y1: round2(y1), width: round2(y1 - y0) });
+  const groupOpenings = [
+    opening('entrance', 0, doors.entrance.y0, doors.entrance.y1),
+    opening('g1-g2', T.L3.x + S, T.L3.y + m.l3ExitOpening.from, T.L3.y + m.l3ExitOpening.to),
+    opening('g2-g3', P1.a.x, P1.b.y, ponyY),
+    opening('g3-g4', P2.a.x, diagonalYAt(P2.a.x), P2.b.y),
+    opening('g4-g5', P3.a.x, P3.b.y, ponyY),
+    opening('g5-g6', T.R3.x, T.R3.y + m.r3EntryOpening.from, T.R3.y + m.r3EntryOpening.to),
+    opening('exit', W, doors.exit.y0, doors.exit.y1),
+  ];
+
+  // Group areas in route order. Lanes split along the partition lines, from the diagonal
+  // down to the pony wall.
+  const pt = (x, y) => ({ x: round2(x), y: round2(y) });
+  const area = (pts) => Math.round(Math.abs(pts.reduce((sum, p, i) => {
+    const q = pts[(i + 1) % pts.length];
+    return sum + p.x * q.y - q.x * p.y;
+  }, 0)) / 2);
+  const lane = (x0, x1) => [pt(x0, diagonalYAt(x0)), pt(x1, diagonalYAt(x1)), pt(x1, ponyY), pt(x0, ponyY)];
+  // Badge 40% of the way down the lane, clear of the partition length labels near the floor.
+  const laneBadge = (x0, x1) => {
+    const top = diagonalYAt(mid(x0, x1));
+    return pt(mid(x0, x1), top + (ponyY - top) * 0.4);
+  };
+  const groupDefs = [
+    {
+      name: 'Entrance tents',
+      points: [pt(0, T.L1.y), pt(T.L3.x, T.L1.y), pt(T.L3.x, T.L3.y), pt(T.L3.x + S, T.L3.y), pt(T.L3.x + S, ponyY), pt(0, ponyY)],
+      at: pt(T.L3.x + S / 2, T.L1.y),
+    },
+    { name: 'First lane', x0: diagA.x, x1: P1.a.x },
+    { name: 'Second lane', x0: P1.a.x, x1: P2.a.x },
+    { name: 'Third lane', x0: P2.a.x, x1: P3.a.x },
+    { name: 'Last lane', x0: P3.a.x, x1: corridor.a.x },
+    {
+      name: 'Exit tents',
+      points: [pt(T.R1.x, T.R1.y), pt(T.R2.x + S, T.R2.y), pt(T.R2.x + S, T.R2.y + S), pt(T.R3.x + S, T.R3.y), pt(T.R3.x + S, T.R3.y + S), pt(T.R3.x, T.R3.y + S)],
+      at: pt(T.R1.x + S / 2, T.R1.y + S / 2),
+    },
+  ];
+  const groups = groupDefs.map((g, i) => {
+    const isLane = g.x0 !== undefined;
+    const points = isLane ? lane(g.x0, g.x1) : g.points;
+    return {
+      n: i + 1,
+      name: g.name,
+      points,
+      area: area(points),
+      width: isLane ? round2(g.x1 - g.x0) : null,
+      at: isLane ? laneBadge(g.x0, g.x1) : g.at,
+      in: groupOpenings[i].id,
+      out: groupOpenings[i + 1].id,
+    };
+  });
+
   return {
     room: { width: W, depth: D },
     wallHeight: h,
@@ -199,6 +258,8 @@ export function buildLayout(m = MEASUREMENTS) {
     tentSides,
     barriers,
     route,
+    groups,
+    openings: groupOpenings,
   };
 }
 

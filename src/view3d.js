@@ -3,6 +3,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from '../vendor/three/OrbitControls.js';
+import { GROUP_COLORS } from './layout.js';
 
 const TENT_ROOF = 7;
 const WALL_THICKNESS = 0.5;
@@ -31,6 +32,33 @@ function textSprite(text, color, height = 2.6) {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false }));
   sprite.scale.set((canvas.width / canvas.height) * height, height, 1);
   sprite.renderOrder = 10;
+  return sprite;
+}
+
+// A round group-number badge: white disc, colored ring, dark number.
+function badgeSprite(n, color) {
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 10, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.lineWidth = 16;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.fillStyle = '#17171a';
+  ctx.font = '700 72px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(n), size / 2, size / 2 + 4);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false }));
+  sprite.scale.set(4.5, 4.5, 1);
+  sprite.renderOrder = 11;
   return sprite;
 }
 
@@ -148,11 +176,14 @@ function buildScene(layout, colors) {
   const measureColor = `#${colors.wall.getHexString()}`;
   // The bottom wall's midpoint lines up with the pony wall's from most angles, so its tag
   // sits toward the open stage corner instead.
-  const along = { 'outer-bottom': 0.12 };
+  // Partition tags sit toward the end nearest the stage, clear of the group badges mid-lane.
+  const along = { 'outer-bottom': 0.12, 'outer-left-lower': 0.85 };
+  const partitionIds = new Set(layout.partitions.map((p) => p.id));
   for (const w of layout.walls) {
     const ft = Number.isInteger(w.length) ? w.length : w.length.toFixed(1);
     const tag = textSprite(`${ft} ft`, measureColor, 2);
-    const t = along[w.id] ?? 0.5;
+    const nearFloor = w.b.y > w.a.y ? 0.8 : 0.2;
+    const t = along[w.id] ?? (partitionIds.has(w.id) ? nearFloor : 0.5);
     tag.position.set(w.a.x + (w.b.x - w.a.x) * t, w.height + 1.6, w.a.y + (w.b.y - w.a.y) * t);
     tag.name = `length-${w.id}`;
     measureGroup.add(tag);
@@ -160,7 +191,35 @@ function buildScene(layout, colors) {
   measureGroup.name = 'measurements';
   root.add(measureGroup);
 
-  return { scene, routeGroup, measureGroup };
+  // Group areas: tinted floor, a numbered badge, and the width of each doorway on the route.
+  const groupLayer = new THREE.Group();
+  for (const g of layout.groups) {
+    const shape = new THREE.Shape(g.points.map((p) => new THREE.Vector2(p.x, -p.y)));
+    const color = GROUP_COLORS[g.n - 1];
+    const area = new THREE.Mesh(
+      new THREE.ShapeGeometry(shape),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.55, depthWrite: false }),
+    );
+    area.rotation.x = -Math.PI / 2; // shape (x, -y) lies on the floor at (x, 0, y)
+    area.position.y = 0.06;
+    groupLayer.add(area);
+    const badge = badgeSprite(g.n, color);
+    badge.position.set(g.at.x, 12, g.at.y); // floats above the walls, clear of the wall length tags
+    groupLayer.add(badge);
+  }
+  // Doorway widths sit just inside the space they open into, off the wall line.
+  const inset = { entrance: 4, 'g1-g2': -2.5, 'g5-g6': 2.5, exit: -4 };
+  for (const o of layout.openings) {
+    const w = Math.round(o.width * 100) / 100;
+    const tag = textSprite(`${w} ft`, measureColor, 1.6);
+    tag.position.set(o.x + (inset[o.id] ?? 0), 1.2, (o.y0 + o.y1) / 2);
+    groupLayer.add(tag);
+  }
+  groupLayer.name = 'groups';
+  groupLayer.visible = false;
+  root.add(groupLayer);
+
+  return { scene, routeGroup, measureGroup, groupLayer };
 }
 
 function disposeScene(scene) {
@@ -174,7 +233,7 @@ function disposeScene(scene) {
   });
 }
 
-export function mountView3D(container, layout, { showRoute = true, showMeasurements = true } = {}) {
+export function mountView3D(container, layout, { showRoute = true, showMeasurements = true, showGroups = false } = {}) {
 
   const colors = {
     background: cssColor(container, '--scene-bg', '#e8e5de'),
@@ -197,7 +256,8 @@ export function mountView3D(container, layout, { showRoute = true, showMeasureme
   renderer.domElement.className = 'view3d-canvas';
   container.appendChild(renderer.domElement);
 
-  const { scene, routeGroup, measureGroup } = buildScene(layout, colors);
+  const { scene, routeGroup, measureGroup, groupLayer } = buildScene(layout, colors);
+  groupLayer.visible = showGroups;
   routeGroup.visible = showRoute;
   measureGroup.visible = showMeasurements;
 
@@ -291,6 +351,10 @@ export function mountView3D(container, layout, { showRoute = true, showMeasureme
     },
     setMeasurementsVisible(v) {
       measureGroup.visible = v;
+      requestRender();
+    },
+    setGroupsVisible(v) {
+      groupLayer.visible = v;
       requestRender();
     },
     resetView() {

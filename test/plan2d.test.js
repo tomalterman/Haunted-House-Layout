@@ -51,18 +51,66 @@ test('entrance, exit, and stage are named', () => {
   assert.ok(texts.some((t) => t.startsWith('Stage')));
 });
 
-test('labels are readable at 390 px and do not overlap', () => {
-  const vbWidth = PLAN_STYLE.viewBox[2];
-  assert.ok(PLAN_STYLE.label * (390 / vbWidth) >= 10, 'label renders at 10 px or more');
-  const boxes = planLabels(layout).map((l) => ({ text: l.text, ...l.box }));
-  for (let i = 0; i < boxes.length; i++) {
-    for (let j = i + 1; j < boxes.length; j++) {
-      const a = boxes[i];
-      const b = boxes[j];
-      const apart = a.x1 <= b.x0 || b.x1 <= a.x0 || a.y1 <= b.y0 || b.y1 <= a.y0;
-      assert.ok(apart, `"${a.text}" overlaps "${b.text}"`);
+// Corners of a label's rotated rectangle.
+function corners(lb) {
+  const t = (lb.angle * Math.PI) / 180;
+  const ux = { x: Math.cos(t), y: Math.sin(t) };
+  const uy = { x: -Math.sin(t), y: Math.cos(t) };
+  return [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => ({
+    x: lb.x + (sx * lb.w * ux.x) / 2 + (sy * lb.h * uy.x) / 2,
+    y: lb.y + (sx * lb.w * ux.y) / 2 + (sy * lb.h * uy.y) / 2,
+  }));
+}
+
+// Separating-axis test for two rotated rectangles.
+function overlaps(a, b) {
+  const ca = corners(a);
+  const cb = corners(b);
+  for (const poly of [ca, cb]) {
+    for (let i = 0; i < 4; i++) {
+      const p = poly[i];
+      const q = poly[(i + 1) % 4];
+      const axis = { x: q.y - p.y, y: p.x - q.x };
+      const proj = (pts) => pts.map((c) => c.x * axis.x + c.y * axis.y);
+      const pa = proj(ca);
+      const pb = proj(cb);
+      if (Math.max(...pa) <= Math.min(...pb) || Math.max(...pb) <= Math.min(...pa)) return false;
     }
   }
+  return true;
+}
+
+function assertNoOverlap(labels, mode) {
+  for (let i = 0; i < labels.length; i++) {
+    for (let j = i + 1; j < labels.length; j++) {
+      assert.ok(!overlaps(labels[i], labels[j]), `${mode}: "${labels[i].text}" overlaps "${labels[j].text}"`);
+    }
+  }
+}
+
+test('labels are readable at 390 px', () => {
+  const vbWidth = PLAN_STYLE.viewBox[2];
+  assert.ok(PLAN_STYLE.label * (390 / vbWidth) >= 10, 'label renders at 10 px or more');
+});
+
+test('labels do not overlap in the normal view', () => {
+  assertNoOverlap(planLabels(layout).filter((lb) => !lb.group), 'normal');
+});
+
+test('labels do not overlap with groups shown', () => {
+  assertNoOverlap(planLabels(layout).filter((lb) => lb.cls !== 'tent-label'), 'groups');
+});
+
+test('group layer shows six colored areas, numbered badges, and every doorway width', () => {
+  const svg = renderPlan2D(layout);
+  assert.match(svg, /<g id="groups" class="grp">/);
+  assert.match(svg, /<g id="group-labels" class="grp">/);
+  assert.equal(count(svg, /class="group-area"/g), 6);
+  const badges = planLabels(layout).filter((lb) => lb.cls === 'badge').map((lb) => lb.text);
+  assert.deepEqual(badges, ['1', '2', '3', '4', '5', '6']);
+  const doors = planLabels(layout).filter((lb) => lb.cls === 'door-width').map((lb) => lb.text);
+  assert.deepEqual(doors, ['6 ft', '4 ft', '4.75 ft', '7.65 ft', '8.25 ft', '7 ft', '4 ft']);
+  assert.match(svg, /svg\.groups-on \.tent-label\{display:none\}/);
 });
 
 test('labels stay inside the drawing', () => {

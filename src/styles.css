@@ -19,6 +19,7 @@
   --plan-text: #2b2a27;
   --plan-muted: #5c5850;
   --plan-dim: #6b6760;
+  --plan-halo: #fffdf8;
 
   --scene-bg: #e8e5de;
   --scene-floor: #d8c6a0;
@@ -51,6 +52,7 @@
     --plan-text: #ecebe7;
     --plan-muted: #c4bfb3;
     --plan-dim: #9b968c;
+    --plan-halo: #26262a;
     --scene-bg: #1d1d21;
     --scene-floor: #8c7a5a;
     --scene-stage: #5a5246;
@@ -121,6 +123,34 @@ button:focus-visible, .check input:focus-visible { outline: 3px solid var(--acce
 .sw-tent { background: var(--plan-tent); border: 1px solid var(--plan-tent-side); }
 .sw-route { height: 0; border-top: 3px dashed var(--plan-route); border-radius: 0; }
 .sw-off { background: var(--plan-off); border: 1px solid var(--line); }
+
+.group-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  padding: 4px 16px 8px;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.group-panel[hidden] { display: none; }
+.group-panel li { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.group-panel b { color: var(--ink); }
+.chip {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid var(--group);
+  background: #fff;
+  color: #17171a;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
 
 .views { position: relative; flex: 1; min-height: 320px; display: flex; }
 .view { flex: 1; min-width: 0; }

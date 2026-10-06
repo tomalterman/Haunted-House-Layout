@@ -1,4 +1,4 @@
-import { layout } from './layout.js';
+import { layout, GROUP_COLORS } from './layout.js';
 import { renderPlan2D } from './plan2d.js';
 
 const $ = (id) => document.getElementById(id);
@@ -8,11 +8,25 @@ const btn2d = $('view-2d');
 const btn3d = $('view-3d');
 const routeBox = $('show-route');
 const measureBox = $('show-measurements');
+const groupsBox = $('show-groups');
+const groupPanel = $('group-panel');
 const resetBtn = $('reset-view');
 const status = $('status');
 
 $('subtitle').textContent = `To scale · ${layout.room.width} × ${layout.room.depth} ft`;
 plan2d.innerHTML = renderPlan2D(layout);
+
+// Group sizes and doorway widths, listed for the page.
+const doorWidth = Object.fromEntries(layout.openings.map((o) => [o.id, Math.round(o.width * 100) / 100]));
+groupPanel.innerHTML = layout.groups
+  .map((g) => {
+    const size = g.width ? `${g.width} ft wide · ${g.area} sq ft` : `${g.area} sq ft`;
+    return (
+      `<li><span class="chip" style="--group:${GROUP_COLORS[g.n - 1]}">${g.n}</span>` +
+      `<span><b>${g.name}</b><br>${size}<br>In ${doorWidth[g.in]} ft · out ${doorWidth[g.out]} ft</span></li>`
+    );
+  })
+  .join('');
 
 let view3d = null;
 let loading = null;
@@ -40,6 +54,14 @@ function applyMeasurements() {
   if (view3d) view3d.setMeasurementsVisible(visible);
 }
 
+function applyGroups() {
+  const visible = groupsBox.checked;
+  const svg = plan2d.querySelector('svg');
+  if (svg) svg.classList.toggle('groups-on', visible);
+  groupPanel.hidden = !visible;
+  if (view3d) view3d.setGroupsVisible(visible);
+}
+
 function setPressed(is3d) {
   btn2d.setAttribute('aria-pressed', String(!is3d));
   btn3d.setAttribute('aria-pressed', String(is3d));
@@ -62,7 +84,7 @@ async function show3D() {
       showStatus('Loading 3D…');
       loading = import('./view3d.js')
         .then((m) => {
-          view3d = m.mountView3D(plan3d, layout, { showRoute: routeBox.checked, showMeasurements: measureBox.checked });
+          view3d = m.mountView3D(plan3d, layout, { showRoute: routeBox.checked, showMeasurements: measureBox.checked, showGroups: groupsBox.checked });
         })
         .finally(() => {
           loading = null;
@@ -95,7 +117,9 @@ btn3d.addEventListener('click', () => {
 });
 routeBox.addEventListener('change', applyRoute);
 measureBox.addEventListener('change', applyMeasurements);
+groupsBox.addEventListener('change', applyGroups);
 resetBtn.addEventListener('click', () => view3d && view3d.resetView());
 
 applyRoute();
 applyMeasurements();
+applyGroups();
