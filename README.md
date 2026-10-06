@@ -1,6 +1,17 @@
 # Gym Haunted House Layout
 
-A to-scale view of the gym haunted house: the walls that funnel visitors from the entrance, through the tents and the S-shaped serpentine, to the exit. Switch between a flat 2D plan and a 3D model you can spin and zoom, and turn the visitor route, the wall-length measurements, and the six group areas (with floor area and doorway widths) on or off in either view.
+A to-scale view of the gym haunted house: the walls that funnel visitors from the entrance, through the tents and the S-shaped serpentine, to the exit. Switch between a flat 2D plan and a realistic 3D sandbox, and turn the visitor route, the wall-length measurements, and the six group areas (with floor area and doorway widths) on or off in either view.
+
+## The 3D sandbox
+
+The 3D view is a place to try ideas and see if they feel right. Surfaces look like the real build (wood gym floor, black sheeting on pine frames, white tents), lights cast real shadows, and props obey physics at real-world scale against the actual walls.
+
+- **Fly:** drag to look, W A S D to fly, E / Q to rise and sink, Shift for speed, mouse wheel to move forward. On a phone: drag to look, pinch to fly, two-finger drag to slide or rise.
+- **Scene:** pick an idea from the dropdown. **Replay** restarts it, for example to drop the ball again.
+- **Lights:** Work lights shows the whole gym; Show (dark) shows the haunted-house mood with each scene's own lights.
+- **Quality** is picked automatically (lower on phones). Add `?quality=low` or `?quality=high` to the URL to force it.
+
+Ideas live in `src/scenes/`, one file per scene: props (shape, size, weight, bounce, look, start position, drop delay) and lights (spot or point, color, brightness, aim). Copy `schoolyard-demo.js`, change it, and list it in `src/scenes/index.js`. `npm test` checks every scene is valid and settles.
 
 ## Open it
 
@@ -31,5 +42,10 @@ The tests include a leak check. It flood-fills the floor from the entrance door 
 - `src/layout.js`: measurements and derived geometry
 - `src/barriers.js`: leak check
 - `src/plan2d.js`: 2D SVG plan
-- `src/view3d.js`: 3D model (Three.js r186, vendored in `vendor/three/`)
+- `src/view3d.js`: realistic 3D sandbox (Three.js r186, vendored in `vendor/three/`)
+- `src/physics.js`: physics world from the layout (cannon-es, vendored in `vendor/cannon-es/`)
+- `src/flycam.js`: fly-through camera
+- `src/textures.js`: procedural textures
+- `src/scenes/`: scene files and their validator
+- `scripts/sandbox-smoke.cjs`: browser check with screenshots (needs Playwright)
 - `src/main.js`, `index.html`, `src/styles.css`: page shell

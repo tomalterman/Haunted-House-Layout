@@ -6,15 +6,18 @@ export const MEASUREMENTS = {
   roomWidth: 85,
   roomDepth: 60,
   wallHeight: 8,
+  wallThickness: 0.5,
   panelLength: 8,
 
   // Stage runs along the bottom wall behind the pony wall. Depth not on the sketch.
   stageDepth: 4,
+  stageHeight: 3, // not on the sketch
   ponyStartX: 20,
   ponyLength: 50,
   ponyHeight: 4,
 
   tentSize: 10,
+  tentHeight: 7, // canopy height; closed sides hang this tall
   // Left block: two tents on the bottom row against the left wall, one on top of the right one.
   // Right block: two tents along the top, one below the left one.
   rightTentsX: 65,
@@ -247,7 +250,9 @@ export function buildLayout(m = MEASUREMENTS) {
   return {
     room: { width: W, depth: D },
     wallHeight: h,
-    stage: { x: 0, y: ponyY, width: W, depth: m.stageDepth },
+    wallThickness: m.wallThickness,
+    tentHeight: m.tentHeight,
+    stage: { x: 0, y: ponyY, width: W, depth: m.stageDepth, height: m.stageHeight },
     pony,
     tents,
     diagonal,
