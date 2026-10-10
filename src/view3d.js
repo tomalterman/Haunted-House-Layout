@@ -9,7 +9,7 @@ import { createPhysics } from './physics.js';
 import { stepFly, attachFlyInput } from './flycam.js';
 import { SCENES, DEFAULT_SCENE_ID, sceneById } from './scenes/index.js';
 import { validateScene } from './scenes/validate.js';
-import { gymFloor, blackSheeting, pine, plywood, stripCurtain, fabric, propPattern } from './textures.js';
+import { gymFloor, blackSheeting, pine, plywood, drape, fabric, propPattern } from './textures.js';
 
 const RAIL = 0.3; // pine frame rail and post size
 
@@ -289,16 +289,15 @@ function fixtureMesh(spec, pose, textures) {
   if (look.pattern === 'sheeting') {
     const { map, bumpMap } = base('sheeting', blackSheeting);
     mat = new THREE.MeshStandardMaterial({ map: tiled(map, 8), bumpMap: tiled(bumpMap, 8), bumpScale: 1.5, roughness: 0.42 });
-  } else if (look.pattern === 'strips') {
-    const { map, alphaMap } = base('strips', stripCurtain);
-    mat = new THREE.MeshStandardMaterial({ map: tiled(map, 4), alphaMap: tiled(alphaMap, 4), transparent: true, roughness: 0.35, side: THREE.DoubleSide });
+  } else if (look.pattern === 'drape') {
+    mat = new THREE.MeshStandardMaterial({ map: tiled(base('drape', drape), 8), roughness: 0.95 });
   } else if (look.pattern === 'pine' || look.pattern === 'plywood') {
     const map = base(look.pattern, look.pattern === 'pine' ? pine : plywood);
     mat = new THREE.MeshStandardMaterial({ map: tiled(map, 4), roughness: 0.7 });
   } else {
     mat = new THREE.MeshStandardMaterial({ color: look.color, roughness: 0.6 });
   }
-  const mesh = shadowed(new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat), look.pattern !== 'strips', true);
+  const mesh = shadowed(new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat));
   mesh.position.set(pose.x, pose.height, pose.y);
   mesh.quaternion.set(...pose.quaternion);
   mesh.name = spec.id;
@@ -439,23 +438,10 @@ export function mountView3D(
     const fixtures = new Map((spec.fixtures ?? []).map((f, i) => [f.id, fixtureMesh(f, poses[i], textures)]));
     for (const m of fixtures.values()) group.add(m);
     for (const t of textures.values()) for (const tex of t.isTexture ? [t] : Object.values(t)) tex.dispose(); // clones hold the image
-    // Tethers: a rope line from the pulley to the ball, plus the pulley itself.
-    const ropes = spec.props
-      .filter((p) => p.tether)
-      .map((p) => {
-        const a = p.tether.anchor;
-        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xc9a25a }));
-        line.frustumCulled = false; // its ends move every frame
-        const pulley = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0.8, roughness: 0.3 }));
-        pulley.position.set(a.x, a.height, a.y);
-        group.add(line, pulley);
-        return { id: p.id, anchor: new THREE.Vector3(a.x, a.height, a.y), radius: p.size.diameter / 2, line };
-      });
-    current = { spec, group, meshes, fixtures, ropes, physics };
+    current = { spec, group, meshes, fixtures, physics };
     syncProps();
     requestRender();
   };
-  const ropeEnd = new THREE.Vector3();
   const syncProps = () => {
     renderer.shadowMap.needsUpdate = true;
     for (const p of current.physics.poses()) {
@@ -463,15 +449,10 @@ export function mountView3D(
       mesh.position.set(p.x, p.height, p.y);
       mesh.quaternion.set(...p.quaternion);
     }
-    for (const f of current.physics.fixtures()) current.fixtures.get(f.id).visible = f.present;
-    for (const r of current.ropes) {
-      // The rope ties to the ball's net on the side facing the pulley.
-      const ball = current.meshes.get(r.id).position;
-      ropeEnd.subVectors(r.anchor, ball).setLength(r.radius).add(ball);
-      const pos = r.line.geometry.attributes.position;
-      pos.setXYZ(0, r.anchor.x, r.anchor.y, r.anchor.z);
-      pos.setXYZ(1, ropeEnd.x, ropeEnd.y, ropeEnd.z);
-      pos.needsUpdate = true;
+    for (const f of current.physics.fixtures()) {
+      const mesh = current.fixtures.get(f.id);
+      mesh.position.set(f.x, f.height, f.y);
+      mesh.quaternion.set(...f.quaternion);
     }
   };
 
@@ -625,7 +606,7 @@ export function mountView3D(
         canRelease: current.physics.canRelease(),
         awaitingRelease: current.physics.awaitingRelease(),
         released: current.physics.released,
-        fixtures: current.physics.fixtures().map(({ id, present }) => ({ id, present })),
+        fixtures: current.physics.fixtures().map(({ id, height, angle }) => ({ id, height, angle })),
         camera: { ...fly },
         overlays: { route: routeGroup.visible, measurements: measureGroup.visible, groups: groupLayer.visible },
         frames,

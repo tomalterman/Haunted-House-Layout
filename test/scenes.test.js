@@ -80,7 +80,6 @@ test('bad props are rejected with a message naming the prop', () => {
     [(s) => (s.props[0].dropDelay = -1), /crate.*dropDelay/],
     [(s) => s.props.push({ ...s.props[0] }), /crate.*duplicate/],
     [(s) => (s.props[0].dropDelay = 'later'), /crate.*dropDelay/],
-    [(s) => (s.props[0].tether = { anchor: { x: 40, height: 9, y: 30 }, length: 0 }), /crate.*tether/],
   ];
   for (const [mutate, message] of cases) {
     const s = good();
@@ -109,7 +108,12 @@ test('bad fixtures are rejected with a message naming the fixture', () => {
     [(f) => (f.at = { x: 40, height: 9, y: 99 }), /ramp.*at/],
     [(f) => (f.slope = 95), /ramp.*slope/],
     [(f) => delete f.look, /ramp.*look/],
-    [(f) => (f.solid = 'no'), /ramp.*solid/],
+    [(f) => (f.hinge = { edge: 'middle', mass: 2, opens: 90 }), /ramp.*hinge edge/],
+    [(f) => (f.hinge = { edge: 'bottom', mass: 0, opens: 90 }), /ramp.*hinge mass/],
+    [(f) => (f.hinge = { edge: 'bottom', mass: 2, opens: 200 }), /ramp.*hinge opens/],
+    [(f) => (f.hinge = { edge: 'bottom', mass: 2, opens: 90, latched: 'yes' }), /ramp.*hinge latched/],
+    [(f) => (f.dropsOnRelease = 'yes'), /ramp.*dropsOnRelease/],
+    [(f) => Object.assign(f, { dropsOnRelease: true, hinge: { edge: 'bottom', mass: 2, opens: 90 } }), /ramp.*cannot also be hinged/],
   ];
   assert.doesNotThrow(() => validateScene({ ...good(), fixtures: [fixture()] }, layout));
   for (const [mutate, message] of cases) {

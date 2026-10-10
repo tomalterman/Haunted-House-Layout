@@ -1,16 +1,14 @@
-// The hidden ball drop rig for group 4: hidden before release, lands in the front of the
-// third lane, stays in the lane, and the tether keeps the exit clear.
+// The hidden ball drop rig for group 4: hidden before release, one pull drops the drape and the
+// stop bar, the ball lands in the front of the third lane, and it stays in the lane on its own.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout } from '../src/layout.js';
-import { createPhysics } from '../src/physics.js';
+import { createPhysics, DRAPE_PILE } from '../src/physics.js';
 import { reachableFrom } from '../src/barriers.js';
-import rig, { at, TETHER_ANCHOR, TETHER_LENGTH, OPENING_WIDTH } from '../src/scenes/ball-drop-rig.js';
-import free from '../src/scenes/ball-drop-free.js';
+import rig, { at, OPENING_WIDTH } from '../src/scenes/ball-drop-rig.js';
 
 const R = 3.25;
 const lane = layout.groups.find((g) => g.n === 4);
-const exitGap = layout.openings.find((o) => o.id === 'g4-g5');
 
 function inPolygon(pts, p) {
   let inside = false;
@@ -35,19 +33,18 @@ function drop(scene, over = {}) {
   const physics = createPhysics(layout, { ...scene, props: scene.props.map((p) => ({ ...p, ...over })) });
   physics.release();
   let prev = physics.poses()[0];
-  const s = { landing: null, crossed: [], maxRope: 0, path: [prev] };
-  for (let t = 1 / 60; t < 30 && physics.isActive(); t += 1 / 60) {
+  const s = { landing: null, crossed: [], path: [prev] };
+  for (let t = 1 / 60; t < 120 && physics.isActive(); t += 1 / 60) {
     physics.step(1 / 60);
     const p = physics.poses()[0];
     const w = crossesWall(prev, p);
     if (w) s.crossed.push(w.id);
-    if (!s.landing && p.height < R + 0.15) s.landing = { t, x: p.x, y: p.y };
-    const a = TETHER_ANCHOR;
-    s.maxRope = Math.max(s.maxRope, Math.hypot(p.x - a.x, p.height - a.height, p.y - a.y));
+    if (!s.landing && p.height < R + 0.15) s.landing = { t, x: p.x, y: p.y, index: s.path.length };
     s.path.push(p);
     prev = p;
   }
   s.end = physics.poses()[0];
+  s.afterLanding = s.path.slice(s.landing?.index ?? 0);
   return s;
 }
 
@@ -121,27 +118,38 @@ test('the same check sees the ball once it has dropped into the lane', () => {
   assert.ok(eyePoints().some((eye) => physics.canSee(eye, ball)), 'visible after the drop');
 });
 
-test('the ball rolls through the curtain, over the wall, and lands in the front of the lane', () => {
+test('one pull drops the drape and frees the stop bar, and the drape is down before the ball arrives', () => {
+  const physics = createPhysics(layout, rig);
+  const fixture = (id) => physics.fixtures().find((f) => f.id === id);
+  const drapeSpec = rig.fixtures.find((f) => f.id === 'kabuki-drape');
+  physics.release();
+  let drapeDownAt = null;
+  let ballAtDrapeAt = null;
+  const drapePlane = local(drapeSpec.at).out;
+  for (let t = 1 / 60; t < 4; t += 1 / 60) {
+    physics.step(1 / 60);
+    if (drapeDownAt === null && Math.abs(fixture('kabuki-drape').height + drapeSpec.size.height / 2 - DRAPE_PILE) < 1e-9) drapeDownAt = t;
+    if (ballAtDrapeAt === null && local(physics.poses()[0]).out + R > drapePlane) ballAtDrapeAt = t;
+  }
+  assert.ok(drapeDownAt < 1.1, `drape heaped on the floor ${drapeDownAt?.toFixed(2)} s after the pull`);
+  assert.ok(ballAtDrapeAt > drapeDownAt + 0.5, `ball reaches the drape line at ${ballAtDrapeAt?.toFixed(2)} s`);
+  assert.ok(Math.abs(fixture('stop-bar').angle - 90) < 0.5, 'the ball has knocked the stop bar flat');
+});
+
+test('the ball rolls over the wall and lands in the front of the lane', () => {
   const s = drop(rig);
   assert.deepEqual(s.crossed, []);
   assert.ok(s.landing, 'it lands');
-  assert.ok(s.landing.t < 3.5, `lands ${s.landing.t.toFixed(2)} s after release`);
+  assert.ok(s.landing.t < 4, `lands ${s.landing.t.toFixed(2)} s after the pull`);
   assert.ok(inPolygon(lane.points, s.landing), `lands in group 4 at (${s.landing.x.toFixed(1)}, ${s.landing.y.toFixed(1)})`);
   assert.ok(s.landing.y < 30, 'lands in the front part of the lane, near the entrance');
 });
 
-test('the tether stops the ball before the exit into group 5, inside group 4', () => {
+test('with nothing tied to it, the ball rolls on down the lane and stays in group 4', () => {
   const s = drop(rig);
-  assert.ok(s.maxRope <= TETHER_LENGTH + 0.05, `rope stretched to ${s.maxRope.toFixed(2)} ft`);
-  assert.ok(s.path.slice(60 * 4).every((p) => inPolygon(lane.points, p)), 'stays in group 4 after landing');
-  assert.ok(s.end.y + R < exitGap.y0, `stops at y ${s.end.y.toFixed(1)}, clear of the exit gap at y ${exitGap.y0}`);
-});
-
-test('without the tether the ball still stays in group 4 but rolls down to the stage end', () => {
-  const s = drop(free);
-  assert.deepEqual(s.crossed, []);
-  assert.ok(s.path.slice(60 * 4).every((p) => inPolygon(lane.points, p)), 'stays in group 4');
-  assert.ok(s.end.y > exitGap.y0, `runs on to y ${s.end.y.toFixed(1)}, into the approach to the exit`);
+  assert.ok(s.afterLanding.every((p) => inPolygon(lane.points, p)), 'never leaves group 4 (not back out the entrance, not on into group 5)');
+  assert.ok(s.end.y > s.landing.y + 10, `rolls down the lane after the group, to y ${s.end.y.toFixed(1)}`);
+  assert.ok(s.end.sleeping, 'comes to rest');
 });
 
 test('the ball passes the opening without touching the jambs', () => {
@@ -149,21 +157,15 @@ test('the ball passes the opening without touching the jambs', () => {
   assert.ok(jambClearance(s.path) > 0.25, `clearance ${jambClearance(s.path).toFixed(2)} ft`);
 });
 
-test('the tether can never reach the exit gap, whatever the ball does', () => {
-  const a = TETHER_ANCHOR;
-  const reach = Math.sqrt(TETHER_LENGTH ** 2 - (a.height - R) ** 2); // rope taut, ball on the floor
-  assert.ok(a.y + reach + R < exitGap.y0 - 1, `furthest ball edge y ${(a.y + reach + R).toFixed(1)}, exit gap starts at ${exitGap.y0}`);
-});
-
-test('the drop works for a light or heavy ball, more or less bouncy, held a foot off center', () => {
+test('the drop works for a light or heavy ball, bouncier, on a slicker floor, or held a foot off center', () => {
   const along = at(1, 0, 0);
   const shift = (d) => ({ ...rig.props[0].start, x: rig.props[0].start.x + (along.x - origin.x) * d, y: rig.props[0].start.y + (along.y - origin.y) * d });
-  for (const over of [{ mass: 6 }, { mass: 18 }, { bounce: 0.75 }, { start: shift(1) }, { start: shift(-1) }]) {
+  for (const over of [{ mass: 6 }, { mass: 18 }, { bounce: 0.75 }, { rollingResistance: 0.02 }, { start: shift(1) }, { start: shift(-1) }]) {
     const s = drop(rig, over);
     const label = JSON.stringify(over);
     assert.deepEqual(s.crossed, [], label);
     assert.ok(s.landing && inPolygon(lane.points, s.landing) && s.landing.y < 30, `${label} lands in the front of the lane`);
-    assert.ok(s.end.y + R < exitGap.y0, `${label} stops clear of the exit`);
+    assert.ok(s.afterLanding.every((p) => inPolygon(lane.points, p)), `${label} stays in group 4`);
     assert.ok(jambClearance(s.path) > 0, `${label} clears the jambs (${jambClearance(s.path).toFixed(2)} ft)`);
   }
 });

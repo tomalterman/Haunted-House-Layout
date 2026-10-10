@@ -166,23 +166,16 @@ export function plywood() {
   return texture(c);
 }
 
-// Black plastic strip curtain: overlapping vertical strips with a faint sheen between them.
-// Returns a color map and an alpha map (strip edges let a little light through).
-export function stripCurtain() {
-  const [c, g] = canvas(256, 256);
-  const [a, ga] = canvas(256, 256);
-  const rand = rng(17);
-  g.fillStyle = '#0c0c0e';
-  g.fillRect(0, 0, 256, 256);
-  ga.fillStyle = '#ffffff';
-  ga.fillRect(0, 0, 256, 256);
-  for (let x = 0; x < 256; x += 16) {
-    g.fillStyle = `rgba(90,90,100,${0.08 + rand() * 0.08})`;
-    g.fillRect(x + 1, 0, 2, 256);
-    ga.fillStyle = '#d0d0d0';
-    ga.fillRect(x, 0, 1, 256);
+// Black velour drape: soft vertical folds, lit on the crowns and dark in the valleys.
+export function drape() {
+  const [c, g] = canvas(256, 64);
+  for (let x = 0; x < 256; x++) {
+    const fold = 0.5 + 0.5 * Math.sin((x / 256) * Math.PI * 2 * 8);
+    const v = Math.round(8 + fold * 22);
+    g.fillStyle = `rgb(${v},${v},${v + 2})`;
+    g.fillRect(x, 0, 1, 64);
   }
-  return { map: texture(c), alphaMap: texture(a, { color: false }) };
+  return texture(c);
 }
 
 // White canopy fabric with a faint weave.

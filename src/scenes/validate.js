@@ -6,6 +6,7 @@ const SHAPES = {
   box: ['width', 'height', 'depth'],
   cylinder: ['diameter', 'height'],
 };
+const HINGE_EDGES = ['left', 'right', 'bottom', 'top'];
 const LIGHT_TYPES = ['spot', 'point'];
 const MAX_HEIGHT = 40;
 
@@ -44,9 +45,6 @@ export function validateScene(scene, layout) {
     if (p.dropDelay !== undefined && p.dropDelay !== 'manual' && !(isNum(p.dropDelay) && p.dropDelay >= 0)) {
       bad("dropDelay (seconds, 0 or more, or 'manual')");
     }
-    if (p.tether !== undefined && !(p.tether && inRoom(p.tether.anchor) && isNum(p.tether.length) && p.tether.length > 0)) {
-      bad('tether (needs an anchor inside the room and a length above 0)');
-    }
   }
 
   if (scene.fixtures !== undefined && !Array.isArray(scene.fixtures)) fail('fixtures must be a list');
@@ -60,7 +58,15 @@ export function validateScene(scene, layout) {
     if (f.yaw !== undefined && !inRange(f.yaw, -360, 360)) bad('yaw (degrees)');
     if (f.slope !== undefined && !inRange(f.slope, -89, 89)) bad('slope (degrees, -89 to 89)');
     if (!f.look || typeof f.look.color !== 'string') bad('look (needs a color)');
-    for (const flag of ['solid', 'removeOnRelease']) if (f[flag] !== undefined && typeof f[flag] !== 'boolean') bad(`${flag} (true or false)`);
+    const h = f.hinge;
+    if (h !== undefined) {
+      if (!h || !HINGE_EDGES.includes(h.edge)) bad(`hinge edge (use ${HINGE_EDGES.join(', ')})`);
+      if (!isNum(h.mass) || h.mass <= 0) bad('hinge mass (pounds, above 0)');
+      if (!inRange(h.opens, 1, 180)) bad('hinge opens (degrees, 1 to 180)');
+      if (h.latched !== undefined && typeof h.latched !== 'boolean') bad('hinge latched (true or false)');
+    }
+    if (f.dropsOnRelease !== undefined && typeof f.dropsOnRelease !== 'boolean') bad('dropsOnRelease (true or false)');
+    if (f.dropsOnRelease && f.hinge) bad('dropsOnRelease (a drape cannot also be hinged)');
   }
 
   scene.lights.forEach((l, i) => {

@@ -11,6 +11,7 @@ export const FIXED_STEP = 1 / 120;
 const MAX_SUBSTEPS = 8; // a slow frame drops sim time instead of stalling the page
 const MAX_FRAME = 0.25;
 const AIR_DENSITY = 0.0765; // lb/ft³
+export const DRAPE_PILE = 0.4; // ft of a dropped drape heaped on the floor
 
 const UP = new CANNON.Vec3(0, 1, 0);
 const DEG = Math.PI / 180;
@@ -40,6 +41,15 @@ function frontalArea(prop) {
 function fixtureQuaternion({ yaw = 0, slope = 0 }) {
   return new CANNON.Quaternion().setFromEuler(slope * DEG, -yaw * DEG, 0, 'YXZ');
 }
+
+// Hinge edges in a fixture's own frame (width x, height y, depth z). Each axis is signed so a
+// positive angle swings the free edge toward +depth.
+const HINGE_EDGES = {
+  left: { pivot: (s) => new CANNON.Vec3(-s.width / 2, 0, 0), axis: new CANNON.Vec3(0, -1, 0) },
+  right: { pivot: (s) => new CANNON.Vec3(s.width / 2, 0, 0), axis: new CANNON.Vec3(0, 1, 0) },
+  bottom: { pivot: (s) => new CANNON.Vec3(0, -s.height / 2, 0), axis: new CANNON.Vec3(1, 0, 0) },
+  top: { pivot: (s) => new CANNON.Vec3(0, s.height / 2, 0), axis: new CANNON.Vec3(-1, 0, 0) },
+};
 
 // A static box centered on segment a-b, standing on the floor.
 function wallBody(a, b, height, thickness, material) {
@@ -72,18 +82,92 @@ export function createPhysics(layout, scene) {
   stage.position.set(st.x + st.width / 2, st.height / 2, st.y + st.depth / 2);
   world.addBody(stage);
 
-  // Rig pieces from the scene: ramps, booths, gates, curtains. A non-solid fixture (a strip
-  // curtain) lets props pass but still blocks sight lines.
+  // Rig pieces from the scene: ramps, booths, stop bars, drapes. A hinged fixture is a light
+  // panel that swings about one edge; only props push it. A drop fixture is a drape: it blocks
+  // sight but not props, and on release it falls to the floor.
+  const hingeAnchor = new CANNON.Body({ mass: 0 });
+  world.addBody(hingeAnchor);
   const fixtures = (scene.fixtures ?? []).map((spec) => {
     const s = spec.size;
-    const solid = spec.solid !== false;
-    const body = new CANNON.Body({ mass: 0, material: fixed, collisionFilterGroup: STATIC, collisionResponse: solid });
+    const body = new CANNON.Body({ mass: 0, material: fixed, collisionFilterGroup: STATIC, collisionResponse: !spec.dropsOnRelease });
     body.addShape(new CANNON.Box(new CANNON.Vec3(s.width / 2, s.height / 2, s.depth / 2)));
-    body.position.set(spec.at.x, spec.at.height, spec.at.y);
-    body.quaternion.copy(fixtureQuaternion(spec));
+    if (spec.dropsOnRelease) body.type = CANNON.Body.KINEMATIC;
+    const f = { spec, body, restPosition: new CANNON.Vec3(spec.at.x, spec.at.height, spec.at.y), restQuaternion: fixtureQuaternion(spec) };
+    body.position.copy(f.restPosition);
+    body.quaternion.copy(f.restQuaternion);
     world.addBody(body);
-    return { spec, body, present: true };
+    if (spec.hinge) hinge(f);
+    return f;
   });
+  const hinged = fixtures.filter((f) => f.spec.hinge);
+  const drapes = fixtures.filter((f) => f.spec.dropsOnRelease);
+  // A released drape falls freely and heaps up on the floor: it keeps sinking until only a pile
+  // DRAPE_PILE high shows above the floor. Fabric drags a little in the air, which free fall
+  // ignores, so it lands a moment early.
+  const pileCenter = (f) => DRAPE_PILE - f.spec.size.height / 2;
+  const dropDrapes = () => {
+    for (const f of drapes) {
+      if (!f.falling) continue;
+      f.fallSpeed += GRAVITY * FIXED_STEP;
+      const p = f.body.position;
+      p.y = Math.max(p.y - f.fallSpeed * FIXED_STEP, pileCenter(f));
+      if (p.y === pileCenter(f)) f.falling = false;
+      f.body.aabbNeedsUpdate = true;
+    }
+  };
+
+  // Set up a fixture's hinge: a constraint to the world along one edge, with stops at shut and at
+  // fully open.
+  function hinge(f) {
+    const { spec, body } = f;
+    const h = spec.hinge;
+    const edge = HINGE_EDGES[h.edge];
+    body.type = CANNON.Body.DYNAMIC;
+    body.mass = h.mass;
+    body.collisionFilterMask = PROP;
+    body.sleepSpeedLimit = 0.2;
+    body.sleepTimeLimit = 0.5;
+    body.updateMassProperties();
+    f.pivotLocal = edge.pivot(spec.size);
+    f.axisLocal = edge.axis;
+    f.pivotWorld = f.restPosition.vadd(f.restQuaternion.vmult(f.pivotLocal));
+    f.axisWorld = f.restQuaternion.vmult(f.axisLocal);
+    f.maxAngle = h.opens * DEG;
+    f.constraint = new CANNON.HingeConstraint(body, hingeAnchor, { pivotA: f.pivotLocal, axisA: f.axisLocal, pivotB: f.pivotWorld, axisB: f.axisWorld });
+    world.addConstraint(f.constraint);
+  }
+  const hingeAngle = (f) => {
+    const q = f.restQuaternion.conjugate().mult(f.body.quaternion);
+    const a = 2 * Math.atan2(q.x * f.axisLocal.x + q.y * f.axisLocal.y + q.z * f.axisLocal.z, q.w);
+    return Math.atan2(Math.sin(a), Math.cos(a));
+  };
+  const setHingeAngle = (f, angle) => {
+    const { body } = f;
+    body.quaternion.copy(f.restQuaternion.mult(new CANNON.Quaternion().setFromAxisAngle(f.axisLocal, angle)));
+    body.position.copy(f.pivotWorld.vsub(body.quaternion.vmult(f.pivotLocal)));
+    body.velocity.setZero();
+    body.angularVelocity.setZero();
+  };
+  // A pinned (latched) panel stays put until the release pulls the pin.
+  const latch = (f) => {
+    f.body.type = CANNON.Body.KINEMATIC;
+    f.constraint.disable();
+  };
+  const unlatch = (f) => {
+    f.body.type = CANNON.Body.DYNAMIC;
+    // enable() would also switch on the hinge's motor, which brakes it; leave that off.
+    for (const eq of f.constraint.equations) eq.enabled = eq !== f.constraint.motorEquation;
+    f.body.wakeUp();
+  };
+  // The hinge's stops: shut against the frame at 0, fully open at its limit.
+  const hingeLimits = () => {
+    for (const f of hinged) {
+      if (f.body.type !== CANNON.Body.DYNAMIC) continue;
+      const a = hingeAngle(f);
+      if (a < 0) setHingeAngle(f, 0);
+      else if (a > f.maxAngle) setHingeAngle(f, f.maxAngle);
+    }
+  };
 
   const props = scene.props.map((spec) => {
     const body = new CANNON.Body({
@@ -108,14 +192,13 @@ export function createPhysics(layout, scene) {
     p.body.velocity.setZero();
     p.body.angularVelocity.setZero();
   };
-  // The release opens any gates (stop bars) the scene marks to go with it.
-  const openGates = () => {
+  // The release pulls every pin in the rig.
+  const releaseRig = () => {
     released = true;
-    for (const f of fixtures) {
-      if (f.spec.removeOnRelease && f.present) {
-        world.removeBody(f.body);
-        f.present = false;
-      }
+    for (const f of hinged) if (f.spec.hinge.latched) unlatch(f);
+    for (const f of drapes) {
+      f.falling = true;
+      f.fallSpeed = 0;
     }
   };
   const release = (p) => {
@@ -126,30 +209,6 @@ export function createPhysics(layout, scene) {
     const v = p.spec.velocity;
     if (v) p.body.velocity.set(v.x, v.height, v.y);
     p.body.wakeUp();
-  };
-
-  // A tether is a slack rope: free inside its length, taut at it. When taut, pull the prop
-  // back onto the rope's reach and drop the outward part of its velocity.
-  const tethered = props.filter((p) => p.spec.tether);
-  const applyTethers = () => {
-    for (const p of tethered) {
-      if (p.pending) continue;
-      const a = p.spec.tether.anchor;
-      const L = p.spec.tether.length;
-      const pos = p.body.position;
-      const dx = pos.x - a.x;
-      const dy = pos.y - a.height;
-      const dz = pos.z - a.y;
-      const d = Math.hypot(dx, dy, dz);
-      if (d <= L) continue;
-      const nx = dx / d;
-      const ny = dy / d;
-      const nz = dz / d;
-      pos.set(a.x + nx * L, a.height + ny * L, a.y + nz * L);
-      const v = p.body.velocity;
-      const out = v.x * nx + v.y * ny + v.z * nz;
-      if (out > 0) v.set(v.x - out * nx, v.y - out * ny, v.z - out * nz);
-    }
   };
 
   let accumulator = 0;
@@ -163,10 +222,22 @@ export function createPhysics(layout, scene) {
     reset() {
       api.time = 0;
       released = false;
-      for (const f of fixtures) {
-        if (!f.present) {
-          world.addBody(f.body);
-          f.present = true;
+      for (const f of drapes) {
+        f.body.position.copy(f.restPosition);
+        f.body.aabbNeedsUpdate = true;
+        f.falling = false;
+      }
+      for (const f of hinged) {
+        f.body.position.copy(f.restPosition); // exactly, so replays match to the last bit
+        f.body.quaternion.copy(f.restQuaternion);
+        f.body.updateInertiaWorld(true); // cannon refreshes this only while integrating
+        f.body.aabbNeedsUpdate = true;
+        f.body.velocity.setZero();
+        f.body.angularVelocity.setZero();
+        if (f.spec.hinge.latched) latch(f);
+        else {
+          unlatch(f);
+          f.body.sleep();
         }
       }
       world.time = 0; // sleep timers run on the world clock; a stale clock makes replays drift
@@ -188,7 +259,7 @@ export function createPhysics(layout, scene) {
     // Let go of everything still held (the operator pulls the release).
     release() {
       for (const p of props) if (p.pending) release(p);
-      openGates();
+      releaseRig();
     },
     // Advance by one frame's elapsed time in fixed steps.
     step(frameSeconds) {
@@ -198,7 +269,7 @@ export function createPhysics(layout, scene) {
         for (const p of props) {
           if (p.pending && typeof p.spec.dropDelay === 'number' && api.time >= p.spec.dropDelay) {
             release(p);
-            openGates();
+            releaseRig();
           }
           if (!p.pending && p.dragK > 0) {
             // Quadratic air drag at the center of mass, opposing motion.
@@ -209,8 +280,9 @@ export function createPhysics(layout, scene) {
             p.body.force.z += k * v.z;
           }
         }
+        dropDrapes();
         world.step(FIXED_STEP);
-        applyTethers();
+        hingeLimits();
         api.time += FIXED_STEP;
         accumulator -= FIXED_STEP;
         n++;
@@ -220,8 +292,10 @@ export function createPhysics(layout, scene) {
     // True while a timed drop is still scheduled or anything is moving. A prop waiting for a
     // manual release needs no simulation time.
     isActive() {
-      return props.some((p) =>
-        p.pending ? typeof p.spec.dropDelay === 'number' : p.body.sleepState !== CANNON.Body.SLEEPING,
+      return (
+        props.some((p) => (p.pending ? typeof p.spec.dropDelay === 'number' : p.body.sleepState !== CANNON.Body.SLEEPING)) ||
+        hinged.some((f) => f.body.type === CANNON.Body.DYNAMIC && f.body.sleepState !== CANNON.Body.SLEEPING) ||
+        drapes.some((f) => f.falling)
       );
     },
     // Does the scene hold anything for a manual release?
@@ -232,19 +306,19 @@ export function createPhysics(layout, scene) {
     awaitingRelease() {
       return props.some((p) => p.pending && p.spec.dropDelay === 'manual');
     },
-    // Fixed rig pieces, and whether each is still in place.
+    // Rig pieces where they are now, with how far each hinged one is open (degrees).
     fixtures() {
-      return fixtures.map(({ spec, body, present }) => ({
-        id: spec.id,
-        x: body.position.x,
-        height: body.position.y,
-        y: body.position.z,
-        quaternion: [body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w],
-        present,
+      return fixtures.map((f) => ({
+        id: f.spec.id,
+        x: f.body.position.x,
+        height: f.body.position.y,
+        y: f.body.position.z,
+        quaternion: [f.body.quaternion.x, f.body.quaternion.y, f.body.quaternion.z, f.body.quaternion.w],
+        angle: f.spec.hinge ? hingeAngle(f) / DEG : 0,
       }));
     },
-    // Can an eye at `from` see the point `to`? Walls, the stage, and every fixture in place
-    // (curtains included) block the view; props do not. Points are plan feet {x, height, y}.
+    // Can an eye at `from` see the point `to`? Walls, the stage, and every fixture (drapes
+    // included) block the view; props do not. Points are plan feet {x, height, y}.
     canSee(from, to) {
       sightResult.reset();
       return !world.raycastAny(
