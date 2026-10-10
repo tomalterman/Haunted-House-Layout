@@ -163,6 +163,7 @@ groupsBox.addEventListener('change', applyGroups);
 const sandboxAction = (fn) => () => {
   if (!view3d) return;
   fn();
+  updateRelease();
   view3d.focus();
 };
 // Release shows only for scenes that hold something for a manual release, and is usable
@@ -173,18 +174,9 @@ function updateRelease() {
   releaseBtn.disabled = !s.awaitingRelease;
 }
 resetBtn.addEventListener('click', sandboxAction(() => view3d.resetView()));
-replayBtn.addEventListener('click', sandboxAction(() => {
-  view3d.replay();
-  updateRelease();
-}));
-releaseBtn.addEventListener('click', sandboxAction(() => {
-  view3d.release();
-  updateRelease();
-}));
-sceneSelect.addEventListener('change', sandboxAction(() => {
-  view3d.setScene(sceneSelect.value);
-  updateRelease();
-}));
+replayBtn.addEventListener('click', sandboxAction(() => view3d.replay()));
+releaseBtn.addEventListener('click', sandboxAction(() => view3d.release()));
+sceneSelect.addEventListener('change', sandboxAction(() => view3d.setScene(sceneSelect.value)));
 lightsSelect.addEventListener('change', sandboxAction(() => view3d.setLights(lightsSelect.value)));
 
 applyRoute();

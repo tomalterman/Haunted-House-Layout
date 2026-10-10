@@ -55,7 +55,7 @@ export function validateScene(scene, layout) {
     if (typeof f.id !== 'string' || !f.id) fail('every fixture needs an id');
     if (seen.has(f.id)) fail(`fixture "${f.id}" is a duplicate id`);
     seen.add(f.id);
-    if (!f.size || !['width', 'height', 'depth'].every((k) => isNum(f.size[k]) && f.size[k] > 0)) bad('size (needs width, height, depth)');
+    if (!f.size || !SHAPES.box.every((k) => isNum(f.size[k]) && f.size[k] > 0)) bad('size (needs width, height, depth)');
     if (!inRoom(f.at)) bad(`at (its center, inside the room, height 0 to ${MAX_HEIGHT} ft)`);
     if (f.yaw !== undefined && !inRange(f.yaw, -360, 360)) bad('yaw (degrees)');
     if (f.slope !== undefined && !inRange(f.slope, -89, 89)) bad('slope (degrees, -89 to 89)');

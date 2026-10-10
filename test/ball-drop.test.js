@@ -35,21 +35,19 @@ function drop(scene, over = {}) {
   const physics = createPhysics(layout, { ...scene, props: scene.props.map((p) => ({ ...p, ...over })) });
   physics.release();
   let prev = physics.poses()[0];
-  const s = { landing: null, crossed: [], maxRope: 0, path: [prev], maxSpeedAfterBounce: 0 };
+  const s = { landing: null, crossed: [], maxRope: 0, path: [prev] };
   for (let t = 1 / 60; t < 30 && physics.isActive(); t += 1 / 60) {
     physics.step(1 / 60);
     const p = physics.poses()[0];
     const w = crossesWall(prev, p);
     if (w) s.crossed.push(w.id);
-    if (!s.landing && p.height < R + 0.15) s.landing = { t, x: p.x, y: p.y, speed: (Math.hypot(p.x - prev.x, p.height - prev.height, p.y - prev.y) * 60) };
-    if (s.landing && t > s.landing.t + 1) s.maxSpeedAfterBounce = Math.max(s.maxSpeedAfterBounce, Math.hypot(p.x - prev.x, p.y - prev.y) * 60);
+    if (!s.landing && p.height < R + 0.15) s.landing = { t, x: p.x, y: p.y };
     const a = TETHER_ANCHOR;
     s.maxRope = Math.max(s.maxRope, Math.hypot(p.x - a.x, p.height - a.height, p.y - a.y));
     s.path.push(p);
     prev = p;
   }
   s.end = physics.poses()[0];
-  s.settled = !physics.isActive();
   return s;
 }
 

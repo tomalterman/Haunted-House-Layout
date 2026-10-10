@@ -37,7 +37,7 @@ function frontalArea(prop) {
 
 // Orientation of a scene fixture. `yaw` is the plan angle of the box's width axis, measured
 // from +x toward +y like a wall's direction. `slope` tilts the depth axis down toward +depth.
-export function fixtureQuaternion({ yaw = 0, slope = 0 }) {
+function fixtureQuaternion({ yaw = 0, slope = 0 }) {
   return new CANNON.Quaternion().setFromEuler(slope * DEG, -yaw * DEG, 0, 'YXZ');
 }
 
@@ -108,8 +108,8 @@ export function createPhysics(layout, scene) {
     p.body.velocity.setZero();
     p.body.angularVelocity.setZero();
   };
-  const release = (p) => {
-    p.pending = false;
+  // The release opens any gates (stop bars) the scene marks to go with it.
+  const openGates = () => {
     released = true;
     for (const f of fixtures) {
       if (f.spec.removeOnRelease && f.present) {
@@ -117,6 +117,9 @@ export function createPhysics(layout, scene) {
         f.present = false;
       }
     }
+  };
+  const release = (p) => {
+    p.pending = false;
     p.body.type = CANNON.Body.DYNAMIC;
     p.body.mass = p.spec.mass;
     p.body.updateMassProperties();
@@ -151,6 +154,7 @@ export function createPhysics(layout, scene) {
 
   let accumulator = 0;
   let released = false;
+  const sightResult = new CANNON.RaycastResult();
   const api = {
     time: 0,
     get released() {
@@ -180,11 +184,11 @@ export function createPhysics(layout, scene) {
         if (spec.dropDelay === 'manual' || spec.dropDelay > 0) hold(p);
         else release(p);
       }
-      if (props.some((p) => p.pending)) released = false;
     },
     // Let go of everything still held (the operator pulls the release).
     release() {
       for (const p of props) if (p.pending) release(p);
+      openGates();
     },
     // Advance by one frame's elapsed time in fixed steps.
     step(frameSeconds) {
@@ -192,7 +196,10 @@ export function createPhysics(layout, scene) {
       let n = 0;
       while (accumulator >= FIXED_STEP && n < MAX_SUBSTEPS) {
         for (const p of props) {
-          if (p.pending && typeof p.spec.dropDelay === 'number' && api.time >= p.spec.dropDelay) release(p);
+          if (p.pending && typeof p.spec.dropDelay === 'number' && api.time >= p.spec.dropDelay) {
+            release(p);
+            openGates();
+          }
           if (!p.pending && p.dragK > 0) {
             // Quadratic air drag at the center of mass, opposing motion.
             const v = p.body.velocity;
@@ -235,14 +242,13 @@ export function createPhysics(layout, scene) {
     // Can an eye at `from` see the point `to`? Walls, the stage, and every fixture in place
     // (curtains included) block the view; props do not. Points are plan feet {x, height, y}.
     canSee(from, to) {
-      const result = new CANNON.RaycastResult();
-      world.raycastClosest(
+      sightResult.reset();
+      return !world.raycastAny(
         new CANNON.Vec3(from.x, from.height, from.y),
         new CANNON.Vec3(to.x, to.height, to.y),
         { collisionFilterMask: STATIC, checkCollisionResponse: false, skipBackfaces: false },
-        result,
+        sightResult,
       );
-      return !result.hasHit;
     },
     poses() {
       return props.map(({ spec, body, pending }) => ({

@@ -28,7 +28,7 @@ import { layout } from '../layout.js';
 const DEG = Math.PI / 180;
 const BALL_D = 6.5;
 const R = BALL_D / 2;
-export const RAMP_SLOPE = 12; // degrees
+const RAMP_SLOPE = 12; // degrees
 const TAN = Math.tan(RAMP_SLOPE * DEG);
 const WALL_T = layout.wallThickness;
 const BOOTH_H = 17;
@@ -38,13 +38,13 @@ const { a: A, b: B } = layout.diagonal;
 const len = Math.hypot(B.x - A.x, B.y - A.y);
 const u = { x: (B.x - A.x) / len, y: (B.y - A.y) / len };
 const n = { x: -u.y, y: u.x }; // toward the lane (away from the top wall)
-export const WALL_YAW = Math.atan2(u.y, u.x) / DEG;
+const WALL_YAW = Math.atan2(u.y, u.x) / DEG;
 
 // The drop point: on the wall over the front of the third lane, left of center so the
 // opening stays above group 4 (lane runs x 43-55).
 const STATION_X = 46.5;
 const ts = (STATION_X - A.x) / (B.x - A.x);
-export const STATION = { x: A.x + (B.x - A.x) * ts, y: A.y + (B.y - A.y) * ts };
+const STATION = { x: A.x + (B.x - A.x) * ts, y: A.y + (B.y - A.y) * ts };
 
 export const at = (along, out, height) => ({
   x: STATION.x + u.x * along + n.x * out,
@@ -59,10 +59,7 @@ const BACK = -7; // deck high end, 7 ft behind the wall's centerline
 const DECK_T = 0.25;
 const deckTop = (out) => 8.3 - (out - LANE_FACE) * TAN;
 // A point `lift` feet off the deck surface (along its normal), above deck position `out`.
-const onDeck = (along, out, lift) => {
-  const p = at(along, out + Math.sin(RAMP_SLOPE * DEG) * lift, deckTop(out) + Math.cos(RAMP_SLOPE * DEG) * lift);
-  return p;
-};
+const onDeck = (along, out, lift) => at(along, out + Math.sin(RAMP_SLOPE * DEG) * lift, deckTop(out) + Math.cos(RAMP_SLOPE * DEG) * lift);
 const slopeLen = (LIP - BACK) / Math.cos(RAMP_SLOPE * DEG);
 
 const black = { color: '#121214', pattern: 'sheeting' };
@@ -89,15 +86,17 @@ const box = (id, label, size, center, look, extra = {}) => ({ id, label, size, a
 
 export const fixtures = [
   box('ramp-deck', 'Ramp deck (plywood, 12 deg)', { width: 8, height: DECK_T, depth: slopeLen }, onDeck(0, (LIP + BACK) / 2, -DECK_T / 2), paintedBlack, { slope: RAMP_SLOPE }),
-  box('rail-left', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(-3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
-  box('rail-right', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
+  ...[-1, 1].map((side) =>
+    box(`rail-${side < 0 ? 'left' : 'right'}`, 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(side * 3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
+  ),
   box('stop-bar', 'Stop bar (2x4 on a pull pin)', { width: 7.4, height: BAR_H, depth: 0.125 }, onDeck(0, barOut, BAR_H / 2), { color: '#d23b2a' }, { slope: RAMP_SLOPE, removeOnRelease: true }),
   ...[-3.6, 3.6].map((along, i) =>
     box(`ramp-post-${i + 1}`, 'Ramp post (4x4)', { width: 0.3, height: deckTop(BACK + 0.4) - DECK_T, depth: 0.3 }, at(along, BACK + 0.4, (deckTop(BACK + 0.4) - DECK_T) / 2), pine),
   ),
   // Booth front, standing on the wall: two jambs and a header around the ball opening.
-  box('booth-jamb-left', 'Booth front (black sheeting)', { width: JAMB, height: BOOTH_H - 8, depth: PANEL }, at(-(OPEN_W + JAMB) / 2, 0, (8 + BOOTH_H) / 2), black),
-  box('booth-jamb-right', 'Booth front (black sheeting)', { width: JAMB, height: BOOTH_H - 8, depth: PANEL }, at((OPEN_W + JAMB) / 2, 0, (8 + BOOTH_H) / 2), black),
+  ...[-1, 1].map((side) =>
+    box(`booth-jamb-${side < 0 ? 'left' : 'right'}`, 'Booth front (black sheeting)', { width: JAMB, height: BOOTH_H - 8, depth: PANEL }, at(side * (OPEN_W + JAMB) / 2, 0, (8 + BOOTH_H) / 2), black),
+  ),
   box('booth-header', 'Booth front header', { width: OPEN_W, height: BOOTH_H - OPEN_TOP, depth: PANEL }, at(0, 0, (OPEN_TOP + BOOTH_H) / 2), black),
   // Hung on the lane face and 6 in wider than the opening each side, so no slanted view slips
   // past its edges.
