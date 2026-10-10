@@ -148,6 +148,36 @@ export function pine() {
   return texture(c);
 }
 
+// Plywood: pale veneer with long, soft grain. One tile covers 4 ft.
+export function plywood() {
+  const [c, g] = canvas(256, 256);
+  const rand = rng(13);
+  g.fillStyle = '#d8b882';
+  g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 40; i++) {
+    g.strokeStyle = `rgba(140,95,50,${0.06 + rand() * 0.12})`;
+    g.lineWidth = 1 + rand() * 3;
+    g.beginPath();
+    const y = rand() * 256;
+    g.moveTo(0, y);
+    for (let x = 0; x <= 256; x += 16) g.lineTo(x, y + Math.sin(x / 50 + i * 1.7) * 6);
+    g.stroke();
+  }
+  return texture(c);
+}
+
+// Black velour drape: soft vertical folds, lit on the crowns and dark in the valleys.
+export function drape() {
+  const [c, g] = canvas(256, 64);
+  for (let x = 0; x < 256; x++) {
+    const fold = 0.5 + 0.5 * Math.sin((x / 256) * Math.PI * 2 * 8);
+    const v = Math.round(8 + fold * 22);
+    g.fillStyle = `rgb(${v},${v},${v + 2})`;
+    g.fillRect(x, 0, 1, 64);
+  }
+  return texture(c);
+}
+
 // White canopy fabric with a faint weave.
 export function fabric() {
   const [c, g] = canvas(128, 128);

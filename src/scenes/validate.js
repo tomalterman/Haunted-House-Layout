@@ -6,6 +6,7 @@ const SHAPES = {
   box: ['width', 'height', 'depth'],
   cylinder: ['diameter', 'height'],
 };
+const HINGE_EDGES = ['left', 'right', 'bottom', 'top'];
 const LIGHT_TYPES = ['spot', 'point'];
 const MAX_HEIGHT = 40;
 
@@ -41,7 +42,31 @@ export function validateScene(scene, layout) {
     if (!p.look || typeof p.look.color !== 'string') bad('look (needs a color)');
     if (!inRoom(p.start)) bad(`start (inside the room, height 0 to ${MAX_HEIGHT} ft)`);
     if (p.velocity !== undefined && !isPoint(p.velocity)) bad('velocity (x, height, y)');
-    if (p.dropDelay !== undefined && !(isNum(p.dropDelay) && p.dropDelay >= 0)) bad('dropDelay (seconds, 0 or more)');
+    if (p.dropDelay !== undefined && p.dropDelay !== 'manual' && !(isNum(p.dropDelay) && p.dropDelay >= 0)) {
+      bad("dropDelay (seconds, 0 or more, or 'manual')");
+    }
+  }
+
+  if (scene.fixtures !== undefined && !Array.isArray(scene.fixtures)) fail('fixtures must be a list');
+  for (const f of scene.fixtures ?? []) {
+    const bad = (field) => fail(`fixture "${f.id}" has a bad ${field}`);
+    if (typeof f.id !== 'string' || !f.id) fail('every fixture needs an id');
+    if (seen.has(f.id)) fail(`fixture "${f.id}" is a duplicate id`);
+    seen.add(f.id);
+    if (!f.size || !SHAPES.box.every((k) => isNum(f.size[k]) && f.size[k] > 0)) bad('size (needs width, height, depth)');
+    if (!inRoom(f.at)) bad(`at (its center, inside the room, height 0 to ${MAX_HEIGHT} ft)`);
+    if (f.yaw !== undefined && !inRange(f.yaw, -360, 360)) bad('yaw (degrees)');
+    if (f.slope !== undefined && !inRange(f.slope, -89, 89)) bad('slope (degrees, -89 to 89)');
+    if (!f.look || typeof f.look.color !== 'string') bad('look (needs a color)');
+    const h = f.hinge;
+    if (h !== undefined) {
+      if (!h || !HINGE_EDGES.includes(h.edge)) bad(`hinge edge (use ${HINGE_EDGES.join(', ')})`);
+      if (!isNum(h.mass) || h.mass <= 0) bad('hinge mass (pounds, above 0)');
+      if (!inRange(h.opens, 1, 180)) bad('hinge opens (degrees, 1 to 180)');
+      if (h.latched !== undefined && typeof h.latched !== 'boolean') bad('hinge latched (true or false)');
+    }
+    if (f.dropsOnRelease !== undefined && typeof f.dropsOnRelease !== 'boolean') bad('dropsOnRelease (true or false)');
+    if (f.dropsOnRelease && f.hinge) bad('dropsOnRelease (a drape cannot also be hinged)');
   }
 
   scene.lights.forEach((l, i) => {

@@ -9,7 +9,7 @@ import { createPhysics } from './physics.js';
 import { stepFly, attachFlyInput } from './flycam.js';
 import { SCENES, DEFAULT_SCENE_ID, sceneById } from './scenes/index.js';
 import { validateScene } from './scenes/validate.js';
-import { gymFloor, blackSheeting, pine, fabric, propPattern } from './textures.js';
+import { gymFloor, blackSheeting, pine, plywood, drape, fabric, propPattern } from './textures.js';
 
 const RAIL = 0.3; // pine frame rail and post size
 
@@ -273,12 +273,43 @@ function propMesh(spec) {
   return mesh;
 }
 
+// A rig fixture from a scene: a box with a material for what it is built from. Textures tile at
+// real size (sheeting 8 ft, lumber 4 ft). `textures` caches each pattern's canvas for one scene,
+// and each fixture tiles its own clone of it.
+function fixtureMesh(spec, pose, textures) {
+  const { width, height, depth } = spec.size;
+  const look = spec.look;
+  const base = (key, make) => textures.get(key) ?? textures.set(key, make()).get(key);
+  const tiled = (t, ft) => {
+    const c = t.clone();
+    c.repeat.set(Math.max(width, depth) / ft, Math.max(height, depth) / ft);
+    return c;
+  };
+  let mat;
+  if (look.pattern === 'sheeting') {
+    const { map, bumpMap } = base('sheeting', blackSheeting);
+    mat = new THREE.MeshStandardMaterial({ map: tiled(map, 8), bumpMap: tiled(bumpMap, 8), bumpScale: 1.5, roughness: 0.42 });
+  } else if (look.pattern === 'drape') {
+    mat = new THREE.MeshStandardMaterial({ map: tiled(base('drape', drape), 8), roughness: 0.95 });
+  } else if (look.pattern === 'pine' || look.pattern === 'plywood') {
+    const map = base(look.pattern, look.pattern === 'pine' ? pine : plywood);
+    mat = new THREE.MeshStandardMaterial({ map: tiled(map, 4), roughness: 0.7 });
+  } else {
+    mat = new THREE.MeshStandardMaterial({ color: look.color, roughness: 0.6 });
+  }
+  const mesh = shadowed(new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat));
+  mesh.position.set(pose.x, pose.height, pose.y);
+  mesh.quaternion.set(...pose.quaternion);
+  mesh.name = spec.id;
+  return mesh;
+}
+
 function disposeObject(obj) {
   obj.traverse((o) => {
     o.geometry?.dispose();
     const mats = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
     for (const m of mats) {
-      for (const key of ['map', 'bumpMap']) m[key]?.dispose();
+      for (const key of ['map', 'bumpMap', 'alphaMap']) m[key]?.dispose();
       m.dispose();
     }
     o.shadow?.map?.dispose();
@@ -400,7 +431,14 @@ export function mountView3D(
       group.add(bulb);
     });
     root.add(group);
-    current = { spec, group, meshes, physics: createPhysics(layout, spec) };
+    const physics = createPhysics(layout, spec);
+    // Physics lists fixtures in scene order, so poses line up with the specs.
+    const poses = physics.fixtures();
+    const textures = new Map();
+    const fixtures = new Map((spec.fixtures ?? []).map((f, i) => [f.id, fixtureMesh(f, poses[i], textures)]));
+    for (const m of fixtures.values()) group.add(m);
+    for (const t of textures.values()) for (const tex of t.isTexture ? [t] : Object.values(t)) tex.dispose(); // clones hold the image
+    current = { spec, group, meshes, fixtures, physics };
     syncProps();
     requestRender();
   };
@@ -410,6 +448,11 @@ export function mountView3D(
       const mesh = current.meshes.get(p.id);
       mesh.position.set(p.x, p.height, p.y);
       mesh.quaternion.set(...p.quaternion);
+    }
+    for (const f of current.physics.fixtures()) {
+      const mesh = current.fixtures.get(f.id);
+      mesh.position.set(f.x, f.height, f.y);
+      mesh.quaternion.set(...f.quaternion);
     }
   };
 
@@ -536,6 +579,12 @@ export function mountView3D(
       syncProps();
       requestRender();
     },
+    // Pull the release on anything the scene holds for a manual release.
+    release() {
+      current.physics.release();
+      syncProps();
+      requestRender();
+    },
     resetView() {
       userMoved = false;
       fly = startPose(camera.aspect);
@@ -554,6 +603,10 @@ export function mountView3D(
         time: current.physics.time,
         active: current.physics.isActive(),
         props: current.physics.poses(),
+        canRelease: current.physics.canRelease(),
+        awaitingRelease: current.physics.awaitingRelease(),
+        released: current.physics.released,
+        fixtures: current.physics.fixtures().map(({ id, height, angle }) => ({ id, height, angle })),
         camera: { ...fly },
         overlays: { route: routeGroup.visible, measurements: measureGroup.visible, groups: groupLayer.visible },
         frames,
