@@ -9,7 +9,8 @@
 // Build notes (what each fixture stands for):
 // - Ramp deck: 3/4 in plywood on a 2x4 frame, 8 ft wide, square to the wall, 12 deg slope.
 //   Its low end rests on the wall's top rail and overhangs the lane face by 1 ft, with a
-//   rounded, carpeted edge so the vinyl ball can't snag or puncture.
+//   rounded, carpeted edge so the vinyl ball can't snag or puncture. Paint the deck, lip, and
+//   rails flat black: from the lane the lip is the one part of the rig a visitor can see.
 // - Guide rails: 2x6 on edge along both sides of the deck, so the ball can't wander off it.
 // - Stop bar: a 2x4 across the deck, hinged at one end and held up by a pull pin on a cord.
 //   Pulling the pin lets the bar swing flat; a 4 in bar holds the ball on a 12 deg slope.
@@ -67,6 +68,7 @@ const slopeLen = (LIP - BACK) / Math.cos(RAMP_SLOPE * DEG);
 const black = { color: '#121214', pattern: 'sheeting' };
 const pine = { color: '#d9b47c', pattern: 'pine' };
 const plywood = { color: '#c9a46e', pattern: 'plywood' };
+const paintedBlack = { color: '#161618' }; // anything visitors could glimpse is painted flat black
 
 // Ball held at the top of the ramp, resting against the stop bar.
 const BALL_CONTACT = -5.8;
@@ -86,9 +88,9 @@ const PANEL = 0.25;
 const box = (id, label, size, center, look, extra = {}) => ({ id, label, size, at: center, yaw: WALL_YAW, look, ...extra });
 
 export const fixtures = [
-  box('ramp-deck', 'Ramp deck (plywood, 12 deg)', { width: 8, height: DECK_T, depth: slopeLen }, onDeck(0, (LIP + BACK) / 2, -DECK_T / 2), plywood, { slope: RAMP_SLOPE }),
-  box('rail-left', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(-3.8, (LIP + BACK) / 2, 0.25), pine, { slope: RAMP_SLOPE }),
-  box('rail-right', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(3.8, (LIP + BACK) / 2, 0.25), pine, { slope: RAMP_SLOPE }),
+  box('ramp-deck', 'Ramp deck (plywood, 12 deg)', { width: 8, height: DECK_T, depth: slopeLen }, onDeck(0, (LIP + BACK) / 2, -DECK_T / 2), paintedBlack, { slope: RAMP_SLOPE }),
+  box('rail-left', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(-3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
+  box('rail-right', 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
   box('stop-bar', 'Stop bar (2x4 on a pull pin)', { width: 7.4, height: BAR_H, depth: 0.125 }, onDeck(0, barOut, BAR_H / 2), { color: '#d23b2a' }, { slope: RAMP_SLOPE, removeOnRelease: true }),
   ...[-3.6, 3.6].map((along, i) =>
     box(`ramp-post-${i + 1}`, 'Ramp post (4x4)', { width: 0.3, height: deckTop(BACK + 0.4) - DECK_T, depth: 0.3 }, at(along, BACK + 0.4, (deckTop(BACK + 0.4) - DECK_T) / 2), pine),

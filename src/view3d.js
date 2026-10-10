@@ -9,7 +9,7 @@ import { createPhysics } from './physics.js';
 import { stepFly, attachFlyInput } from './flycam.js';
 import { SCENES, DEFAULT_SCENE_ID, sceneById } from './scenes/index.js';
 import { validateScene } from './scenes/validate.js';
-import { gymFloor, blackSheeting, pine, fabric, propPattern } from './textures.js';
+import { gymFloor, blackSheeting, pine, plywood, stripCurtain, fabric, propPattern } from './textures.js';
 
 const RAIL = 0.3; // pine frame rail and post size
 
@@ -273,12 +273,40 @@ function propMesh(spec) {
   return mesh;
 }
 
+// A rig fixture from a scene: a box with a material for what it is built from. Textures tile at
+// real size (sheeting 8 ft, lumber 4 ft).
+function fixtureMesh(spec, pose) {
+  const { width, height, depth } = spec.size;
+  const look = spec.look;
+  const tiled = (t, ft) => {
+    t.repeat.set(Math.max(width, depth) / ft, Math.max(height, depth) / ft);
+    return t;
+  };
+  let mat;
+  if (look.pattern === 'sheeting') {
+    const { map, bumpMap } = blackSheeting();
+    mat = new THREE.MeshStandardMaterial({ map: tiled(map, 8), bumpMap: tiled(bumpMap, 8), bumpScale: 1.5, roughness: 0.42 });
+  } else if (look.pattern === 'strips') {
+    const { map, alphaMap } = stripCurtain();
+    mat = new THREE.MeshStandardMaterial({ map: tiled(map, 4), alphaMap: tiled(alphaMap, 4), transparent: true, roughness: 0.35, side: THREE.DoubleSide });
+  } else if (look.pattern === 'pine' || look.pattern === 'plywood') {
+    mat = new THREE.MeshStandardMaterial({ map: tiled(look.pattern === 'pine' ? pine() : plywood(), 4), roughness: 0.7 });
+  } else {
+    mat = new THREE.MeshStandardMaterial({ color: look.color, roughness: 0.6 });
+  }
+  const mesh = shadowed(new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), mat), look.pattern !== 'strips', true);
+  mesh.position.set(pose.x, pose.height, pose.y);
+  mesh.quaternion.set(...pose.quaternion);
+  mesh.name = spec.id;
+  return mesh;
+}
+
 function disposeObject(obj) {
   obj.traverse((o) => {
     o.geometry?.dispose();
     const mats = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
     for (const m of mats) {
-      for (const key of ['map', 'bumpMap']) m[key]?.dispose();
+      for (const key of ['map', 'bumpMap', 'alphaMap']) m[key]?.dispose();
       m.dispose();
     }
     o.shadow?.map?.dispose();
@@ -400,16 +428,39 @@ export function mountView3D(
       group.add(bulb);
     });
     root.add(group);
-    current = { spec, group, meshes, physics: createPhysics(layout, spec) };
+    const physics = createPhysics(layout, spec);
+    const fixtureSpecs = new Map((spec.fixtures ?? []).map((f) => [f.id, f]));
+    const fixtures = new Map(physics.fixtures().map((pose) => [pose.id, fixtureMesh(fixtureSpecs.get(pose.id), pose)]));
+    for (const m of fixtures.values()) group.add(m);
+    // Tethers: a rope line from the pulley to the ball, plus the pulley itself.
+    const ropes = spec.props
+      .filter((p) => p.tether)
+      .map((p) => {
+        const a = p.tether.anchor;
+        const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xc9a25a }));
+        const pulley = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0.8, roughness: 0.3 }));
+        pulley.position.set(a.x, a.height, a.y);
+        group.add(line, pulley);
+        return { id: p.id, anchor: new THREE.Vector3(a.x, a.height, a.y), radius: p.size.diameter / 2, line };
+      });
+    current = { spec, group, meshes, fixtures, ropes, physics };
     syncProps();
     requestRender();
   };
+  const ropeEnd = new THREE.Vector3();
   const syncProps = () => {
     renderer.shadowMap.needsUpdate = true;
     for (const p of current.physics.poses()) {
       const mesh = current.meshes.get(p.id);
       mesh.position.set(p.x, p.height, p.y);
       mesh.quaternion.set(...p.quaternion);
+    }
+    for (const f of current.physics.fixtures()) current.fixtures.get(f.id).visible = f.present;
+    for (const r of current.ropes) {
+      // The rope ties to the ball's net on the side facing the pulley.
+      const ball = current.meshes.get(r.id).position;
+      ropeEnd.subVectors(r.anchor, ball).setLength(r.radius).add(ball);
+      r.line.geometry.setFromPoints([r.anchor, ropeEnd]);
     }
   };
 
@@ -536,6 +587,12 @@ export function mountView3D(
       syncProps();
       requestRender();
     },
+    // Pull the release on anything the scene holds for a manual release.
+    release() {
+      current.physics.release();
+      syncProps();
+      requestRender();
+    },
     resetView() {
       userMoved = false;
       fly = startPose(camera.aspect);
@@ -554,6 +611,10 @@ export function mountView3D(
         time: current.physics.time,
         active: current.physics.isActive(),
         props: current.physics.poses(),
+        canRelease: current.spec.props.some((p) => p.dropDelay === 'manual'),
+        awaitingRelease: current.physics.awaitingRelease(),
+        released: current.physics.released,
+        fixtures: current.physics.fixtures().map(({ id, present }) => ({ id, present })),
         camera: { ...fly },
         overlays: { route: routeGroup.visible, measurements: measureGroup.visible, groups: groupLayer.visible },
         frames,

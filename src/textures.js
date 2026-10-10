@@ -148,6 +148,43 @@ export function pine() {
   return texture(c);
 }
 
+// Plywood: pale veneer with long, soft grain. One tile covers 4 ft.
+export function plywood() {
+  const [c, g] = canvas(256, 256);
+  const rand = rng(13);
+  g.fillStyle = '#d8b882';
+  g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 40; i++) {
+    g.strokeStyle = `rgba(140,95,50,${0.06 + rand() * 0.12})`;
+    g.lineWidth = 1 + rand() * 3;
+    g.beginPath();
+    const y = rand() * 256;
+    g.moveTo(0, y);
+    for (let x = 0; x <= 256; x += 16) g.lineTo(x, y + Math.sin(x / 50 + i * 1.7) * 6);
+    g.stroke();
+  }
+  return texture(c);
+}
+
+// Black plastic strip curtain: overlapping vertical strips with a faint sheen between them.
+// Returns a color map and an alpha map (strip edges let a little light through).
+export function stripCurtain() {
+  const [c, g] = canvas(256, 256);
+  const [a, ga] = canvas(256, 256);
+  const rand = rng(17);
+  g.fillStyle = '#0c0c0e';
+  g.fillRect(0, 0, 256, 256);
+  ga.fillStyle = '#ffffff';
+  ga.fillRect(0, 0, 256, 256);
+  for (let x = 0; x < 256; x += 16) {
+    g.fillStyle = `rgba(90,90,100,${0.08 + rand() * 0.08})`;
+    g.fillRect(x + 1, 0, 2, 256);
+    ga.fillStyle = '#d0d0d0';
+    ga.fillRect(x, 0, 1, 256);
+  }
+  return { map: texture(c), alphaMap: texture(a, { color: false }) };
+}
+
 // White canopy fabric with a faint weave.
 export function fabric() {
   const [c, g] = canvas(128, 128);
