@@ -145,10 +145,19 @@ test('replay repeats the first run exactly', async () => {
     run(physics, 12, (poses) => out.push(poses.map((p) => [p.x, p.height, p.y])));
     return out;
   };
-  const physics = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
-  const first = trace(physics);
-  physics.reset();
-  assert.deepEqual(trace(physics), first);
+  // A timed scene, and the default rig scene released by hand (its stop bar comes back on reset).
+  const timed = createPhysics(layout, sceneById('schoolyard-demo'));
+  const first = trace(timed);
+  assert.ok(first.at(-1)[0][1] < 10, 'the timed ball actually dropped');
+  timed.reset();
+  assert.deepEqual(trace(timed), first);
+  const rig = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
+  rig.release();
+  const rigFirst = trace(rig);
+  rig.reset();
+  assert.equal(rig.fixtures().find((f) => f.id === 'stop-bar').present, true);
+  rig.release();
+  assert.deepEqual(trace(rig), rigFirst);
 });
 
 // A flat test bed in the open part of the gym, north of the diagonal (off-route area).

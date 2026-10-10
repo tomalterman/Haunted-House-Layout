@@ -60,6 +60,7 @@ export function validateScene(scene, layout) {
     if (f.yaw !== undefined && !inRange(f.yaw, -360, 360)) bad('yaw (degrees)');
     if (f.slope !== undefined && !inRange(f.slope, -89, 89)) bad('slope (degrees, -89 to 89)');
     if (!f.look || typeof f.look.color !== 'string') bad('look (needs a color)');
+    for (const flag of ['solid', 'removeOnRelease']) if (f[flag] !== undefined && typeof f[flag] !== 'boolean') bad(`${flag} (true or false)`);
   }
 
   scene.lights.forEach((l, i) => {

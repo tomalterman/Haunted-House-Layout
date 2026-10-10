@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { layout } from '../src/layout.js';
 import { createPhysics } from '../src/physics.js';
 import { reachableFrom } from '../src/barriers.js';
-import rig, { at, TETHER_ANCHOR, TETHER_LENGTH } from '../src/scenes/ball-drop-rig.js';
+import rig, { at, TETHER_ANCHOR, TETHER_LENGTH, OPENING_WIDTH } from '../src/scenes/ball-drop-rig.js';
 import free from '../src/scenes/ball-drop-free.js';
 
 const R = 3.25;
@@ -49,6 +49,25 @@ function drop(scene, over = {}) {
   }
   s.end = physics.poses()[0];
   return s;
+}
+
+// Where the ball's center sits relative to the wall frame of the rig: `along` the wall from the
+// drop point, `out` into the lane.
+const origin = at(0, 0, 0);
+const ua = at(1, 0, 0);
+const na = at(0, 1, 0);
+const local = (p) => ({
+  along: (p.x - origin.x) * (ua.x - origin.x) + (p.y - origin.y) * (ua.y - origin.y),
+  out: (p.x - origin.x) * (na.x - origin.x) + (p.y - origin.y) * (na.y - origin.y),
+});
+// Worst sideways clearance between the ball and the opening's jambs while it passes the wall.
+function jambClearance(path) {
+  let worst = Infinity;
+  for (const p of path) {
+    const l = local(p);
+    if (l.out > -R && l.out < R && p.height > 8) worst = Math.min(worst, OPENING_WIDTH / 2 - R - Math.abs(l.along));
+  }
+  return worst;
 }
 
 // Every place a visitor can stand along the route, at kid, adult, and tall-adult eye heights.
@@ -125,9 +144,19 @@ test('without the tether the ball still stays in group 4 but rolls down to the s
   assert.ok(s.end.y > exitGap.y0, `runs on to y ${s.end.y.toFixed(1)}, into the approach to the exit`);
 });
 
+test('the ball passes the opening without touching the jambs', () => {
+  const s = drop(rig);
+  assert.ok(jambClearance(s.path) > 0.25, `clearance ${jambClearance(s.path).toFixed(2)} ft`);
+});
+
+test('the tether can never reach the exit gap, whatever the ball does', () => {
+  const a = TETHER_ANCHOR;
+  const reach = Math.sqrt(TETHER_LENGTH ** 2 - (a.height - R) ** 2); // rope taut, ball on the floor
+  assert.ok(a.y + reach + R < exitGap.y0 - 1, `furthest ball edge y ${(a.y + reach + R).toFixed(1)}, exit gap starts at ${exitGap.y0}`);
+});
+
 test('the drop works for a light or heavy ball, more or less bouncy, held a foot off center', () => {
   const along = at(1, 0, 0);
-  const origin = at(0, 0, 0);
   const shift = (d) => ({ ...rig.props[0].start, x: rig.props[0].start.x + (along.x - origin.x) * d, y: rig.props[0].start.y + (along.y - origin.y) * d });
   for (const over of [{ mass: 6 }, { mass: 18 }, { bounce: 0.75 }, { start: shift(1) }, { start: shift(-1) }]) {
     const s = drop(rig, over);
@@ -135,5 +164,6 @@ test('the drop works for a light or heavy ball, more or less bouncy, held a foot
     assert.deepEqual(s.crossed, [], label);
     assert.ok(s.landing && inPolygon(lane.points, s.landing) && s.landing.y < 30, `${label} lands in the front of the lane`);
     assert.ok(s.end.y + R < exitGap.y0, `${label} stops clear of the exit`);
+    assert.ok(jambClearance(s.path) > 0, `${label} clears the jambs (${jambClearance(s.path).toFixed(2)} ft)`);
   }
 });

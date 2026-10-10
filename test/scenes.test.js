@@ -109,6 +109,7 @@ test('bad fixtures are rejected with a message naming the fixture', () => {
     [(f) => (f.at = { x: 40, height: 9, y: 99 }), /ramp.*at/],
     [(f) => (f.slope = 95), /ramp.*slope/],
     [(f) => delete f.look, /ramp.*look/],
+    [(f) => (f.solid = 'no'), /ramp.*solid/],
   ];
   assert.doesNotThrow(() => validateScene({ ...good(), fixtures: [fixture()] }, layout));
   for (const [mutate, message] of cases) {

@@ -622,7 +622,7 @@ export function mountView3D(
         time: current.physics.time,
         active: current.physics.isActive(),
         props: current.physics.poses(),
-        canRelease: current.spec.props.some((p) => p.dropDelay === 'manual'),
+        canRelease: current.physics.canRelease(),
         awaitingRelease: current.physics.awaitingRelease(),
         released: current.physics.released,
         fixtures: current.physics.fixtures().map(({ id, present }) => ({ id, present })),

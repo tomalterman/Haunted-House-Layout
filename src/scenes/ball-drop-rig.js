@@ -11,7 +11,9 @@
 //   Its low end rests on the wall's top rail and overhangs the lane face by 1 ft, with a
 //   rounded, carpeted edge so the vinyl ball can't snag or puncture. Paint the deck, lip, and
 //   rails flat black: from the lane the lip is the one part of the rig a visitor can see.
-// - Guide rails: 2x6 on edge along both sides of the deck, so the ball can't wander off it.
+// - Guide rails: 2x12 on edge (with a padded top) along both sides of the deck, 7 ft apart.
+//   They are tall enough to push an off-center ball back to the middle before it reaches the
+//   opening; low 2x6 rails only touch the ball's lower curve and let it clip the jambs.
 // - Stop bar: a 2x4 across the deck, hinged at one end and held up by a pull pin on a cord.
 //   Pulling the pin lets the bar swing flat; a 4 in bar holds the ball on a 12 deg slope.
 // - Booth: 2x4 frame covered in the same black sheeting as the walls, 17 ft tall, with an
@@ -74,22 +76,28 @@ const barReach = Math.sqrt(R * R - (R - BAR_H) ** 2); // slope distance from bal
 const ballStart = onDeck(0, BALL_CONTACT, R);
 const barOut = BALL_CONTACT + (barReach + 0.07) * Math.cos(RAMP_SLOPE * DEG);
 
-// Booth sizes. The opening clears the ball by 0.5 ft each side and about 1 ft overhead.
-const OPEN_W = 7.5;
+// Booth sizes. The opening clears the ball by 0.75 ft each side and about 1 ft overhead.
+const OPEN_W = 8;
+export const OPENING_WIDTH = OPEN_W;
 const OPEN_TOP = 16.25;
 const JAMB = 1;
 const BOOTH_W = OPEN_W + 2 * JAMB;
 const BOOTH_D = 11.5;
 const PANEL = 0.25;
 
+// Rails 1.5 ft tall with inner faces 3.425 ft from the middle hold the ball within about
+// 0.7 ft of center, inside the opening's 0.75 ft side clearance.
+const RAIL_H = 1.5;
+const RAIL_AT = 3.5;
+
 const box = (id, label, size, center, look, extra = {}) => ({ id, label, size, at: center, yaw: WALL_YAW, look, ...extra });
 
 export const fixtures = [
   box('ramp-deck', 'Ramp deck (plywood, 12 deg)', { width: 8, height: DECK_T, depth: slopeLen }, onDeck(0, (LIP + BACK) / 2, -DECK_T / 2), paintedBlack, { slope: RAMP_SLOPE }),
   ...[-1, 1].map((side) =>
-    box(`rail-${side < 0 ? 'left' : 'right'}`, 'Guide rail (2x6)', { width: 0.15, height: 0.5, depth: slopeLen }, onDeck(side * 3.8, (LIP + BACK) / 2, 0.25), paintedBlack, { slope: RAMP_SLOPE }),
+    box(`rail-${side < 0 ? 'left' : 'right'}`, 'Guide rail (2x12, padded top)', { width: 0.15, height: RAIL_H, depth: slopeLen }, onDeck(side * RAIL_AT, (LIP + BACK) / 2, RAIL_H / 2), paintedBlack, { slope: RAMP_SLOPE }),
   ),
-  box('stop-bar', 'Stop bar (2x4 on a pull pin)', { width: 7.4, height: BAR_H, depth: 0.125 }, onDeck(0, barOut, BAR_H / 2), { color: '#d23b2a' }, { slope: RAMP_SLOPE, removeOnRelease: true }),
+  box('stop-bar', 'Stop bar (2x4 on a pull pin)', { width: 2 * RAIL_AT - 0.2, height: BAR_H, depth: 0.125 }, onDeck(0, barOut, BAR_H / 2), { color: '#d23b2a' }, { slope: RAMP_SLOPE, removeOnRelease: true }),
   ...[-3.6, 3.6].map((along, i) =>
     box(`ramp-post-${i + 1}`, 'Ramp post (4x4)', { width: 0.3, height: deckTop(BACK + 0.4) - DECK_T, depth: 0.3 }, at(along, BACK + 0.4, (deckTop(BACK + 0.4) - DECK_T) / 2), pine),
   ),
@@ -112,7 +120,7 @@ export const fixtures = [
 
 // Pulley at the top of the opening, a little into the lane.
 export const TETHER_ANCHOR = at(0, LANE_FACE + 0.3, OPEN_TOP - 0.2);
-export const TETHER_LENGTH = 27;
+export const TETHER_LENGTH = 25; // the ball's edge can never get within about 2 ft of the exit gap
 
 export const ball = {
   id: 'inflatable-ball',

@@ -224,6 +224,10 @@ export function createPhysics(layout, scene) {
         p.pending ? typeof p.spec.dropDelay === 'number' : p.body.sleepState !== CANNON.Body.SLEEPING,
       );
     },
+    // Does the scene hold anything for a manual release?
+    canRelease() {
+      return props.some((p) => p.spec.dropDelay === 'manual');
+    },
     // True while some prop waits for a manual release.
     awaitingRelease() {
       return props.some((p) => p.pending && p.spec.dropDelay === 'manual');
