@@ -8,11 +8,20 @@
 // start { x, height, y }, velocity { x, height, y } (ft/s), dropDelay (seconds).
 // Light fields: type (spot | point), color, intensity, position, target (spot only),
 // angle (spot cone, degrees), castShadow.
+//
+// Props may also be held until released: dropDelay 'manual' waits for the Release button.
+// tether { anchor, length } ties a prop to a point with a slack rope.
+// Fixtures are fixed rig pieces (ramps, booths, gates, curtains), each a box: id, label,
+// size { width, height, depth }, at (center), yaw (plan angle of the width axis, degrees),
+// slope (degrees, depth axis tilting down), look, solid (false lets props pass but still
+// blocks sight, like a strip curtain), removeOnRelease (a gate that opens on release).
 
+import ballDropRig from './ball-drop-rig.js';
+import ballDropFree from './ball-drop-free.js';
 import schoolyardDemo from './schoolyard-demo.js';
 import empty from './empty.js';
 
-export const SCENES = [schoolyardDemo, empty];
-export const DEFAULT_SCENE_ID = schoolyardDemo.id;
+export const SCENES = [ballDropRig, ballDropFree, schoolyardDemo, empty];
+export const DEFAULT_SCENE_ID = ballDropRig.id;
 
 export const sceneById = (id) => SCENES.find((s) => s.id === id);

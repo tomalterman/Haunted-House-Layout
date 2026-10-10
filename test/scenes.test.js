@@ -31,8 +31,16 @@ test('every registered scene is valid and ids are unique', () => {
   assert.ok(sceneById(DEFAULT_SCENE_ID));
 });
 
-test('the default scene drops a 6.5 ft inflatable ball into the group 4 lane', () => {
+test('the default scene is the hidden ball drop, with nothing but the ball and its rig', () => {
   const scene = sceneById(DEFAULT_SCENE_ID);
+  assert.equal(scene.id, 'ball-drop-rig');
+  assert.deepEqual(scene.props.map((p) => p.size.diameter), [6.5]);
+  assert.equal(scene.props[0].dropDelay, 'manual');
+  assert.ok(scene.fixtures.length > 0);
+});
+
+test('the schoolyard demo drops a 6.5 ft inflatable ball into the group 4 lane', () => {
+  const scene = sceneById('schoolyard-demo');
   const ball = scene.props.find((p) => p.shape === 'sphere' && p.size.diameter === 6.5);
   assert.ok(ball, 'has a 6.5 ft ball');
   const lane = layout.groups.find((g) => g.n === 4);
@@ -71,6 +79,8 @@ test('bad props are rejected with a message naming the prop', () => {
     [(s) => (s.props[0].start.height = 60), /crate.*start/],
     [(s) => (s.props[0].dropDelay = -1), /crate.*dropDelay/],
     [(s) => s.props.push({ ...s.props[0] }), /crate.*duplicate/],
+    [(s) => (s.props[0].dropDelay = 'later'), /crate.*dropDelay/],
+    [(s) => (s.props[0].tether = { anchor: { x: 40, height: 9, y: 30 }, length: 0 }), /crate.*tether/],
   ];
   for (const [mutate, message] of cases) {
     const s = good();
@@ -90,4 +100,21 @@ test('bad lights are rejected', () => {
     mutate(s);
     assert.throws(() => validateScene(s, layout), message);
   }
+});
+
+test('bad fixtures are rejected with a message naming the fixture', () => {
+  const fixture = () => ({ id: 'ramp', label: 'Ramp', size: { width: 8, height: 0.25, depth: 7 }, at: { x: 40, height: 9, y: 10 }, slope: 12, look: { color: '#a07a4a' } });
+  const cases = [
+    [(f) => (f.size.depth = 0), /ramp.*size/],
+    [(f) => (f.at = { x: 40, height: 9, y: 99 }), /ramp.*at/],
+    [(f) => (f.slope = 95), /ramp.*slope/],
+    [(f) => delete f.look, /ramp.*look/],
+  ];
+  assert.doesNotThrow(() => validateScene({ ...good(), fixtures: [fixture()] }, layout));
+  for (const [mutate, message] of cases) {
+    const f = fixture();
+    mutate(f);
+    assert.throws(() => validateScene({ ...good(), fixtures: [f] }, layout), message);
+  }
+  assert.throws(() => validateScene({ ...good(), fixtures: [fixture(), fixture()] }, layout), /ramp.*duplicate/);
 });

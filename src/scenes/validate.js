@@ -41,7 +41,25 @@ export function validateScene(scene, layout) {
     if (!p.look || typeof p.look.color !== 'string') bad('look (needs a color)');
     if (!inRoom(p.start)) bad(`start (inside the room, height 0 to ${MAX_HEIGHT} ft)`);
     if (p.velocity !== undefined && !isPoint(p.velocity)) bad('velocity (x, height, y)');
-    if (p.dropDelay !== undefined && !(isNum(p.dropDelay) && p.dropDelay >= 0)) bad('dropDelay (seconds, 0 or more)');
+    if (p.dropDelay !== undefined && p.dropDelay !== 'manual' && !(isNum(p.dropDelay) && p.dropDelay >= 0)) {
+      bad("dropDelay (seconds, 0 or more, or 'manual')");
+    }
+    if (p.tether !== undefined && !(p.tether && inRoom(p.tether.anchor) && isNum(p.tether.length) && p.tether.length > 0)) {
+      bad('tether (needs an anchor inside the room and a length above 0)');
+    }
+  }
+
+  if (scene.fixtures !== undefined && !Array.isArray(scene.fixtures)) fail('fixtures must be a list');
+  for (const f of scene.fixtures ?? []) {
+    const bad = (field) => fail(`fixture "${f.id}" has a bad ${field}`);
+    if (typeof f.id !== 'string' || !f.id) fail('every fixture needs an id');
+    if (seen.has(f.id)) fail(`fixture "${f.id}" is a duplicate id`);
+    seen.add(f.id);
+    if (!f.size || !['width', 'height', 'depth'].every((k) => isNum(f.size[k]) && f.size[k] > 0)) bad('size (needs width, height, depth)');
+    if (!inRoom(f.at)) bad(`at (its center, inside the room, height 0 to ${MAX_HEIGHT} ft)`);
+    if (f.yaw !== undefined && !inRange(f.yaw, -360, 360)) bad('yaw (degrees)');
+    if (f.slope !== undefined && !inRange(f.slope, -89, 89)) bad('slope (degrees, -89 to 89)');
+    if (!f.look || typeof f.look.color !== 'string') bad('look (needs a color)');
   }
 
   scene.lights.forEach((l, i) => {
