@@ -150,3 +150,59 @@ test('replay repeats the first run exactly', async () => {
   physics.reset();
   assert.deepEqual(trace(physics), first);
 });
+
+// A flat test bed in the open part of the gym, north of the diagonal (off-route area).
+const shelf = (over = {}) => ({ id: 'shelf', label: 'Shelf', size: { width: 8, height: 0.25, depth: 8 }, at: { x: 40, height: 5, y: 10 }, look: { color: '#888' }, ...over });
+
+test('a ball rests on a solid fixture', () => {
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7, y: 10 } })), fixtures: [shelf()] });
+  run(physics, 4);
+  assert.ok(Math.abs(pose(physics.poses(), 'ball').height - (5.125 + 1)) < 0.05);
+});
+
+test('a non-solid fixture (curtain) lets a ball fall through', () => {
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7, y: 10 } })), fixtures: [shelf({ solid: false })] });
+  run(physics, 4);
+  assert.ok(pose(physics.poses(), 'ball').height < 1.1);
+});
+
+test('a sloped fixture rolls a ball downhill toward +depth', () => {
+  const ramp = shelf({ id: 'ramp', size: { width: 8, height: 0.25, depth: 20 }, slope: 10, yaw: 0 });
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7.5, y: 10 } })), fixtures: [ramp] });
+  run(physics, 1.5);
+  assert.ok(pose(physics.poses(), 'ball').y > 10.5, 'moved toward +y (depth axis of a yaw-0 box)');
+});
+
+test('a manual hold waits for release and removes release-gated fixtures', () => {
+  const gate = shelf({ id: 'gate', removeOnRelease: true });
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7, y: 10 }, dropDelay: 'manual' })), fixtures: [gate] });
+  assert.equal(physics.awaitingRelease(), true);
+  assert.equal(physics.isActive(), false, 'nothing to simulate while waiting');
+  run(physics, 2);
+  assert.equal(pose(physics.poses(), 'ball').height, 7);
+  physics.release();
+  assert.equal(physics.fixtures()[0].present, false);
+  run(physics, 3);
+  assert.ok(pose(physics.poses(), 'ball').height < 1.1, 'gate is gone, ball falls to the floor');
+  physics.reset();
+  assert.equal(physics.fixtures()[0].present, true);
+  assert.equal(physics.awaitingRelease(), true);
+});
+
+test('a tether keeps the ball within its rope length', () => {
+  const anchor = { x: 49, height: 12, y: 30 };
+  const physics = createPhysics(layout, sceneOf(ball({ start: { x: 49, height: 3.25, y: 32 }, velocity: { x: 0, height: 0, y: 20 }, tether: { anchor, length: 12 } })));
+  let worst = 0;
+  run(physics, 6, (poses) => {
+    const p = pose(poses, 'ball');
+    worst = Math.max(worst, Math.hypot(p.x - anchor.x, p.height - anchor.height, p.y - anchor.y));
+  });
+  assert.ok(worst <= 12.01, `max rope distance ${worst}`);
+});
+
+test('sight lines are blocked by walls and by curtains, not by open air', () => {
+  const physics = createPhysics(layout, { ...sceneOf(), fixtures: [shelf({ id: 'curtain', solid: false, size: { width: 8, height: 8, depth: 0.1 }, at: { x: 40, height: 4, y: 10 } })] });
+  assert.equal(physics.canSee({ x: 49, height: 5, y: 30 }, { x: 49, height: 5, y: 40 }), true, 'open lane');
+  assert.equal(physics.canSee({ x: 49, height: 5, y: 30 }, { x: 37, height: 5, y: 30 }), false, 'P2 is in the way');
+  assert.equal(physics.canSee({ x: 40, height: 4, y: 5 }, { x: 40, height: 4, y: 15 }), false, 'curtain blocks the view');
+});

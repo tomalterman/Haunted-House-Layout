@@ -13,6 +13,11 @@ const MAX_FRAME = 0.25;
 const AIR_DENSITY = 0.0765; // lb/ft³
 
 const UP = new CANNON.Vec3(0, 1, 0);
+const DEG = Math.PI / 180;
+
+// Collision groups: the gym and rig fixtures, and the props that move.
+const STATIC = 1;
+const PROP = 2;
 
 function shapeOf(prop) {
   const s = prop.size;
@@ -30,10 +35,16 @@ function frontalArea(prop) {
   return (Math.PI * (s.diameter / 2) ** 2 + s.diameter * s.height) / 2;
 }
 
+// Orientation of a scene fixture. `yaw` is the plan angle of the box's width axis, measured
+// from +x toward +y like a wall's direction. `slope` tilts the depth axis down toward +depth.
+export function fixtureQuaternion({ yaw = 0, slope = 0 }) {
+  return new CANNON.Quaternion().setFromEuler(slope * DEG, -yaw * DEG, 0, 'YXZ');
+}
+
 // A static box centered on segment a-b, standing on the floor.
 function wallBody(a, b, height, thickness, material) {
   const len = Math.hypot(b.x - a.x, b.y - a.y) + thickness;
-  const body = new CANNON.Body({ mass: 0, material });
+  const body = new CANNON.Body({ mass: 0, material, collisionFilterGroup: STATIC });
   body.addShape(new CANNON.Box(new CANNON.Vec3(len / 2, height / 2, thickness / 2)));
   body.position.set((a.x + b.x) / 2, height / 2, (a.y + b.y) / 2);
   body.quaternion.setFromAxisAngle(UP, -Math.atan2(b.y - a.y, b.x - a.x));
@@ -48,7 +59,7 @@ export function createPhysics(layout, scene) {
   // (cannon multiplies the two materials in a contact).
   const fixed = new CANNON.Material({ friction: 1, restitution: 1 });
 
-  const floor = new CANNON.Body({ mass: 0, material: fixed, shape: new CANNON.Plane() });
+  const floor = new CANNON.Body({ mass: 0, material: fixed, shape: new CANNON.Plane(), collisionFilterGroup: STATIC });
   floor.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
   world.addBody(floor);
 
@@ -56,10 +67,23 @@ export function createPhysics(layout, scene) {
   for (const w of layout.walls) world.addBody(wallBody(w.a, w.b, w.height, t, fixed));
   for (const s of layout.tentSides) world.addBody(wallBody(s.a, s.b, layout.tentHeight, t, fixed));
   const st = layout.stage;
-  const stage = new CANNON.Body({ mass: 0, material: fixed });
+  const stage = new CANNON.Body({ mass: 0, material: fixed, collisionFilterGroup: STATIC });
   stage.addShape(new CANNON.Box(new CANNON.Vec3(st.width / 2, st.height / 2, st.depth / 2)));
   stage.position.set(st.x + st.width / 2, st.height / 2, st.y + st.depth / 2);
   world.addBody(stage);
+
+  // Rig pieces from the scene: ramps, booths, gates, curtains. A non-solid fixture (a strip
+  // curtain) lets props pass but still blocks sight lines.
+  const fixtures = (scene.fixtures ?? []).map((spec) => {
+    const s = spec.size;
+    const solid = spec.solid !== false;
+    const body = new CANNON.Body({ mass: 0, material: fixed, collisionFilterGroup: STATIC, collisionResponse: solid });
+    body.addShape(new CANNON.Box(new CANNON.Vec3(s.width / 2, s.height / 2, s.depth / 2)));
+    body.position.set(spec.at.x, spec.at.height, spec.at.y);
+    body.quaternion.copy(fixtureQuaternion(spec));
+    world.addBody(body);
+    return { spec, body, present: true };
+  });
 
   const props = scene.props.map((spec) => {
     const body = new CANNON.Body({
@@ -70,6 +94,7 @@ export function createPhysics(layout, scene) {
       linearDamping: 0, // air drag is applied as a real quadratic force instead
       sleepSpeedLimit: 0.25,
       sleepTimeLimit: 0.5,
+      collisionFilterGroup: PROP,
     });
     world.addBody(body);
     return { spec, body, dragK: 0.5 * AIR_DENSITY * (spec.drag ?? 0) * frontalArea(spec), pending: false };
@@ -85,6 +110,13 @@ export function createPhysics(layout, scene) {
   };
   const release = (p) => {
     p.pending = false;
+    released = true;
+    for (const f of fixtures) {
+      if (f.spec.removeOnRelease && f.present) {
+        world.removeBody(f.body);
+        f.present = false;
+      }
+    }
     p.body.type = CANNON.Body.DYNAMIC;
     p.body.mass = p.spec.mass;
     p.body.updateMassProperties();
@@ -93,11 +125,46 @@ export function createPhysics(layout, scene) {
     p.body.wakeUp();
   };
 
+  // A tether is a slack rope: free inside its length, taut at it. When taut, pull the prop
+  // back onto the rope's reach and drop the outward part of its velocity.
+  const tethered = props.filter((p) => p.spec.tether);
+  const applyTethers = () => {
+    for (const p of tethered) {
+      if (p.pending) continue;
+      const a = p.spec.tether.anchor;
+      const L = p.spec.tether.length;
+      const pos = p.body.position;
+      const dx = pos.x - a.x;
+      const dy = pos.y - a.height;
+      const dz = pos.z - a.y;
+      const d = Math.hypot(dx, dy, dz);
+      if (d <= L) continue;
+      const nx = dx / d;
+      const ny = dy / d;
+      const nz = dz / d;
+      pos.set(a.x + nx * L, a.height + ny * L, a.y + nz * L);
+      const v = p.body.velocity;
+      const out = v.x * nx + v.y * ny + v.z * nz;
+      if (out > 0) v.set(v.x - out * nx, v.y - out * ny, v.z - out * nz);
+    }
+  };
+
   let accumulator = 0;
+  let released = false;
   const api = {
     time: 0,
+    get released() {
+      return released;
+    },
     reset() {
       api.time = 0;
+      released = false;
+      for (const f of fixtures) {
+        if (!f.present) {
+          world.addBody(f.body);
+          f.present = true;
+        }
+      }
       world.time = 0; // sleep timers run on the world clock; a stale clock makes replays drift
       accumulator = 0;
       for (const p of props) {
@@ -110,9 +177,14 @@ export function createPhysics(layout, scene) {
         body.angularVelocity.setZero();
         body.force.setZero();
         body.torque.setZero();
-        if (spec.dropDelay > 0) hold(p);
+        if (spec.dropDelay === 'manual' || spec.dropDelay > 0) hold(p);
         else release(p);
       }
+      if (props.some((p) => p.pending)) released = false;
+    },
+    // Let go of everything still held (the operator pulls the release).
+    release() {
+      for (const p of props) if (p.pending) release(p);
     },
     // Advance by one frame's elapsed time in fixed steps.
     step(frameSeconds) {
@@ -120,7 +192,7 @@ export function createPhysics(layout, scene) {
       let n = 0;
       while (accumulator >= FIXED_STEP && n < MAX_SUBSTEPS) {
         for (const p of props) {
-          if (p.pending && api.time >= p.spec.dropDelay) release(p);
+          if (p.pending && typeof p.spec.dropDelay === 'number' && api.time >= p.spec.dropDelay) release(p);
           if (!p.pending && p.dragK > 0) {
             // Quadratic air drag at the center of mass, opposing motion.
             const v = p.body.velocity;
@@ -131,15 +203,46 @@ export function createPhysics(layout, scene) {
           }
         }
         world.step(FIXED_STEP);
+        applyTethers();
         api.time += FIXED_STEP;
         accumulator -= FIXED_STEP;
         n++;
       }
       if (n === MAX_SUBSTEPS) accumulator = 0;
     },
-    // True while a drop is still scheduled or anything is moving.
+    // True while a timed drop is still scheduled or anything is moving. A prop waiting for a
+    // manual release needs no simulation time.
     isActive() {
-      return props.some((p) => p.pending || p.body.sleepState !== CANNON.Body.SLEEPING);
+      return props.some((p) =>
+        p.pending ? typeof p.spec.dropDelay === 'number' : p.body.sleepState !== CANNON.Body.SLEEPING,
+      );
+    },
+    // True while some prop waits for a manual release.
+    awaitingRelease() {
+      return props.some((p) => p.pending && p.spec.dropDelay === 'manual');
+    },
+    // Fixed rig pieces, and whether each is still in place.
+    fixtures() {
+      return fixtures.map(({ spec, body, present }) => ({
+        id: spec.id,
+        x: body.position.x,
+        height: body.position.y,
+        y: body.position.z,
+        quaternion: [body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w],
+        present,
+      }));
+    },
+    // Can an eye at `from` see the point `to`? Walls, the stage, and every fixture in place
+    // (curtains included) block the view; props do not. Points are plan feet {x, height, y}.
+    canSee(from, to) {
+      const result = new CANNON.RaycastResult();
+      world.raycastClosest(
+        new CANNON.Vec3(from.x, from.height, from.y),
+        new CANNON.Vec3(to.x, to.height, to.y),
+        { collisionFilterMask: STATIC, checkCollisionResponse: false, skipBackfaces: false },
+        result,
+      );
+      return !result.hasHit;
     },
     poses() {
       return props.map(({ spec, body, pending }) => ({
