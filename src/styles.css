@@ -93,6 +93,9 @@ body {
 button:focus-visible, .check input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .sandbox-controls { display: contents; }
 .sandbox-controls[hidden] { display: none; }
+.plain.release { background: var(--accent); border-color: var(--accent); color: #fff; }
+.plain.release:disabled { opacity: 0.45; cursor: default; }
+.plain[hidden] { display: none; }
 .pick { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 600; }
 .pick select {
   min-height: 44px;

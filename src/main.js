@@ -15,6 +15,7 @@ const sandboxControls = $('sandbox-controls');
 const sceneSelect = $('scene-select');
 const lightsSelect = $('lights-select');
 const replayBtn = $('replay');
+const releaseBtn = $('release');
 const flyHint = $('fly-hint');
 const status = $('status');
 
@@ -121,6 +122,7 @@ async function show3D() {
           });
           sceneSelect.replaceChildren(...view3d.scenes.map((s) => new Option(s.name, s.id)));
           sceneSelect.value = view3d.snapshot().scene;
+          updateRelease();
           window.__sandbox = { snapshot: () => view3d.snapshot() }; // read-only hook for tests
         })
         .finally(() => {
@@ -161,10 +163,19 @@ groupsBox.addEventListener('change', applyGroups);
 const sandboxAction = (fn) => () => {
   if (!view3d) return;
   fn();
+  updateRelease();
   view3d.focus();
 };
+// Release shows only for scenes that hold something for a manual release, and is usable
+// until it has been pulled; Replay or a scene change re-arms it.
+function updateRelease() {
+  const s = view3d.snapshot();
+  releaseBtn.hidden = !s.canRelease;
+  releaseBtn.disabled = !s.awaitingRelease;
+}
 resetBtn.addEventListener('click', sandboxAction(() => view3d.resetView()));
 replayBtn.addEventListener('click', sandboxAction(() => view3d.replay()));
+releaseBtn.addEventListener('click', sandboxAction(() => view3d.release()));
 sceneSelect.addEventListener('change', sandboxAction(() => view3d.setScene(sceneSelect.value)));
 lightsSelect.addEventListener('change', sandboxAction(() => view3d.setLights(lightsSelect.value)));
 

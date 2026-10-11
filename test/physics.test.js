@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout } from '../src/layout.js';
-import { createPhysics } from '../src/physics.js';
+import { createPhysics, DRAPE_PILE } from '../src/physics.js';
 
 const ball = (over = {}) => ({
   id: 'ball',
@@ -145,8 +145,92 @@ test('replay repeats the first run exactly', async () => {
     run(physics, 12, (poses) => out.push(poses.map((p) => [p.x, p.height, p.y])));
     return out;
   };
-  const physics = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
-  const first = trace(physics);
+  // A timed scene, and the default rig scene released by hand (its stop bar and drape come back
+  // on reset).
+  const timed = createPhysics(layout, sceneById('schoolyard-demo'));
+  const first = trace(timed);
+  assert.ok(first.at(-1)[0][1] < 10, 'the timed ball actually dropped');
+  timed.reset();
+  assert.deepEqual(trace(timed), first);
+  const rig = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
+  rig.release();
+  const rigFirst = trace(rig);
+  const restHeights = (physics) => physics.fixtures().map((f) => f.height);
+  const before = createPhysics(layout, sceneById(DEFAULT_SCENE_ID));
+  rig.reset();
+  assert.deepEqual(rig.fixtures().map((f) => f.angle), before.fixtures().map((f) => f.angle));
+  assert.deepEqual(restHeights(rig), restHeights(before));
+  rig.release();
+  assert.deepEqual(trace(rig), rigFirst);
+});
+
+// A flat test bed in the open part of the gym, north of the diagonal (off-route area).
+const shelf = (over = {}) => ({ id: 'shelf', label: 'Shelf', size: { width: 8, height: 0.25, depth: 8 }, at: { x: 40, height: 5, y: 10 }, look: { color: '#888' }, ...over });
+
+test('a ball rests on a solid fixture', () => {
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7, y: 10 } })), fixtures: [shelf()] });
+  run(physics, 4);
+  assert.ok(Math.abs(pose(physics.poses(), 'ball').height - (5.125 + 1)) < 0.05);
+});
+
+test('a drape blocks the view, lets a ball through, and falls to the floor on release', () => {
+  const drape = shelf({ id: 'drape', size: { width: 8, height: 8, depth: 0.05 }, at: { x: 40, height: 9, y: 10 }, dropsOnRelease: true });
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 9, y: 7 }, velocity: { x: 0, height: 0, y: 10 }, dropDelay: 'manual' })), fixtures: [drape] });
+  assert.equal(physics.canSee({ x: 40, height: 9, y: 5 }, { x: 40, height: 9, y: 15 }), false, 'hanging drape blocks the view');
+  physics.release();
+  let drapeHeight = 9;
+  let ballY = 0;
+  run(physics, 1, () => {
+    drapeHeight = physics.fixtures()[0].height;
+    ballY = Math.max(ballY, pose(physics.poses(), 'ball').y);
+  });
+  assert.ok(ballY > 11, 'the ball passed through the drape');
+  assert.ok(Math.abs(drapeHeight + 4 - DRAPE_PILE) < 1e-9, 'the drape lies heaped on the floor');
+  assert.equal(physics.canSee({ x: 40, height: 9, y: 5 }, { x: 40, height: 9, y: 15 }), true, 'nothing blocks the view once it has dropped');
   physics.reset();
-  assert.deepEqual(trace(physics), first);
+  assert.equal(physics.fixtures()[0].height, 9, 'reset re-hangs the drape');
+});
+
+test('a sloped fixture rolls a ball downhill toward +depth', () => {
+  const ramp = shelf({ id: 'ramp', size: { width: 8, height: 0.25, depth: 20 }, slope: 10, yaw: 0 });
+  const physics = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 7.5, y: 10 } })), fixtures: [ramp] });
+  run(physics, 1.5);
+  assert.ok(pose(physics.poses(), 'ball').y > 10.5, 'moved toward +y (depth axis of a yaw-0 box)');
+});
+
+// A stop bar on the 10 deg test ramp: hinged at the deck, pinned upright until the release.
+const testRamp = shelf({ id: 'ramp', size: { width: 8, height: 0.25, depth: 20 }, slope: 10, yaw: 0 });
+const stopBar = (hinge) => shelf({ id: 'bar', size: { width: 6, height: 0.3, depth: 0.15 }, at: { x: 40, height: 5.27, y: 7 }, slope: 10, hinge: { edge: 'bottom', mass: 3, opens: 90, ...hinge } });
+
+test('a pinned stop bar holds a ball until release, then the ball knocks it flat', () => {
+  const held = ball({ size: { diameter: 2 }, start: { x: 40, height: 6.5, y: 6 }, dropDelay: 'manual' });
+  const physics = createPhysics(layout, { ...sceneOf(held), fixtures: [testRamp, stopBar({ latched: true })] });
+  assert.equal(physics.awaitingRelease(), true);
+  assert.equal(physics.isActive(), false, 'nothing to simulate while waiting');
+  physics.release();
+  run(physics, 3);
+  assert.ok(Math.abs(physics.fixtures()[1].angle - 90) < 0.5, `bar lies flat (${physics.fixtures()[1].angle.toFixed(1)} deg)`);
+  assert.ok(pose(physics.poses(), 'ball').y > 12, 'the ball rolled on down the ramp');
+  physics.reset();
+  assert.equal(physics.fixtures()[1].angle, 0, 'reset stands the bar back up');
+  assert.equal(physics.awaitingRelease(), true);
+});
+
+test('a hinged panel only swings forward, and stops at its limit', () => {
+  // Unpinned, it rests against its stop; a ball rolling into its back face cannot open it.
+  const backwards = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 1, y: 12 }, velocity: { x: 0, height: 0, y: -12 } })), fixtures: [shelf({ id: 'flap', size: { width: 4, height: 4, depth: 0.1 }, at: { x: 40, height: 2.1, y: 9 }, hinge: { edge: 'top', mass: 2, opens: 60 } })] });
+  run(backwards, 2);
+  assert.equal(backwards.fixtures()[0].angle, 0);
+  // From the front it swings up toward +depth, no further than 60 degrees.
+  const forwards = createPhysics(layout, { ...sceneOf(ball({ size: { diameter: 2 }, start: { x: 40, height: 1, y: 6 }, velocity: { x: 0, height: 0, y: 30 } })), fixtures: [shelf({ id: 'flap', size: { width: 4, height: 4, depth: 0.1 }, at: { x: 40, height: 2.1, y: 9 }, hinge: { edge: 'top', mass: 2, opens: 60 } })] });
+  let widest = 0;
+  run(forwards, 2, () => (widest = Math.max(widest, forwards.fixtures()[0].angle)));
+  assert.ok(widest > 30 && widest <= 60.01, `opened to ${widest.toFixed(1)} deg`);
+});
+
+test('sight lines are blocked by walls and fixtures, not by open air', () => {
+  const physics = createPhysics(layout, { ...sceneOf(), fixtures: [shelf({ id: 'panel', size: { width: 8, height: 8, depth: 0.1 }, at: { x: 40, height: 4, y: 10 } })] });
+  assert.equal(physics.canSee({ x: 49, height: 5, y: 30 }, { x: 49, height: 5, y: 40 }), true, 'open lane');
+  assert.equal(physics.canSee({ x: 49, height: 5, y: 30 }, { x: 37, height: 5, y: 30 }), false, 'P2 is in the way');
+  assert.equal(physics.canSee({ x: 40, height: 4, y: 5 }, { x: 40, height: 4, y: 15 }), false, 'the panel blocks the view');
 });
