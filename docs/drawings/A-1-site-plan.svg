@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="1056" viewBox="0 0 1632 1056">
+<style>
+  .cut { stroke:#111; stroke-width:2; fill:url(#hatch); }
+  .cutsolid { stroke:#111; stroke-width:2; fill:#1b1b1b; }
+  .vis { stroke:#111; stroke-width:1.2; fill:none; }
+  .visf { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .lite { stroke:#777; stroke-width:0.8; fill:none; }
+  .litef { stroke:#777; stroke-width:0.8; fill:#f1f1f1; }
+  .black { stroke:#111; stroke-width:1; fill:#2b2b30; }
+  .grayf { stroke:#555; stroke-width:0.8; fill:#d9d9dc; }
+  .hid { stroke:#555; stroke-width:0.9; fill:none; stroke-dasharray:6 4; }
+  .ctr { stroke:#999; stroke-width:0.7; fill:none; stroke-dasharray:16 4 3 4; }
+  .dim { stroke:#1a4fa0; stroke-width:0.7; fill:none; }
+  .dimt { fill:#1a4fa0; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbl { fill:#111; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbls { fill:#333; font:9.5px 'DejaVu Sans', Arial, sans-serif; }
+  .lblb { fill:#111; font:bold 11px 'DejaVu Sans', Arial, sans-serif; }
+  .vt { fill:#111; font:bold 15px 'DejaVu Sans', Arial, sans-serif; }
+  .vs { fill:#444; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .ldr { stroke:#111; stroke-width:0.6; fill:none; }
+  .ball { stroke:#111; stroke-width:1.4; fill:#fbfbf8; }
+  .ghost { stroke:#888; stroke-width:1; fill:none; stroke-dasharray:4 3; }
+  .path { stroke:#c0392b; stroke-width:1.2; fill:none; stroke-dasharray:3 3; }
+  .zone { fill:#d33; fill-opacity:0.12; stroke:#d33; stroke-width:1; stroke-dasharray:5 3; }
+  .route { stroke:#7b3fbf; stroke-width:1.5; fill:none; stroke-dasharray:8 4; }
+  .lineK { stroke:#c0392b; stroke-width:1.6; fill:none; }
+  .lineB { stroke:#1f7a3a; stroke-width:1.6; fill:none; }
+  .lineR { stroke:#d68910; stroke-width:1.6; fill:none; stroke-dasharray:7 3; }
+  .lineH { stroke:#1a4fa0; stroke-width:1.6; fill:none; stroke-dasharray:2 3; }
+  .lineL { stroke:#7b3fbf; stroke-width:1.6; fill:none; }
+  .red { stroke:#8e1d14; stroke-width:1.2; fill:#d23b2a; }
+  .floor { stroke:#111; stroke-width:1.6; }
+  .tb { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .tbl { stroke:#999; stroke-width:0.6; }
+</style><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#f4efe4"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a6d3b" stroke-width="0.8"/>
+  </pattern>
+  <pattern id="ground" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="10" stroke="#aaa" stroke-width="0.6"/>
+  </pattern>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+  <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+    <circle cx="5" cy="5" r="4" fill="#111"/>
+  </marker>
+</defs>
+<rect width="1632" height="1056" fill="#fff"/>
+<clipPath id="clipA1_0"><rect x="50" y="70" width="1040" height="730"/></clipPath>
+<g clip-path="url(#clipA1_0)"><polygon points="575.6,342.4 719.6,256 719.6,748 575.6,748" class="none" style="fill:#fff7d6;stroke:none"/>
+<polygon points="59.6,76 1079.6,76 1079.6,796 59.6,796" class="vis" />
+<polygon points="59.6,748 1079.6,748 1079.6,796 59.6,796" class="litef" />
+<text x="569.6" y="776" class="lbls" text-anchor="middle">STAGE</text>
+<line x1="59.6" y1="76" x2="1079.6" y2="76" class="vis" style="stroke-width:3"/>
+<line x1="59.6" y1="796" x2="1079.6" y2="796" class="vis" style="stroke-width:3"/>
+<line x1="59.6" y1="76" x2="59.6" y2="652" class="vis" style="stroke-width:3"/>
+<line x1="59.6" y1="724" x2="59.6" y2="796" class="vis" style="stroke-width:3"/>
+<line x1="1079.6" y1="76" x2="1079.6" y2="148" class="vis" style="stroke-width:3"/>
+<line x1="1079.6" y1="196" x2="1079.6" y2="796" class="vis" style="stroke-width:3"/>
+<line x1="299.6" y1="748" x2="899.6" y2="748" class="vis" style="stroke-width:3"/>
+<line x1="299.6" y1="508" x2="839.6" y2="184" class="vis" style="stroke-width:3"/>
+<line x1="839.6" y1="364" x2="839.6" y2="748" class="vis" style="stroke-width:3"/>
+<line x1="419.6" y1="436" x2="419.6" y2="691" class="vis" style="stroke-width:3"/>
+<line x1="575.6" y1="748" x2="575.6" y2="434.2" class="vis" style="stroke-width:3"/>
+<line x1="719.6" y1="256" x2="719.6" y2="649" class="vis" style="stroke-width:3"/>
+<line x1="59.6" y1="628" x2="179.6" y2="628" class="lite" style="stroke-width:2"/>
+<line x1="59.6" y1="748" x2="179.6" y2="748" class="lite" style="stroke-width:2"/>
+<line x1="59.6" y1="628" x2="59.6" y2="652" class="lite" style="stroke-width:2"/>
+<line x1="59.6" y1="724" x2="59.6" y2="748" class="lite" style="stroke-width:2"/>
+<line x1="179.6" y1="748" x2="299.6" y2="748" class="lite" style="stroke-width:2"/>
+<line x1="299.6" y1="628" x2="299.6" y2="748" class="lite" style="stroke-width:2"/>
+<line x1="179.6" y1="508" x2="299.6" y2="508" class="lite" style="stroke-width:2"/>
+<line x1="179.6" y1="508" x2="179.6" y2="628" class="lite" style="stroke-width:2"/>
+<line x1="299.6" y1="508" x2="299.6" y2="520" class="lite" style="stroke-width:2"/>
+<line x1="299.6" y1="568" x2="299.6" y2="628" class="lite" style="stroke-width:2"/>
+<line x1="839.6" y1="124" x2="959.6" y2="124" class="lite" style="stroke-width:2"/>
+<line x1="839.6" y1="124" x2="839.6" y2="244" class="lite" style="stroke-width:2"/>
+<line x1="959.6" y1="124" x2="1079.6" y2="124" class="lite" style="stroke-width:2"/>
+<line x1="959.6" y1="244" x2="1079.6" y2="244" class="lite" style="stroke-width:2"/>
+<line x1="1079.6" y1="124" x2="1079.6" y2="148" class="lite" style="stroke-width:2"/>
+<line x1="1079.6" y1="196" x2="1079.6" y2="244" class="lite" style="stroke-width:2"/>
+<line x1="839.6" y1="364" x2="959.6" y2="364" class="lite" style="stroke-width:2"/>
+<line x1="839.6" y1="244" x2="839.6" y2="256" class="lite" style="stroke-width:2"/>
+<line x1="839.6" y1="340" x2="839.6" y2="364" class="lite" style="stroke-width:2"/>
+<line x1="959.6" y1="244" x2="959.6" y2="364" class="lite" style="stroke-width:2"/>
+<polyline points="41.6,688 119.6,688 239.6,688 239.6,544 359.6,556 359.6,719.56 497.6,719.56 497.6,425.2 575.6,388.36 647.6,388.36 647.6,698.56 779.6,698.56 779.6,298 899.6,298 899.6,184 1019.6,172 1097.6,172" class="route" />
+<text x="239.6" y="632" class="lblb" text-anchor="middle">G1</text>
+<text x="359.6" y="586.4" class="lblb" text-anchor="middle">G2</text>
+<text x="497.6" y="536.72" class="lblb" text-anchor="middle">G3</text>
+<text x="647.6" y="482.72" class="lblb" text-anchor="middle">G4</text>
+<text x="779.6" y="435.2" class="lblb" text-anchor="middle">G5</text>
+<text x="899.6" y="188" class="lblb" text-anchor="middle">G6</text>
+<polygon points="557.75,349.61 674.37,279.64 604.91,163.88 488.29,233.85" class="black" style="fill:#2b2b30;fill-opacity:0.85"/>
+<polygon points="584.16,354.76 666.48,305.37 606.28,205.04 523.96,254.43" class="lite" style="stroke:#fff"/>
+<line x1="570.51" y1="365.05" x2="681.98" y2="298.16" class="vis" style="stroke-width:2.5"/>
+<circle cx="657.03" cy="382.92" r="60" class="zone"/>
+<circle cx="657.03" cy="382.92" r="3.6" class="red"/>
+<polyline points="658.72,385.74 661.97,391.15 665.06,396.3 668.05,401.29 670.97,406.15 673.81,410.88 676.55,415.46 676.81,418.91 675.08,421.82 672.48,425.36 669.94,428.82 667.44,432.21 664.87,435.65 662.35,439.03 659.85,442.37 657.38,445.67 654.94,448.92 652.55,452.13 650.18,455.29 647.85,458.41 645.55,461.48 643.28,464.51 641.04,467.51 638.83,470.46 636.65,473.37 634.5,476.25 632.38,479.08 630.28,481.88 628.21,484.65 626.17,487.38 624.15,490.07 622.16,492.74 620.19,495.36 618.25,497.96 617.59,499.81 617.6,501.11 617.6,502.4 617.6,503.68 617.6,504.95 617.6,506.21 617.6,507.46 617.6,508.71 617.6,509.94 617.6,511.17 617.6,512.38 617.6,513.59 617.6,514.79 617.6,515.98 617.6,517.16 617.6,518.34 617.61,519.5 617.61,520.66 617.61,521.81 617.61,522.95 617.61,524.08 617.61,525.21 617.61,526.32 617.61,527.43 617.61,528.53 617.61,529.63 617.61,530.71 617.61,531.79 617.61,532.87 617.61,533.93 617.61,534.99 617.61,536.04 617.61,537.08 617.61,538.11 617.61,539.14 617.61,540.16 617.61,541.18 617.61,542.19 617.61,543.19 617.61,544.18 617.61,545.17 617.61,546.15 617.61,547.13 617.61,548.09 617.61,549.06 617.61,550.01 617.61,550.96 617.62,551.9 617.62,552.84 617.62,553.77 617.62,554.7 617.62,555.62" class="path" />
+<text x="293.6" y="522" class="lbls" text-anchor="end">Diagonal wall, left end (20, 36)</text></g>
+<polyline points="657.03,382.92 807.03,422.92 813.03,422.92" class="ldr" marker-start="url(#dot)"/>
+<text x="816.03" y="426.92" class="lbl" text-anchor="start">Landing spot (simulated)</text>
+<text x="816.03" y="438.92" class="lbl" text-anchor="start">x 49.8, y 25.6</text>
+<text x="816.03" y="450.92" class="lbl" text-anchor="start">Keep 5 ft around it clear</text>
+<text x="816.03" y="462.92" class="lbl" text-anchor="start">when the cord is pulled</text>
+<polyline points="617.62,555.62 737.62,585.62 743.62,585.62" class="ldr" marker-start="url(#dot)"/>
+<text x="746.62" y="589.62" class="lbl" text-anchor="start">Ball path after landing</text>
+<text x="746.62" y="601.62" class="lbl" text-anchor="start">(rolls on to the stage end)</text>
+<polyline points="580.56,255.46 490.56,185.46 484.56,185.46" class="ldr" marker-start="url(#dot)"/>
+<text x="481.56" y="189.46" class="lbl" text-anchor="end">Booth 11'-4" x 11'-3"</text>
+<text x="481.56" y="201.46" class="lbl" text-anchor="end">behind the diagonal wall</text>
+<line x1="298.86" y1="506.77" x2="282.44" y2="479.39" class="dim" />
+<line x1="616.86" y1="315.97" x2="600.44" y2="288.59" class="dim" />
+<line x1="283.55" y1="481.25" x2="601.55" y2="290.45" class="dim" />
+<line x1="278.7" y1="480.03" x2="288.4" y2="482.46" class="dim" style="stroke-width:1.3"/>
+<line x1="596.7" y1="289.23" x2="606.4" y2="291.66" class="dim" style="stroke-width:1.3"/>
+<text x="440.49" y="386.42" class="dimt" text-anchor="middle" transform="rotate(-30.96 440.49 382.42)">30'-10 7/8" to opening center</text>
+<line x1="300.34" y1="509.23" x2="314.29" y2="532.49" class="dim" />
+<line x1="560.03" y1="353.42" x2="573.98" y2="376.68" class="dim" />
+<line x1="313.18" y1="530.64" x2="572.87" y2="374.82" class="dim" />
+<line x1="308.33" y1="529.43" x2="318.03" y2="531.85" class="dim" style="stroke-width:1.3"/>
+<line x1="568.02" y1="373.61" x2="577.72" y2="376.04" class="dim" style="stroke-width:1.3"/>
+<text x="445.09" y="460.16" class="dimt" text-anchor="middle" transform="rotate(-30.96 445.09 456.16)">25'-2 7/8" to booth</text>
+<text x="50" y="822" class="vt">SITE PLAN: GYM, 85 x 60 FT</text>
+<text x="50" y="838" class="vs">Plan coordinates: x from the left wall, y from the top wall (stage along the bottom). Group 4 is the third lane.</text>
+<text x="1110" y="80" class="vt" text-anchor="start" >WHAT IS BEING BUILT</text>
+<text x="1110" y="100" class="lbl" text-anchor="start" >A booth behind the diagonal wall holds the 6.5 ft ball on a</text>
+<text x="1110" y="114" class="lbl" text-anchor="start" >12 degree ramp. One pull on a cord drops a black kabuki drape</text>
+<text x="1110" y="128" class="lbl" text-anchor="start" >and frees a hinged stop bar; the ball rolls over the 8 ft wall</text>
+<text x="1110" y="142" class="lbl" text-anchor="start" >and drops into the front of the group 4 lane, then rolls down</text>
+<text x="1110" y="156" class="lbl" text-anchor="start" >the lane after the group and stops at the stage end.</text>
+<text x="1110" y="182" class="vt" text-anchor="start" >KEY NUMBERS</text>
+<rect x="1110" y="192" width="460" height="184" class="tb"/>
+<text x="1114" y="204" class="lblb" text-anchor="start" >Item</text>
+<text x="1344" y="204" class="lblb" text-anchor="start" >Value</text>
+<line x1="1110" y1="209" x2="1570" y2="209" class="tbl"/>
+<text x="1114" y="219" class="lbl" text-anchor="start" >Opening center on the wall</text>
+<text x="1344" y="219" class="lbl" text-anchor="start" >30'-10 7/8" from left end</text>
+<line x1="1110" y1="224" x2="1570" y2="224" class="tbl"/>
+<text x="1114" y="234" class="lbl" text-anchor="start" >Opening (clear)</text>
+<text x="1344" y="234" class="lbl" text-anchor="start" >8'-0" wide x to 16'-3"</text>
+<line x1="1110" y1="239" x2="1570" y2="239" class="tbl"/>
+<text x="1114" y="249" class="lbl" text-anchor="start" >Booth (outside)</text>
+<text x="1344" y="249" class="lbl" text-anchor="start" >11'-4" W x 11'-3" D x 17'-0"</text>
+<line x1="1110" y1="254" x2="1570" y2="254" class="tbl"/>
+<text x="1114" y="264" class="lbl" text-anchor="start" >Ramp</text>
+<text x="1344" y="264" class="lbl" text-anchor="start" >8'-0" wide, 12 deg, 9'-11 5/8" long</text>
+<line x1="1110" y1="269" x2="1570" y2="269" class="tbl"/>
+<text x="1114" y="279" class="lbl" text-anchor="start" >Deck at lip / lane face</text>
+<text x="1344" y="279" class="lbl" text-anchor="start" >8'-1" / 8'-3 5/8"</text>
+<line x1="1110" y1="284" x2="1570" y2="284" class="tbl"/>
+<text x="1114" y="294" class="lbl" text-anchor="start" >Deck at high end</text>
+<text x="1344" y="294" class="lbl" text-anchor="start" >10'-1 7/8"</text>
+<line x1="1110" y1="299" x2="1570" y2="299" class="tbl"/>
+<text x="1114" y="309" class="lbl" text-anchor="start" >Ball center at rest</text>
+<text x="1344" y="309" class="lbl" text-anchor="start" >12'-9 1/8" high</text>
+<line x1="1110" y1="314" x2="1570" y2="314" class="tbl"/>
+<text x="1114" y="324" class="lbl" text-anchor="start" >Kabuki drape</text>
+<text x="1344" y="324" class="lbl" text-anchor="start" >10'-10" x 8'-9", hem 7'-9"</text>
+<line x1="1110" y1="329" x2="1570" y2="329" class="tbl"/>
+<text x="1114" y="339" class="lbl" text-anchor="start" >Operator platform</text>
+<text x="1344" y="339" class="lbl" text-anchor="start" >4'-0" x 2'-5 1/2", top 5'-0"</text>
+<line x1="1110" y1="344" x2="1570" y2="344" class="tbl"/>
+<text x="1114" y="354" class="lbl" text-anchor="start" >Ball leaves lip</text>
+<text x="1344" y="354" class="lbl" text-anchor="start" >2.6 s after the pull</text>
+<line x1="1110" y1="359" x2="1570" y2="359" class="tbl"/>
+<text x="1114" y="369" class="lbl" text-anchor="start" >Ball lands</text>
+<text x="1344" y="369" class="lbl" text-anchor="start" >3.5 s, 6'-1 5/8" out from wall</text>
+<text x="1110" y="396" class="vt" text-anchor="start" >SHEETS</text>
+<text x="1110" y="416" class="lbl" text-anchor="start" >A-1  Site plan and key numbers</text>
+<text x="1110" y="430" class="lbl" text-anchor="start" >A-2  Section A-A through the ramp</text>
+<text x="1110" y="444" class="lbl" text-anchor="start" >A-3  Elevations from the lane</text>
+<text x="1110" y="458" class="lbl" text-anchor="start" >A-4  Plan of the rig</text>
+<text x="1110" y="472" class="lbl" text-anchor="start" >A-5  Mechanism details: stop bar and kabuki drop</text>
+<text x="1110" y="486" class="lbl" text-anchor="start" >A-6  Rigging and the release sequence</text>
+<text x="1110" y="500" class="lbl" text-anchor="start" >A-7  Framing, cut list, and hardware</text>
+<text x="1110" y="514" class="lbl" text-anchor="start" >A-8  Operating, reset, and safety</text>
+<text x="1110" y="538" class="lblb" text-anchor="start" >Conventions</text>
+<text x="1110" y="552" class="lbl" text-anchor="start" >AFF = above finished floor (the gym floor).</text>
+<text x="1110" y="566" class="lbl" text-anchor="start" >"Out" is measured square to the diagonal wall, toward the lane,</text>
+<text x="1110" y="580" class="lbl" text-anchor="start" >from the wall centerline; the maze wall is 6 in thick, 8 ft tall.</text>
+<text x="1110" y="594" class="lbl" text-anchor="start" >Lumber is nominal (2x4 = 1 1/2 x 3 1/2 in actual).</text>
+
+      <rect x="18" y="18" width="1596" height="1020" fill="none" stroke="#111" stroke-width="2"/>
+      <rect x="1072" y="944" width="542" height="94" class="tb"/>
+      <line x1="1072" y1="974" x2="1614" y2="974" class="tbl"/>
+      <line x1="1502" y1="944" x2="1502" y2="1038" class="tbl"/>
+      <text x="1080" y="964" class="lblb">GYM HAUNTED HOUSE: HIDDEN BALL DROP (GROUP 4)</text>
+      <text x="1080" y="994" class="vt">Site plan and key numbers</text>
+      <text x="1080" y="1008" class="lbls">Scale: 1/8 in = 1 ft (site plan) (on a 17 x 11 in sheet)</text>
+      <text x="1080" y="1020" class="lbls">Planning sketch: verify every dimension on site before cutting.</text>
+      <text x="1080" y="1032" class="lbls">From the sandbox model (src/scenes/ball-drop-rig.js), scripts/drawings.mjs</text>
+      <text x="1558" y="964" class="lbls" text-anchor="middle">SHEET</text>
+      <text x="1558" y="1006" class="vt" text-anchor="middle" style="font-size:28px">A-1</text>
+      <text x="1558" y="1028" class="lbls" text-anchor="middle">2026-10-17</text>
+</svg>

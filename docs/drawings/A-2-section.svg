@@ -1,0 +1,339 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="1056" viewBox="0 0 1632 1056">
+<style>
+  .cut { stroke:#111; stroke-width:2; fill:url(#hatch); }
+  .cutsolid { stroke:#111; stroke-width:2; fill:#1b1b1b; }
+  .vis { stroke:#111; stroke-width:1.2; fill:none; }
+  .visf { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .lite { stroke:#777; stroke-width:0.8; fill:none; }
+  .litef { stroke:#777; stroke-width:0.8; fill:#f1f1f1; }
+  .black { stroke:#111; stroke-width:1; fill:#2b2b30; }
+  .grayf { stroke:#555; stroke-width:0.8; fill:#d9d9dc; }
+  .hid { stroke:#555; stroke-width:0.9; fill:none; stroke-dasharray:6 4; }
+  .ctr { stroke:#999; stroke-width:0.7; fill:none; stroke-dasharray:16 4 3 4; }
+  .dim { stroke:#1a4fa0; stroke-width:0.7; fill:none; }
+  .dimt { fill:#1a4fa0; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbl { fill:#111; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbls { fill:#333; font:9.5px 'DejaVu Sans', Arial, sans-serif; }
+  .lblb { fill:#111; font:bold 11px 'DejaVu Sans', Arial, sans-serif; }
+  .vt { fill:#111; font:bold 15px 'DejaVu Sans', Arial, sans-serif; }
+  .vs { fill:#444; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .ldr { stroke:#111; stroke-width:0.6; fill:none; }
+  .ball { stroke:#111; stroke-width:1.4; fill:#fbfbf8; }
+  .ghost { stroke:#888; stroke-width:1; fill:none; stroke-dasharray:4 3; }
+  .path { stroke:#c0392b; stroke-width:1.2; fill:none; stroke-dasharray:3 3; }
+  .zone { fill:#d33; fill-opacity:0.12; stroke:#d33; stroke-width:1; stroke-dasharray:5 3; }
+  .route { stroke:#7b3fbf; stroke-width:1.5; fill:none; stroke-dasharray:8 4; }
+  .lineK { stroke:#c0392b; stroke-width:1.6; fill:none; }
+  .lineB { stroke:#1f7a3a; stroke-width:1.6; fill:none; }
+  .lineR { stroke:#d68910; stroke-width:1.6; fill:none; stroke-dasharray:7 3; }
+  .lineH { stroke:#1a4fa0; stroke-width:1.6; fill:none; stroke-dasharray:2 3; }
+  .lineL { stroke:#7b3fbf; stroke-width:1.6; fill:none; }
+  .red { stroke:#8e1d14; stroke-width:1.2; fill:#d23b2a; }
+  .floor { stroke:#111; stroke-width:1.6; }
+  .tb { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .tbl { stroke:#999; stroke-width:0.6; }
+</style><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#f4efe4"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a6d3b" stroke-width="0.8"/>
+  </pattern>
+  <pattern id="ground" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="10" stroke="#aaa" stroke-width="0.6"/>
+  </pattern>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+  <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+    <circle cx="5" cy="5" r="4" fill="#111"/>
+  </marker>
+</defs>
+<rect width="1632" height="1056" fill="#fff"/>
+<clipPath id="clipA2_0"><rect x="40" y="60" width="1000" height="760"/></clipPath>
+<g clip-path="url(#clipA2_0)"><rect x="101.2" y="729.6" width="918" height="16.2" fill="url(#ground)"/>
+<line x1="101.2" y1="729.6" x2="1019.2" y2="729.6" class="floor" />
+<polygon points="173.2,729.6 578.2,729.6 578.2,117.6 173.2,117.6" class="lite" />
+<polygon points="178.6,729.6 250.6,729.6 250.6,489.6 178.6,489.6" class="lite" />
+<text x="214.6" y="614.4" class="lbls" text-anchor="middle">DOOR</text>
+<text x="214.6" y="636" class="lbls" text-anchor="middle">BEYOND</text>
+<polygon points="173.2,729.6 183.7,729.6 183.7,117.6 173.2,117.6" class="cut" />
+<polygon points="567.7,729.6 578.2,729.6 578.2,440.01 567.7,437.78" class="cut" />
+<polygon points="567.7,144.6 578.2,144.6 578.2,117.6 567.7,117.6" class="cut" />
+<polygon points="567.7,424.74 578.2,424.74 578.2,144.6 567.7,144.6" class="lite" />
+<polygon points="578.2,729.6 596.2,729.6 596.2,441.6 578.2,441.6" class="cut" />
+<polygon points="281.2,308.64 632.2,383.25 632.2,438.45 281.2,363.84" class="litef" />
+<polygon points="281.2,363.84 632.2,438.45 632.2,443.05 578.2,431.57 578.2,440.01 281.2,376.88" class="cut" />
+<line x1="281.2" y1="366.14" x2="578.2" y2="429.27" class="lite" />
+<line x1="578.2" y1="429.27" x2="632.2" y2="440.75" class="lite" />
+<polygon points="429.7,426.86 438.7,426.86 438.7,410.36 429.7,410.36" class="cut" />
+<polygon points="428.95,729.6 439.45,729.6 439.45,426.86 428.95,426.86" class="visf" />
+<polygon points="287.5,396.63 296.5,396.63 296.5,380.13 287.5,380.13" class="cut" />
+<polygon points="286.75,729.6 297.25,729.6 297.25,396.63 286.75,396.63" class="visf" />
+<polygon points="283.72,364.38 288.12,365.32 290.3,355.05 285.9,354.11" class="visf" />
+<polygon points="430.32,395.54 425.92,394.61 428.1,384.34 432.5,385.27" class="red" />
+<polygon points="183.7,551.85 272.2,551.85 272.2,549.6 183.7,549.6" class="cut" />
+<polygon points="183.7,568.35 272.2,568.35 272.2,551.85 183.7,551.85" class="visf" />
+<polygon points="261.7,729.6 272.2,729.6 272.2,568.35 261.7,568.35" class="visf" />
+<polygon points="183.7,729.6 194.2,729.6 194.2,568.35 183.7,568.35" class="visf" />
+<line x1="266.95" y1="549.6" x2="266.95" y2="423.6" class="vis" />
+<line x1="190.9" y1="423.6" x2="266.95" y2="423.6" class="vis" />
+<line x1="190.9" y1="486.6" x2="266.95" y2="486.6" class="vis" />
+<circle cx="190.9" cy="207.6" r="6.48" class="visf"/>
+<polygon points="578.2,450.6 641.2,450.6 641.2,117.6 578.2,117.6" class="lite" />
+<polygon points="567.7,134.1 646.6,134.1 646.6,117.6 567.7,117.6" class="visf" />
+<circle cx="637.6" cy="138.42" r="3.6" class="visf"/>
+<line x1="578.2" y1="438.45" x2="637.6" y2="438.45" class="lite" />
+<polygon points="635.35,135.6 639.85,135.6 639.85,125.1 635.35,125.1" class="cut" />
+<polygon points="639.85,450.6 642.37,450.6 642.37,135.6 639.85,135.6" class="black" />
+<circle cx="402.73" cy="270.06" r="117" class="ball"/>
+<line x1="393.73" y1="270.06" x2="411.73" y2="270.06" class="lite" />
+<line x1="402.73" y1="279.06" x2="402.73" y2="261.06" class="lite" />
+<polyline points="402.73,270.06 402.76,270.09 402.83,270.1 402.94,270.12 403.06,270.11 403.15,270.1 403.21,270.1 403.23,270.1 403.21,270.12 403.17,270.15 403.09,270.14 403.03,270.13 403.01,270.13 403.03,270.13 403.09,270.14 403.18,270.16 403.32,270.19 403.49,270.23 403.66,270.26 403.8,270.22 403.91,270.22 403.99,270.23 404.03,270.26 404.05,270.31 404.07,270.35 404.08,270.35 404.13,270.36 404.21,270.38 404.34,270.41 404.51,270.44 404.71,270.49 404.96,270.54 405.24,270.6 405.53,270.61 405.8,270.59 406.06,270.67 406.29,270.69 406.5,270.81 406.67,270.91 406.8,270.94 406.94,271 407.11,271.02 407.33,271.05 407.58,271.1 407.87,271.16 408.2,271.23 408.57,271.31 408.97,271.39 409.42,271.49 409.9,271.59 410.43,271.7 410.99,271.82 411.59,271.95 412.23,272.08 412.9,272.23 413.62,272.38 414.37,272.54 415.17,272.71 416,272.88 416.86,273.07 417.77,273.26 418.71,273.46 419.7,273.67 420.72,273.89 421.77,274.11 422.87,274.34 424,274.59 425.17,274.83 426.38,275.09 427.62,275.35 428.9,275.63 430.22,275.91 431.59,275.98 432.98,276.07 434.38,276.17 435.78,276.29 437.15,276.31 438.53,276.37 439.93,276.47 441.33,276.6 442.75,276.76 444.19,276.93 445.65,277.13 447.14,277.36 448.64,277.61 450.17,277.88 451.73,278.19 453.32,278.52 454.95,278.87 456.61,279.22 458.3,279.59 460.04,279.97 461.8,280.35 463.61,280.75 465.44,281.18 467.31,281.64 469.21,282.13 471.15,282.68 473.13,283.26 475.14,283.9 477.2,284.59 479.29,285.34 481.43,286.16 483.62,287.03 485.92,287.64 488.3,288.17 490.71,288.74 493.13,289.34 495.6,289.83 498.09,290.35 500.61,290.88 503.16,291.42 505.74,291.96 508.36,292.52 511.01,293.08 513.68,293.65 516.39,294.22 519.13,294.81 521.91,295.4 524.71,295.99 527.54,296.59 530.41,297.2 533.3,297.82 536.22,298.44 539.18,299.07 542.16,299.7 545.17,300.34 548.22,300.99 551.29,301.64 554.39,302.3 557.52,302.97 560.68,303.64 563.86,304.31 567.08,305 570.32,305.69 573.59,306.38 576.89,307.08 580.22,307.79 583.57,308.5 586.96,309.22 590.36,309.95 593.8,310.68 597.26,311.41 600.75,312.16 604.27,312.9 607.81,313.66 611.38,314.41 614.97,315.18 618.59,315.95 622.24,316.72 625.91,317.5 629.6,318.29 633.33,319.08 637.07,319.88 640.84,320.68 644.64,321.48 648.46,322.3 652.3,323.11 656.17,323.93 660.05,324.84 663.94,325.84 667.82,327.02 671.7,328.32 675.58,329.8 679.45,331.42 683.32,333.21 687.18,335.17 691.04,337.32 694.9,339.66 698.74,342.2 702.55,344.94 706.32,347.89 710.04,351.07 713.75,354.54 717.37,358.21 720.91,362.07 724.43,366.22 727.92,370.66 731.38,375.39 734.81,380.4 738.22,385.69 741.59,391.25 744.94,397.09 748.25,403.19 751.53,409.55 754.78,416.17 758,423.05 761.18,430.17 764.33,437.53 767.44,445.14 770.52,452.98 773.56,461.05 776.57,469.34 779.53,477.85 782.47,486.58 785.36,495.52 788.22,504.66 791.03,514 793.82,523.53 796.56,533.26 799.26,543.17 801.93,553.26 804.55,563.52 807.14,573.96 809.69,584.56 812.21,595.32 814.68,606.24 817.12,617.31 820.42,609.32 823.72,601.75 826.98,594.58 830.21,587.81 833.41,581.43 836.57,575.44 839.71,569.82 842.82,564.57 845.9,559.69 848.96,555.16 851.99,550.99 855.01,547.17 858,543.7 860.98,540.56 863.94,537.77 866.88,535.32 869.81,533.2 872.72,531.41 875.62,529.95 878.5,528.82 881.38,528.01 884.24,527.53 887.09,527.38 889.93,527.54 892.76,528.03 895.58,528.83 898.38,529.95 901.17,531.39 903.96,533.15 906.72,535.22 909.48,537.6 912.22,540.28 914.95,543.28 917.66,546.58 920.35,550.18 923.03,554.08" class="path" />
+<circle cx="660.05" cy="324.84" r="117" class="ghost"/>
+<circle cx="817.12" cy="617.31" r="117" class="ghost"/>
+<text x="681.65" y="197.04" class="lbls" text-anchor="middle">leaves the lip, 2.6 s</text>
+<text x="817.12" y="489.51" class="lbls" text-anchor="middle">lands, 3.5 s (red: ball center path)</text>
+<circle cx="1004.8" cy="527.64" r="14.04" class="lite"/>
+<line x1="1004.8" y1="541.68" x2="1004.8" y2="628.08" class="lite" />
+<line x1="1004.8" y1="628.08" x2="983.2" y2="729.6" class="lite" />
+<line x1="1004.8" y1="628.08" x2="1026.4" y2="729.6" class="lite" />
+<line x1="972.4" y1="595.68" x2="1037.2" y2="574.08" class="lite" />
+<text x="1004.8" y="499.2" class="lbls" text-anchor="middle">6'-0" figure</text>
+<text x="177.2" y="791.6" class="lbls" text-anchor="start">rear beam</text>
+<line x1="529.6" y1="402.24" x2="450.4" y2="402.24" class="dim" />
+<line x1="529.6" y1="402.24" x2="450.4" y2="385.41" class="dim" />
+<text x="446.8" y="396.84" class="dimt" text-anchor="end">12°</text>
+<circle cx="227.2" cy="353.36" r="13.64" class="lite"/>
+<line x1="227.2" y1="367" x2="227.2" y2="450.96" class="lite" />
+<line x1="227.2" y1="450.96" x2="206.21" y2="549.6" class="lite" />
+<line x1="227.2" y1="450.96" x2="248.19" y2="549.6" class="lite" />
+<line x1="195.72" y1="419.47" x2="258.68" y2="398.49" class="lite" /></g>
+<path d="M61.6,117.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="61.6,117.6 93.2,117.6 101.2,117.6" class="dim"/>
+<text x="105.2" y="121.6" class="dimt" text-anchor="start">17'-0" AFF</text>
+<path d="M61.6,423.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="61.6,423.6 93.2,423.6 101.2,423.6" class="dim"/>
+<text x="105.2" y="427.6" class="dimt" text-anchor="start">8'-6" AFF guardrail</text>
+<path d="M61.6,549.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="61.6,549.6 93.2,549.6 101.2,549.6" class="dim"/>
+<text x="105.2" y="553.6" class="dimt" text-anchor="start">5'-0" AFF platform</text>
+<path d="M279.4,363.84 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="279.4,363.84 231.6,363.84 223.6,357.84" class="dim"/>
+<text x="219.6" y="361.84" class="dimt" text-anchor="end">10'-1 7/8" AFF deck, high end</text>
+<path d="M402.73,270.06 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="402.73,270.06 545.93,270.06 553.93,256.06" class="dim"/>
+<text x="557.93" y="260.06" class="dimt" text-anchor="start">12'-9 1/8" AFF ball center</text>
+<path d="M578.2,144.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="578.2,144.6 698,144.6 706,152.6" class="dim"/>
+<text x="710" y="156.6" class="dimt" text-anchor="start">16'-3" AFF opening top</text>
+<path d="M637.6,135.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="637.6,135.6 698,135.6 706,127.6" class="dim"/>
+<text x="710" y="131.6" class="dimt" text-anchor="start">16'-6" AFF batten / drape top</text>
+<path d="M632.2,438.45 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="632.2,438.45 698,438.45 706,422.45" class="dim"/>
+<text x="710" y="426.45" class="dimt" text-anchor="start">8'-1" AFF lip</text>
+<path d="M596.2,441.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="596.2,441.6 698,441.6 706,439.6" class="dim"/>
+<text x="710" y="443.6" class="dimt" text-anchor="start">8'-0" AFF maze wall top</text>
+<path d="M641.2,450.6 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="641.2,450.6 698,450.6 706,462.6" class="dim"/>
+<text x="710" y="466.6" class="dimt" text-anchor="start">7'-9" AFF drape hem</text>
+<path d="M596.2,430.8 l-5,-8 h10 z" fill="#1a4fa0"/>
+<polyline points="596.2,430.8 698,430.8 706,400.8" class="dim"/>
+<text x="710" y="404.8" class="dimt" text-anchor="start">8'-3 5/8" AFF deck at the wall</text>
+<line x1="173.2" y1="733.92" x2="173.2" y2="772.08" class="dim" />
+<line x1="292" y1="733.92" x2="292" y2="772.08" class="dim" />
+<line x1="173.2" y1="765.6" x2="292" y2="765.6" class="dim" />
+<line x1="169.66" y1="762.06" x2="176.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<line x1="288.46" y1="762.06" x2="295.54" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<text x="232.6" y="775.6" class="dimt" text-anchor="middle" transform="rotate(0 232.6 771.6)">3'-3 5/8"</text>
+<line x1="292" y1="733.92" x2="292" y2="772.08" class="dim" />
+<line x1="434.2" y1="733.92" x2="434.2" y2="772.08" class="dim" />
+<line x1="292" y1="765.6" x2="434.2" y2="765.6" class="dim" />
+<line x1="288.46" y1="762.06" x2="295.54" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<line x1="430.66" y1="762.06" x2="437.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<text x="363.1" y="775.6" class="dimt" text-anchor="middle" transform="rotate(0 363.1 771.6)">3'-11 3/8"</text>
+<line x1="434.2" y1="733.92" x2="434.2" y2="772.08" class="dim" />
+<line x1="578.2" y1="733.92" x2="578.2" y2="772.08" class="dim" />
+<line x1="434.2" y1="765.6" x2="578.2" y2="765.6" class="dim" />
+<line x1="430.66" y1="762.06" x2="437.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<line x1="574.66" y1="762.06" x2="581.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<text x="506.2" y="775.6" class="dimt" text-anchor="middle" transform="rotate(0 506.2 771.6)">4'-0"</text>
+<line x1="578.2" y1="733.92" x2="578.2" y2="772.08" class="dim" />
+<line x1="596.2" y1="733.92" x2="596.2" y2="772.08" class="dim" />
+<line x1="578.2" y1="765.6" x2="596.2" y2="765.6" class="dim" />
+<line x1="574.66" y1="762.06" x2="581.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<line x1="592.66" y1="762.06" x2="599.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<text x="587.2" y="775.6" class="dimt" text-anchor="middle" transform="rotate(0 587.2 771.6)">6"</text>
+<line x1="596.2" y1="733.92" x2="596.2" y2="772.08" class="dim" />
+<line x1="632.2" y1="733.92" x2="632.2" y2="772.08" class="dim" />
+<line x1="596.2" y1="765.6" x2="632.2" y2="765.6" class="dim" />
+<line x1="592.66" y1="762.06" x2="599.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<line x1="628.66" y1="762.06" x2="635.74" y2="769.14" class="dim" style="stroke-width:1.3"/>
+<text x="614.2" y="775.6" class="dimt" text-anchor="middle" transform="rotate(0 614.2 771.6)">1'-0"</text>
+<line x1="173.2" y1="733.92" x2="173.2" y2="808.08" class="dim" />
+<line x1="578.2" y1="733.92" x2="578.2" y2="808.08" class="dim" />
+<line x1="173.2" y1="801.6" x2="578.2" y2="801.6" class="dim" />
+<line x1="169.66" y1="798.06" x2="176.74" y2="805.14" class="dim" style="stroke-width:1.3"/>
+<line x1="574.66" y1="798.06" x2="581.74" y2="805.14" class="dim" style="stroke-width:1.3"/>
+<text x="375.7" y="811.6" class="dimt" text-anchor="middle" transform="rotate(0 375.7 807.6)">11'-3" booth (outside)</text>
+<line x1="596.2" y1="733.92" x2="596.2" y2="808.08" class="dim" />
+<line x1="637.6" y1="733.92" x2="637.6" y2="808.08" class="dim" />
+<line x1="596.2" y1="801.6" x2="637.6" y2="801.6" class="dim" />
+<line x1="592.66" y1="798.06" x2="599.74" y2="805.14" class="dim" style="stroke-width:1.3"/>
+<line x1="634.06" y1="798.06" x2="641.14" y2="805.14" class="dim" style="stroke-width:1.3"/>
+<text x="616.9" y="809.6" class="dimt" text-anchor="middle" transform="rotate(0 616.9 805.6)">1'-1 3/4" to drape</text>
+<line x1="631.3" y1="442.68" x2="610.64" y2="539.87" class="dim" />
+<line x1="429.42" y1="399.77" x2="408.76" y2="496.96" class="dim" />
+<line x1="611.99" y1="533.53" x2="410.11" y2="490.62" class="dim" />
+<line x1="614.71" y1="537.72" x2="609.27" y2="529.33" class="dim" style="stroke-width:1.3"/>
+<line x1="412.84" y1="494.81" x2="407.39" y2="486.42" class="dim" style="stroke-width:1.3"/>
+<text x="509.8" y="521.94" class="dimt" text-anchor="middle" transform="rotate(12 509.8 517.94)">5'-8 3/4" lip to bar hinge, along deck</text>
+<line x1="631.3" y1="442.68" x2="603.91" y2="571.56" class="dim" />
+<line x1="280.3" y1="368.07" x2="252.91" y2="496.95" class="dim" />
+<line x1="605.25" y1="565.22" x2="254.25" y2="490.61" class="dim" />
+<line x1="607.98" y1="569.41" x2="602.53" y2="561.03" class="dim" style="stroke-width:1.3"/>
+<line x1="256.98" y1="494.81" x2="251.53" y2="486.42" class="dim" style="stroke-width:1.3"/>
+<text x="428.51" y="537.79" class="dimt" text-anchor="middle" transform="rotate(12 428.51 533.79)">9'-11 5/8" deck length along the slope</text>
+<line x1="641.92" y1="315.6" x2="678.92" y2="315.6" class="ldr" marker-start="url(#dot)"/>
+<circle cx="687.92" cy="315.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="687.92" y="319.6" class="lblb" text-anchor="middle" style="font-size:10px">1</text>
+<line x1="637.6" y1="125.1" x2="670.05" y2="104" class="ldr" marker-start="url(#dot)"/>
+<circle cx="677.6" cy="99.1" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="677.6" y="103.1" class="lblb" text-anchor="middle" style="font-size:10px">2</text>
+<line x1="635.8" y1="117.6" x2="659.44" y2="93.96" class="ldr" marker-start="url(#dot)"/>
+<circle cx="665.8" cy="87.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="665.8" y="91.6" class="lblb" text-anchor="middle" style="font-size:10px">3</text>
+<line x1="616" y1="204" x2="577.54" y2="229.08" class="ldr" marker-start="url(#dot)"/>
+<circle cx="570" cy="234" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="570" y="238" class="lblb" text-anchor="middle" style="font-size:10px">4</text>
+<line x1="572.95" y1="585.6" x2="537.95" y2="585.6" class="ldr" marker-start="url(#dot)"/>
+<circle cx="528.95" cy="585.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="528.95" y="589.6" class="lblb" text-anchor="middle" style="font-size:10px">5</text>
+<line x1="587.2" y1="531.6" x2="610.84" y2="555.24" class="ldr" marker-start="url(#dot)"/>
+<circle cx="617.2" cy="561.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="617.2" y="565.6" class="lblb" text-anchor="middle" style="font-size:10px">6</text>
+<line x1="623.2" y1="440.61" x2="656.34" y2="468.78" class="ldr" marker-start="url(#dot)"/>
+<circle cx="663.2" cy="474.61" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="663.2" y="478.61" class="lblb" text-anchor="middle" style="font-size:10px">7</text>
+<line x1="533.2" y1="421.73" x2="533.2" y2="456.73" class="ldr" marker-start="url(#dot)"/>
+<circle cx="533.2" cy="465.73" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="533.2" y="469.73" class="lblb" text-anchor="middle" style="font-size:10px">8</text>
+<line x1="434.2" y1="418.61" x2="457.84" y2="442.24" class="ldr" marker-start="url(#dot)"/>
+<circle cx="464.2" cy="448.61" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="464.2" y="452.61" class="lblb" text-anchor="middle" style="font-size:10px">9</text>
+<line x1="292" y1="388.38" x2="315.64" y2="412.02" class="ldr" marker-start="url(#dot)"/>
+<circle cx="322" cy="418.38" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="322" y="422.38" class="lblb" text-anchor="middle" style="font-size:10px">9</text>
+<line x1="434.2" y1="621.6" x2="455.2" y2="621.6" class="ldr" marker-start="url(#dot)"/>
+<circle cx="464.2" cy="621.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="464.2" y="625.6" class="lblb" text-anchor="middle" style="font-size:10px">10</text>
+<line x1="479.2" y1="352.52" x2="503.8" y2="319.72" class="ldr" marker-start="url(#dot)"/>
+<circle cx="509.2" cy="312.52" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="509.2" y="316.52" class="lblb" text-anchor="middle" style="font-size:10px">11</text>
+<line x1="428.1" y1="384.34" x2="416.95" y2="350.87" class="ldr" marker-start="url(#dot)"/>
+<circle cx="414.1" cy="342.34" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="414.1" y="346.34" class="lblb" text-anchor="middle" style="font-size:10px">12</text>
+<line x1="286.6" y1="354.84" x2="267.59" y2="326.33" class="ldr" marker-start="url(#dot)"/>
+<circle cx="262.6" cy="318.84" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="262.6" y="322.84" class="lblb" text-anchor="middle" style="font-size:10px">13</text>
+<line x1="196.3" y1="207.6" x2="221.54" y2="201.66" class="ldr" marker-start="url(#dot)"/>
+<circle cx="230.3" cy="199.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="230.3" y="203.6" class="lblb" text-anchor="middle" style="font-size:10px">14</text>
+<line x1="205.6" y1="556.8" x2="233.24" y2="584.44" class="ldr" marker-start="url(#dot)"/>
+<circle cx="239.6" cy="590.8" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="239.6" y="594.8" class="lblb" text-anchor="middle" style="font-size:10px">15</text>
+<line x1="187.3" y1="621.6" x2="156.3" y2="621.6" class="ldr" marker-start="url(#dot)"/>
+<circle cx="147.3" cy="621.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="147.3" y="625.6" class="lblb" text-anchor="middle" style="font-size:10px">16</text>
+<line x1="205.6" y1="486.6" x2="168.26" y2="452.65" class="ldr" marker-start="url(#dot)"/>
+<circle cx="161.6" cy="446.6" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="161.6" y="450.6" class="lblb" text-anchor="middle" style="font-size:10px">17</text>
+<circle cx="417.32" cy="431.07" r="15" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<line x1="402.32" y1="431.07" x2="432.32" y2="431.07" stroke="#111" stroke-width="0.8"/>
+<text x="417.32" y="428.07" class="lblb" text-anchor="middle">D1</text>
+<text x="417.32" y="442.07" class="lbls" text-anchor="middle">A-5</text>
+<circle cx="706" cy="96" r="15" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<line x1="691" y1="96" x2="721" y2="96" stroke="#111" stroke-width="0.8"/>
+<text x="706" y="93" class="lblb" text-anchor="middle">D3</text>
+<text x="706" y="107" class="lbls" text-anchor="middle">A-5</text>
+<text x="40" y="842" class="vt">SECTION A-A</text>
+<text x="40" y="858" class="vs">Cut through the middle of the opening, square to the wall, looking toward the wall's right-hand end. Booth left, lane right. Ball at rest on the stop bar.</text>
+<text x="1080" y="80" class="vt" text-anchor="start" >KEYED NOTES</text>
+<circle cx="1089" cy="98" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="102" class="lblb" text-anchor="middle" style="font-size:10px">1</text>
+<text x="1106" y="102" class="lbl" text-anchor="start" >Kabuki drape: IFR black velour, chain in the hem pocket.</text>
+<circle cx="1089" cy="118" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="122" class="lblb" text-anchor="middle" style="font-size:10px">2</text>
+<text x="1106" y="122" class="lbl" text-anchor="start" >2x4 batten, flown on two lift lines, 6 kabuki pins (D3, D4).</text>
+<circle cx="1089" cy="138" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="142" class="lblb" text-anchor="middle" style="font-size:10px">3</text>
+<text x="1106" y="142" class="lbl" text-anchor="start" >2x6 outrigger, bolted to the booth corner post, pulley at end.</text>
+<circle cx="1089" cy="158" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="162" class="lblb" text-anchor="middle" style="font-size:10px">4</text>
+<text x="1106" y="162" class="lbl" text-anchor="start" >Return (beyond): 2x4 frame, black, closes the drape's sides.</text>
+<circle cx="1089" cy="178" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="182" class="lblb" text-anchor="middle" style="font-size:10px">5</text>
+<text x="1106" y="182" class="lbl" text-anchor="start" >Booth front lower wall: 2x4 @ 24" o.c. Beveled double top</text>
+<text x="1106" y="195" class="lbl" text-anchor="start" >plate carries the deck's low end.</text>
+<circle cx="1089" cy="211" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="215" class="lblb" text-anchor="middle" style="font-size:10px">6</text>
+<text x="1106" y="215" class="lbl" text-anchor="start" >Maze wall (existing). Carries no rig load.</text>
+<circle cx="1089" cy="231" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="235" class="lblb" text-anchor="middle" style="font-size:10px">7</text>
+<text x="1106" y="235" class="lbl" text-anchor="start" >Lip: two layers 3/4" ply, bullnose edge, carpet wrapped.</text>
+<circle cx="1089" cy="251" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="255" class="lblb" text-anchor="middle" style="font-size:10px">8</text>
+<text x="1106" y="255" class="lbl" text-anchor="start" >Deck: 3/4" ply on 2x4 joists @ 16" o.c., down the slope.</text>
+<circle cx="1089" cy="271" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="275" class="lblb" text-anchor="middle" style="font-size:10px">9</text>
+<text x="1106" y="275" class="lbl" text-anchor="start" >Beam: (2) 2x6 on 4x4 posts, top beveled 12 deg.</text>
+<circle cx="1089" cy="291" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="295" class="lblb" text-anchor="middle" style="font-size:10px">10</text>
+<text x="1106" y="295" class="lbl" text-anchor="start" >4x4 ramp post, two per beam, 7'-6" apart (A-4).</text>
+<circle cx="1089" cy="311" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="315" class="lblb" text-anchor="middle" style="font-size:10px">11</text>
+<text x="1106" y="315" class="lbl" text-anchor="start" >Guide rail (beyond): 3/4" ply x 18", padded 2x4 cap.</text>
+<circle cx="1089" cy="331" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="335" class="lblb" text-anchor="middle" style="font-size:10px">12</text>
+<text x="1106" y="335" class="lbl" text-anchor="start" >Stop bar: 2x4 on edge, hinged, gravity latches (D1, D2).</text>
+<circle cx="1089" cy="351" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="355" class="lblb" text-anchor="middle" style="font-size:10px">13</text>
+<text x="1106" y="355" class="lbl" text-anchor="start" >Back stop: 2x4 on edge. Holds the ball while reloading.</text>
+<circle cx="1089" cy="371" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="375" class="lblb" text-anchor="middle" style="font-size:10px">14</text>
+<text x="1106" y="375" class="lbl" text-anchor="start" >Hoist pulley at 14'-6" on the back wall (reload).</text>
+<circle cx="1089" cy="391" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="395" class="lblb" text-anchor="middle" style="font-size:10px">15</text>
+<text x="1106" y="395" class="lbl" text-anchor="start" >Operator platform: 3/4" ply on 2x6, 4x4 legs, top 5'-0".</text>
+<circle cx="1089" cy="411" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="415" class="lblb" text-anchor="middle" style="font-size:10px">16</text>
+<text x="1106" y="415" class="lbl" text-anchor="start" >Booth back wall: 2x4 @ 24" o.c., built in two lifts.</text>
+<circle cx="1089" cy="431" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1089" y="435" class="lblb" text-anchor="middle" style="font-size:10px">17</text>
+<text x="1106" y="435" class="lbl" text-anchor="start" >Guardrail 42" with mid rail. T-handle and cleat rail on it.</text>
+<text x="1080" y="463" class="lblb" text-anchor="start" >Notes</text>
+<text x="1080" y="477" class="lbl" text-anchor="start" >1. The booth stands on the floor behind the maze wall, its front</text>
+<text x="1080" y="491" class="lbl" text-anchor="start" >   face against the wall's back face. Nothing bears on the wall.</text>
+<text x="1080" y="505" class="lbl" text-anchor="start" >2. The lip layer clears the wall cap by 2 1/8" at the lane face.</text>
+<text x="1080" y="519" class="lbl" text-anchor="start" >   Joists stop at the booth front wall; only the 1'-6" doubled</text>
+<text x="1080" y="533" class="lbl" text-anchor="start" >   ply lip cantilevers over the wall.</text>
+<text x="1080" y="547" class="lbl" text-anchor="start" >3. Heights are to the deck surface. Frame the deck, then cut</text>
+<text x="1080" y="561" class="lbl" text-anchor="start" >   posts to suit and scribe to the floor.</text>
+<text x="1080" y="575" class="lbl" text-anchor="start" >4. Snap the bar line on the ply, measured along the deck from</text>
+<text x="1080" y="589" class="lbl" text-anchor="start" >   the lip (dimension above the deck).</text>
+<text x="1080" y="603" class="lbl" text-anchor="start" >5. The ball clears the jambs by 9" each side and the header by</text>
+<text x="1080" y="617" class="lbl" text-anchor="start" >   about 1'-5" as it rolls out.</text>
+<text x="1080" y="631" class="lbl" text-anchor="start" >6. Paint everything a visitor could see flat black.</text>
+
+      <rect x="18" y="18" width="1596" height="1020" fill="none" stroke="#111" stroke-width="2"/>
+      <rect x="1072" y="944" width="542" height="94" class="tb"/>
+      <line x1="1072" y1="974" x2="1614" y2="974" class="tbl"/>
+      <line x1="1502" y1="944" x2="1502" y2="1038" class="tbl"/>
+      <text x="1080" y="964" class="lblb">GYM HAUNTED HOUSE: HIDDEN BALL DROP (GROUP 4)</text>
+      <text x="1080" y="994" class="vt">Section A-A through the ramp</text>
+      <text x="1080" y="1008" class="lbls">Scale: 3/8 in = 1 ft (on a 17 x 11 in sheet)</text>
+      <text x="1080" y="1020" class="lbls">Planning sketch: verify every dimension on site before cutting.</text>
+      <text x="1080" y="1032" class="lbls">From the sandbox model (src/scenes/ball-drop-rig.js), scripts/drawings.mjs</text>
+      <text x="1558" y="964" class="lbls" text-anchor="middle">SHEET</text>
+      <text x="1558" y="1006" class="vt" text-anchor="middle" style="font-size:28px">A-2</text>
+      <text x="1558" y="1028" class="lbls" text-anchor="middle">2026-10-17</text>
+</svg>

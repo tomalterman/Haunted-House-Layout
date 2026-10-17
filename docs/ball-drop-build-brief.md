@@ -40,8 +40,8 @@ The gym is 85 x 60 ft. All maze walls are 8 ft tall black sheeting on a pine fra
 ### Where the rig goes
 
 - **Drop point:** the center of the ball opening is on the diagonal wall at x 46.5, y 20.1. Measured along the diagonal wall from its left end (20, 36), that is **30.9 ft**, near the joint between panels 4 and 5.
-- **Opening:** 8 ft wide, so it spans **26.9 to 34.9 ft** along the wall from the left end. The booth is 10 ft wide (25.9 to 35.9 ft).
-- **Booth:** stands in the off-route triangle behind the diagonal wall, between the wall and the top of the gym. Visitors can never reach this area. It extends 11.5 ft back from the wall.
+- **Opening:** 8 ft wide, so it spans **26.9 to 34.9 ft** along the wall from the left end. The booth is 11'-4" wide (25.2 to 36.6 ft).
+- **Booth:** stands in the off-route triangle behind the diagonal wall, between the wall and the top of the gym. Visitors can never reach this area. It stands on the floor behind the wall, its front face against the wall's back face, and extends 11'-3" back from there.
 - **Landing spot:** about **(49.8, 25.6)**, 5.5 ft into the lane. This is right on the route's turn corner at (49, 26), where visitors start down the lane.
 
 > **Key implication:** the ball lands exactly where visitors walk. Everything about operating this safely follows from that (see [Safety](#8-safety)).
@@ -59,13 +59,13 @@ The rig has six parts. One operator pulls one cord, and everything else follows.
    platform  -> against bar  -> (pinned up) --+-> covers the opening
    (5 ft)       on a 12° ramp                 |
                                               |
-   Pull cord runs: handle -> stop bar pins -> kabuki pins
+   One T-handle pulls line K (kabuki pins) and line B (stop bar latches)
 ```
 
 ### 3.1 Booth
 
 - **Construction:** a 2x4 frame covered in the same black sheeting as the maze walls.
-- **Size:** 10 ft wide, 11.5 ft deep, 17 ft tall.
+- **Size:** 11'-4" wide, 11'-3" deep (outside), 17 ft tall. It is a freestanding box: nothing bears on the maze wall.
 - **Front:** stands on top of the diagonal wall. Two 1 ft jambs and a header frame an opening **8 ft wide, from the wall top (8 ft) up to 16.25 ft**.
 - **Sides and back:** run floor to top. The back has an operator door. The side panels butt tightly against the front panels; a gap at those corners let visitors see in during the sight-line tests.
 - **Clearance:** the opening clears the ball by 9 in each side and about 1.3 ft overhead as it rolls out.
@@ -75,34 +75,34 @@ The rig has six parts. One operator pulls one cord, and everything else follows.
 - **Material:** 3/4 in plywood on a 2x4 frame, 8 ft wide, square to the wall, sloped **12 degrees** down toward the lane.
 - **Heights:** the deck surface is 9.84 ft at its high end (7 ft behind the wall centerline), 8.30 ft at the lane face of the wall, and 8.09 ft at the lip.
 - **Lip:** overhangs the lane face by 1 ft. It must be **rounded and carpeted** so the vinyl ball cannot snag or puncture.
-- **Length:** 8.43 ft along the slope. Two 4x8 sheets fall a few inches short, so add a strip.
-- **Support:** two 4x4 posts, 9.5 ft tall, carry the high end, 6.6 ft behind the wall at 3.6 ft each side of center. The low end rests on the wall's top rail in the model. **Decide whether the wall can take that load** (see [open decisions](#10-open-decisions-and-risks)).
+- **Length:** 9'-11 5/8" along the slope, running back to a 2x4 back stop that holds the ball while it is reloaded. Use three sheets of plywood.
+- **Support:** 2x4 joists at 16 in on center run down the slope. They bear on the booth front wall's beveled top plate, just behind the maze wall, and on two doubled 2x6 beams on 4x4 posts, 7'-6" apart. Only the doubled-plywood lip cantilevers 1'-6" over the wall, clearing the wall cap by about 2 in. No load goes onto the maze wall.
 - **Finish:** paint the deck, lip, and rails **flat black**. From the lane, the lip is the only part of the rig a visitor can see after the drape drops.
 
 ### 3.3 Guide rails
 
-- 2x12 on edge with a padded top, along both sides of the deck, centered 3.5 ft from the middle (inner faces 6.85 ft apart), 1.5 ft tall.
+- 3/4 in plywood, 18 in tall, with a foam-padded 2x4 cap, along both sides of the deck, 6'-10 1/4" apart inside.
 - **Why so tall:** an early version had low 2x6 rails. They only touch the bottom curve of the ball, so an off-center ball rode up them and clipped the opening's frame. 18 in rails push it back to center before it reaches the opening; worst case it runs within about 0.7 ft of center, inside the 0.75 ft side clearance.
 
-### 3.4 Trigger: hinged stop bar on pull pins
+### 3.4 Trigger: hinged stop bar on gravity latches
 
 - **Bar:** a 2x4 on edge (3.5 in tall), 6.8 ft long, across the deck between the rails. It is fixed to the deck with two butt hinges along its bottom edge, so it can fold flat toward the lane.
-- **Pins:** it stands upright against two hitch pins (or clevis pins) through brackets on the rails.
+- **Latches:** it stands upright under two steel gravity gate latches, one on each rail's inner face. A reset cord (line R) stands the bar back up from the platform, and the latches click over it on their own.
 - **Ball position:** the ball rests against the bar, with its center 5.8 ft behind the wall centerline (along the slope). The bar is 4.4 ft behind the centerline.
-- **Load:** on a 12 degree slope, a 12 lb ball pushes on the bar with only about **2.5 lb**. The pins see very little load, so the pull takes little effort.
-- **On the pull:** the pins come out, and the ball's weight folds the bar flat in about 1.2 s. The ball rolls over the flat bar, which is only 1.5 in thick.
+- **Load:** on a 12 degree slope, a 12 lb ball pushes on the bar with only about **2.5 lb**. The latches see very little load, so the pull takes little effort.
+- **On the pull:** line B lifts both latch arms, and the ball's weight folds the bar flat in about 1.2 s. The ball rolls over the flat bar, which is only 1.5 in thick.
 
 ### 3.5 Kabuki drop (the reveal)
 
-- **Drape:** black velour, **11 ft wide x 8.75 ft tall**. It hangs from a batten on brackets off the booth header, **1.4 ft out from the wall centerline**. That clears the ramp lip, so the drape can fall straight down without hitting the deck.
+- **Drape:** black velour, **10'-10" wide x 8'-9" tall**, filling the width between the returns. It hangs from a 2x4 batten flown on two lift lines from outriggers on the booth's corner posts, **1.4 ft out from the wall centerline**. That clears the ramp lip, so the drape can fall straight down without hitting the deck.
 - **Coverage:** it laps the opening by 1.5 ft each side. Its hem hangs at 7.75 ft, a few inches below the lip, so nobody in the lane can see up behind it.
-- **Returns:** short black panels (8.5 ft tall, about 1.3 ft deep) close the gaps between the booth front and the drape's edges. They were added because, without them, slanted views from the second lane could see past the drape's edges.
-- **Kabuki pins:** screw eyes on the batten, with a pin through each grommet loop. All the pins are on the **same pull cord** as the stop-bar pins.
+- **Returns:** black panels that continue the booth sides out over the lane, 1'-9" deep, from the drape hem to the booth top, notched over the wall cap. They close the gaps at the drape's edges. Flat black lip fillers close the floor of that pocket beside the ramp. Both were needed: without them, slanted views from the second lane and from the group 3 doorway could see in.
+- **Kabuki pins:** six 1/4 in smooth steel pins, each through two screw eyes on the batten and a webbing loop on the drape. All point the same way and tie to line K, so a 3 in pull frees every loop at once. Line B to the stop bar has 2 in of extra slack, so the drape always goes first.
 - **Drop timing:** the hem reaches the floor in about **0.7 s**, and the drape is heaped at the wall base by about **1.0 s**. The ball does not reach the drape line until about 2.6 s.
 
 ### 3.6 Operator platform
 
-- A stage block or scaffold platform, 4 x 3 ft, top at 5 ft, behind the ball near the booth back.
+- 4'-0" x 2'-5 1/2", top at 5 ft, against the booth back wall and behind the deck's high end, with a 42 in guardrail. Reached by a ladder through a door in the left side wall.
 - The operator stands here to pull the cord, watch the lane monitor, and reload.
 
 ### 3.7 Run-out: no tether
@@ -116,8 +116,8 @@ The rig has six parts. One operator pulls one cord, and everything else follows.
 1. Between groups, a crew member walks the ball back up the lane.
 2. The operator drops a **hoist line** from a pulley over the opening, the crew member clips it to the ball's net, and the operator hauls the ball up onto the deck.
 3. Unclip the line.
-4. Stand the stop bar up and re-insert its pins.
-5. Re-hang the drape on the kabuki pins (from a stepladder in the lane).
+4. Pull line R to stand the stop bar up; the latches click over it. Ease the ball onto the bar and trip the snap shackle to free the hoist line.
+5. Lower the batten to about 6 ft over the lane, hook the drape's loops on the pins, and fly it back up.
 
 **Nothing hangs in the lane while a group is inside.**
 
@@ -171,7 +171,7 @@ This is the history of the idea, so you don't repeat dead ends.
 
 3. **Spring-hinged "saloon" doors the ball pushes open.** Two 4.5 ft black leaves on spring hinges, opening outward over the lane. **In the simulation the ball jammed at the lip every time.** The leaves are long enough that their tips keep pushing back on the ball until it is already rolling off the lip, where it has almost no push left. Damping only on the closing stroke didn't fix it. Doors with no springs did let the ball through, but slowed it (deck speed 5.1 vs 6.5 ft/s) and left the booth open. Rejected.
 
-4. **Current design: kabuki drop, hinged stop bar on pins, free run-out.** Every part has a physical mechanism. One pull triggers it. Nothing stands in the ball's way once the drape is down.
+4. **Current design: kabuki drop, hinged stop bar on latches, free run-out.** Every part has a physical mechanism. One pull triggers it. Nothing stands in the ball's way once the drape is down.
 
 ### Ideas considered and not pursued
 
@@ -181,7 +181,7 @@ These are worth knowing as backups:
 |---|---|
 | Roll-up or guillotine panel that lifts out of the way | Not enough headroom. The booth would need to be about 25 ft tall. |
 | Drop-down "drawbridge" flap hinged at the wall top | It swings out over the lane in an 8 ft arc, which is a strike hazard. |
-| Electromagnetic lock (maglock) instead of pull pins | Viable upgrade: push-button release, fail-safe on power loss. It needs power at the booth and a design for what happens if power drops mid-show. |
+| Electromagnetic lock (maglock) instead of gravity latches | Viable upgrade: push-button release, fail-safe on power loss. It needs power at the booth and a design for what happens if power drops mid-show. |
 | Automatic trigger (beam break or motion sensor) | Not recommended as the only trigger, because the landing spot is on the route. It could light a "ready" lamp for the operator instead. |
 | Catch net, carpet brake strip, or soft bumper in the lower lane | Not needed in simulation, because the dead end stops the ball. Keep them in mind if the real ball rolls too far or too fast, or reaches the exit. |
 | Black strip or velour curtain the ball pushes through | Resistance is untested. If you want to try it, test it on the ground first; the simulation can't predict fabric drag. |
@@ -192,7 +192,7 @@ These are worth knowing as backups:
 
 These came out of the simulation and sight-line checks. Keep them unless you re-test:
 
-- **Rails raised from 2x6 to 2x12, and the opening widened to 8 ft.** Off-center balls clipped the frame with low rails.
+- **Rails raised to 18 in, and the opening widened to 8 ft.** Off-center balls clipped the frame with low rails.
 - **Opening top raised to 16.25 ft.** The first version cleared the ball by only 1.5 in overhead.
 - **Booth sides butted tight against the front.** A small gap let visitors see in.
 - **Drape moved out past the lip** (1.4 ft from the wall centerline). Otherwise the deck blocks it from falling.
@@ -265,7 +265,7 @@ Build and test in stages, and compare each stage to the simulation. If a result 
 | Stage | What to do | Pass if |
 |---|---|---|
 | 1. Measure the ball | Weigh it, measure its diameter, and record its pressure. Do a rough bounce test: drop it from 8 ft and measure the rebound height. | You have real numbers to put in the scene. The simulation assumes 12 lb, 6.5 ft, and bounce 0.6. |
-| 2. Ramp on the ground | Build the deck, rails, and stop bar flat on the floor at 12 degrees (full height not needed). Load the ball, pull the pins, and time it. | Pins pull easily with one hand. The bar folds flat in under about 1.5 s. The ball rolls straight and doesn't climb the rails. |
+| 2. Ramp on the ground | Build the deck, rails, and stop bar flat on the floor at 12 degrees (full height not needed). Load the ball, pull line B, and time it. | Latches lift easily with one hand. The bar folds flat in under about 1.5 s. The ball rolls straight and doesn't climb the rails. |
 | 3. Drape drop | Hang the drape at full height on its batten with the kabuki pins, and pull. Film it. | It falls straight with no snagging. The hem is down in under 1.0 s (simulation: 0.7 s). All pins release every time. |
 | 4. Full rig, no visitors | Assemble at full height and release 10 times. Tape-mark the landing spot and where the ball stops. Time each stage. | Lands within about 1.5 ft of (49.8, 25.6), about 3.5 s after the pull. Never hits the jambs or header. Stays in group 4. |
 | 5. Sight-line walkthrough | With the rig armed and show lighting on, walk the whole route at kid, adult, and tall adult eye height (crouch for kids). | No ball, booth interior, or light visible anywhere. |
@@ -280,9 +280,9 @@ Build and test in stages, and compare each stage to the simulation. If a result 
 | # | Decision or risk | Notes | Owner |
 |---|---|---|---|
 | 1 | How the operator sees the lane: camera and monitor, peephole, or a spotter on radio | This drives the trigger timing and safety. | _TBD_ |
-| 2 | Release hardware: pull pins on a cord, or a maglock with a button | Pins are simple and need no power. A maglock is cleaner but needs a power plan. | _TBD_ |
+| 2 | Release hardware: gravity latches and kabuki pins on cords, or a maglock with a button | Cords are simple and need no power. A maglock is cleaner but needs a power plan. | _TBD_ |
 | 3 | Ramp low-end support: on the wall's top rail, or separate posts | Confirm the wall panels can take the load, or don't load them. | _TBD_ |
-| 4 | Booth bracing and footprint | Check the off-route triangle is really free at 25.9 to 35.9 ft along the diagonal and 11.5 ft back. Check how staff get into that area. | _TBD_ |
+| 4 | Booth bracing and footprint | Check the off-route triangle is really free at 25.2 to 36.6 ft along the diagonal and 11'-3" back from the wall. Check how staff get into that area. | _TBD_ |
 | 5 | Ball choice | Sealed vs constant air, real weight, and source. The simulation handles 6 to 18 lb. | _TBD_ |
 | 6 | Drape fabric and fire approval | Use IFR velour. Find out what the fire marshal needs. | _TBD_ |
 | 7 | Run-out staffing | A ball wrangler in the lower lane? Does anyone hold the ball until the group has exited? | _TBD_ |
@@ -336,6 +336,10 @@ npm run serve        # serves the site on http://localhost:8000
   - It never crosses a wall, and it stays in group 4.
   - All of this holds across ball weight, bounce, floor, and off-center variations.
 
+### Build drawings
+
+`docs/drawings/` holds an 8-sheet drawing set (17 x 11 in): site plan, section, elevations, plan, mechanism details, rigging and release sequence, framing and cut list, and operating notes. Open `ball-drop-drawings.pdf` to print, or the SVG sheets one at a time. `node scripts/drawings.mjs` regenerates the SVG and HTML sheets from the scene file, so the drawings follow any change to the model.
+
 ### Build notes in the code
 
 The header of `src/scenes/ball-drop-rig.js` repeats the build notes in this brief next to the numbers, so the two stay together.
@@ -366,14 +370,14 @@ Fill this in at kickoff.
 | Ball | 6.5 ft diameter, 12 lb assumed (6 to 18 lb tested in the model) |
 | Opening | 8 ft wide; from the wall top (8 ft) to 16.25 ft |
 | Opening center | x 46.5, y 20.1; 30.9 ft along the diagonal from its left end |
-| Booth | 10 W x 11.5 D x 17 H ft |
-| Ramp | 8 ft wide, 12°, 8.43 ft along the slope; 9.84 ft high end, 8.09 ft at the lip |
+| Booth | 11'-4" W x 11'-3" D x 17'-0" H (outside) |
+| Ramp | 8 ft wide, 12°, 9'-11 5/8" along the slope; 10'-1 7/8" high end, 8'-1" at the lip |
 | Lip overhang | 1 ft past the lane face of the wall |
-| Rails | 2x12 on edge, 1.5 ft tall, centered 3.5 ft from the middle |
+| Rails | 3/4 in plywood, 18 in tall, padded cap, 6'-10 1/4" apart inside |
 | Stop bar | 2x4 on edge, 6.8 ft long, hinged at the deck, 4.4 ft behind the wall centerline |
 | Load on the stop bar | About 2.5 lb |
-| Drape | 11 W x 8.75 H ft, 1.4 ft out from the wall centerline, hem at 7.75 ft |
-| Operator platform | 4 x 3 ft, top at 5 ft |
+| Drape | 10'-10" W x 8'-9" H, 1.4 ft out from the wall centerline, hem at 7'-9" |
+| Operator platform | 4'-0" x 2'-5 1/2", top at 5 ft |
 | Drape down | 0.7 s (hem), 1.0 s (heaped) |
 | Ball leaves the lip | 2.8 s, about 7 ft/s |
 | Ball lands | 3.5 s at (49.8, 25.6), about 19 ft/s coming down |

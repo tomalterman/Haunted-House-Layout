@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="1056" viewBox="0 0 1632 1056">
+<style>
+  .cut { stroke:#111; stroke-width:2; fill:url(#hatch); }
+  .cutsolid { stroke:#111; stroke-width:2; fill:#1b1b1b; }
+  .vis { stroke:#111; stroke-width:1.2; fill:none; }
+  .visf { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .lite { stroke:#777; stroke-width:0.8; fill:none; }
+  .litef { stroke:#777; stroke-width:0.8; fill:#f1f1f1; }
+  .black { stroke:#111; stroke-width:1; fill:#2b2b30; }
+  .grayf { stroke:#555; stroke-width:0.8; fill:#d9d9dc; }
+  .hid { stroke:#555; stroke-width:0.9; fill:none; stroke-dasharray:6 4; }
+  .ctr { stroke:#999; stroke-width:0.7; fill:none; stroke-dasharray:16 4 3 4; }
+  .dim { stroke:#1a4fa0; stroke-width:0.7; fill:none; }
+  .dimt { fill:#1a4fa0; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbl { fill:#111; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbls { fill:#333; font:9.5px 'DejaVu Sans', Arial, sans-serif; }
+  .lblb { fill:#111; font:bold 11px 'DejaVu Sans', Arial, sans-serif; }
+  .vt { fill:#111; font:bold 15px 'DejaVu Sans', Arial, sans-serif; }
+  .vs { fill:#444; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .ldr { stroke:#111; stroke-width:0.6; fill:none; }
+  .ball { stroke:#111; stroke-width:1.4; fill:#fbfbf8; }
+  .ghost { stroke:#888; stroke-width:1; fill:none; stroke-dasharray:4 3; }
+  .path { stroke:#c0392b; stroke-width:1.2; fill:none; stroke-dasharray:3 3; }
+  .zone { fill:#d33; fill-opacity:0.12; stroke:#d33; stroke-width:1; stroke-dasharray:5 3; }
+  .route { stroke:#7b3fbf; stroke-width:1.5; fill:none; stroke-dasharray:8 4; }
+  .lineK { stroke:#c0392b; stroke-width:1.6; fill:none; }
+  .lineB { stroke:#1f7a3a; stroke-width:1.6; fill:none; }
+  .lineR { stroke:#d68910; stroke-width:1.6; fill:none; stroke-dasharray:7 3; }
+  .lineH { stroke:#1a4fa0; stroke-width:1.6; fill:none; stroke-dasharray:2 3; }
+  .lineL { stroke:#7b3fbf; stroke-width:1.6; fill:none; }
+  .red { stroke:#8e1d14; stroke-width:1.2; fill:#d23b2a; }
+  .floor { stroke:#111; stroke-width:1.6; }
+  .tb { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .tbl { stroke:#999; stroke-width:0.6; }
+</style><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#f4efe4"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a6d3b" stroke-width="0.8"/>
+  </pattern>
+  <pattern id="ground" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="10" stroke="#aaa" stroke-width="0.6"/>
+  </pattern>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+  <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+    <circle cx="5" cy="5" r="4" fill="#111"/>
+  </marker>
+</defs>
+<rect width="1632" height="1056" fill="#fff"/>
+<clipPath id="clipA6_0"><rect x="40" y="70" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_0)"><rect x="19" y="336" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="19" y1="336" x2="376" y2="336" class="floor" />
+<polygon points="47,336 204.5,336 204.5,98 47,98" class="lite" />
+<polygon points="47,336 51.08,336 51.08,98 47,98" class="cut" />
+<polygon points="200.42,336 204.5,336 204.5,223.38 200.42,222.51" class="cut" />
+<polygon points="200.42,108.5 204.5,108.5 204.5,98 200.42,98" class="cut" />
+<polygon points="200.42,217.44 204.5,217.44 204.5,108.5 200.42,108.5" class="lite" />
+<polygon points="204.5,336 211.5,336 211.5,224 204.5,224" class="cut" />
+<polygon points="89,172.29 225.5,201.31 225.5,222.78 89,193.76" class="litef" />
+<polygon points="89,193.76 225.5,222.78 225.5,224.56 204.5,220.1 204.5,223.38 89,198.83" class="cut" />
+<line x1="89" y1="194.66" x2="204.5" y2="219.21" class="lite" />
+<line x1="204.5" y1="219.21" x2="225.5" y2="223.67" class="lite" />
+<polygon points="146.75,218.27 150.25,218.27 150.25,211.85 146.75,211.85" class="cut" />
+<polygon points="146.46,336 150.54,336 150.54,218.27 146.46,218.27" class="visf" />
+<polygon points="91.45,206.51 94.95,206.51 94.95,200.1 91.45,200.1" class="cut" />
+<polygon points="91.16,336 95.24,336 95.24,206.51 91.16,206.51" class="visf" />
+<polygon points="89.98,193.97 91.69,194.33 92.54,190.34 90.83,189.98" class="visf" />
+<polygon points="146.99,206.09 145.28,205.72 146.13,201.73 147.84,202.09" class="red" />
+<polygon points="51.08,266.88 85.5,266.88 85.5,266 51.08,266" class="cut" />
+<polygon points="51.08,273.29 85.5,273.29 85.5,266.88 51.08,266.88" class="visf" />
+<polygon points="81.42,336 85.5,336 85.5,273.29 81.42,273.29" class="visf" />
+<polygon points="51.08,336 55.17,336 55.17,273.29 51.08,273.29" class="visf" />
+<line x1="83.46" y1="266" x2="83.46" y2="217" class="vis" />
+<line x1="53.88" y1="217" x2="83.46" y2="217" class="vis" />
+<line x1="53.88" y1="241.5" x2="83.46" y2="241.5" class="vis" />
+<circle cx="53.88" cy="133" r="2.52" class="visf"/>
+<polygon points="204.5,227.5 229,227.5 229,98 204.5,98" class="lite" />
+<polygon points="200.42,104.42 231.1,104.42 231.1,98 200.42,98" class="visf" />
+<circle cx="227.6" cy="106.1" r="1.4" class="visf"/>
+<line x1="204.5" y1="222.78" x2="227.6" y2="222.78" class="lite" />
+<polygon points="226.73,105 228.48,105 228.48,100.92 226.73,100.92" class="cut" />
+<polygon points="228.48,227.5 229.46,227.5 229.46,105 228.48,105" class="black" />
+<circle cx="136.26" cy="157.29" r="45.5" class="ball"/>
+<line x1="132.76" y1="157.29" x2="139.76" y2="157.29" class="lite" />
+<line x1="136.26" y1="160.79" x2="136.26" y2="153.79" class="lite" /></g>
+
+<text x="40" y="382" class="vt">t = 0.0 s</text>
+<text x="40" y="398" class="vs">ARMED. Ball on the bar, drape hung.</text>
+<clipPath id="clipA6_1"><rect x="385" y="70" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_1)"><rect x="364" y="336" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="364" y1="336" x2="721" y2="336" class="floor" />
+<polygon points="392,336 549.5,336 549.5,98 392,98" class="lite" />
+<polygon points="392,336 396.08,336 396.08,98 392,98" class="cut" />
+<polygon points="545.42,336 549.5,336 549.5,223.38 545.42,222.51" class="cut" />
+<polygon points="545.42,108.5 549.5,108.5 549.5,98 545.42,98" class="cut" />
+<polygon points="545.42,217.44 549.5,217.44 549.5,108.5 545.42,108.5" class="lite" />
+<polygon points="549.5,336 556.5,336 556.5,224 549.5,224" class="cut" />
+<polygon points="434,172.29 570.5,201.31 570.5,222.78 434,193.76" class="litef" />
+<polygon points="434,193.76 570.5,222.78 570.5,224.56 549.5,220.1 549.5,223.38 434,198.83" class="cut" />
+<line x1="434" y1="194.66" x2="549.5" y2="219.21" class="lite" />
+<line x1="549.5" y1="219.21" x2="570.5" y2="223.67" class="lite" />
+<polygon points="491.75,218.27 495.25,218.27 495.25,211.85 491.75,211.85" class="cut" />
+<polygon points="491.46,336 495.54,336 495.54,218.27 491.46,218.27" class="visf" />
+<polygon points="436.45,206.51 439.95,206.51 439.95,200.1 436.45,200.1" class="cut" />
+<polygon points="436.16,336 440.24,336 440.24,206.51 436.16,206.51" class="visf" />
+<polygon points="434.98,193.97 436.69,194.33 437.54,190.34 435.83,189.98" class="visf" />
+<polygon points="491.99,206.09 490.41,205.34 492.15,201.65 493.73,202.39" class="red" />
+<polygon points="396.08,266.88 430.5,266.88 430.5,266 396.08,266" class="cut" />
+<polygon points="396.08,273.29 430.5,273.29 430.5,266.88 396.08,266.88" class="visf" />
+<polygon points="426.42,336 430.5,336 430.5,273.29 426.42,273.29" class="visf" />
+<polygon points="396.08,336 400.17,336 400.17,273.29 396.08,273.29" class="visf" />
+<line x1="428.46" y1="266" x2="428.46" y2="217" class="vis" />
+<line x1="398.88" y1="217" x2="428.46" y2="217" class="vis" />
+<line x1="398.88" y1="241.5" x2="428.46" y2="241.5" class="vis" />
+<circle cx="398.88" cy="133" r="2.52" class="visf"/>
+<polygon points="549.5,227.5 574,227.5 574,98 549.5,98" class="lite" />
+<polygon points="545.42,104.42 576.1,104.42 576.1,98 545.42,98" class="visf" />
+<circle cx="572.6" cy="106.1" r="1.4" class="visf"/>
+<line x1="549.5" y1="222.78" x2="572.6" y2="222.78" class="lite" />
+<polygon points="571.73,105 573.48,105 573.48,100.92 571.73,100.92" class="cut" />
+<polygon points="573.48,284.74 574.46,284.74 574.46,162.24 573.48,162.24" class="black" />
+<circle cx="482.03" cy="157.46" r="45.5" class="ball"/>
+<line x1="478.53" y1="157.46" x2="485.53" y2="157.46" class="lite" />
+<line x1="482.03" y1="160.96" x2="482.03" y2="153.96" class="lite" /></g>
+
+<text x="385" y="382" class="vt">t = 0.5 s</text>
+<text x="385" y="398" class="vs">Pull. Drape falling, bar tipping.</text>
+<clipPath id="clipA6_2"><rect x="730" y="70" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_2)"><rect x="709" y="336" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="709" y1="336" x2="1066" y2="336" class="floor" />
+<polygon points="737,336 894.5,336 894.5,98 737,98" class="lite" />
+<polygon points="737,336 741.08,336 741.08,98 737,98" class="cut" />
+<polygon points="890.42,336 894.5,336 894.5,223.38 890.42,222.51" class="cut" />
+<polygon points="890.42,108.5 894.5,108.5 894.5,98 890.42,98" class="cut" />
+<polygon points="890.42,217.44 894.5,217.44 894.5,108.5 890.42,108.5" class="lite" />
+<polygon points="894.5,336 901.5,336 901.5,224 894.5,224" class="cut" />
+<polygon points="779,172.29 915.5,201.31 915.5,222.78 779,193.76" class="litef" />
+<polygon points="779,193.76 915.5,222.78 915.5,224.56 894.5,220.1 894.5,223.38 779,198.83" class="cut" />
+<line x1="779" y1="194.66" x2="894.5" y2="219.21" class="lite" />
+<line x1="894.5" y1="219.21" x2="915.5" y2="223.67" class="lite" />
+<polygon points="836.75,218.27 840.25,218.27 840.25,211.85 836.75,211.85" class="cut" />
+<polygon points="836.46,336 840.54,336 840.54,218.27 836.46,218.27" class="visf" />
+<polygon points="781.45,206.51 784.95,206.51 784.95,200.1 781.45,200.1" class="cut" />
+<polygon points="781.16,336 785.24,336 785.24,206.51 781.16,206.51" class="visf" />
+<polygon points="779.98,193.97 781.69,194.33 782.54,190.34 780.83,189.98" class="visf" />
+<polygon points="836.99,206.09 837.13,204.34 841.2,204.68 841.06,206.42" class="red" />
+<polygon points="741.08,266.88 775.5,266.88 775.5,266 741.08,266" class="cut" />
+<polygon points="741.08,273.29 775.5,273.29 775.5,266.88 741.08,266.88" class="visf" />
+<polygon points="771.42,336 775.5,336 775.5,273.29 771.42,273.29" class="visf" />
+<polygon points="741.08,336 745.17,336 745.17,273.29 741.08,273.29" class="visf" />
+<line x1="773.46" y1="266" x2="773.46" y2="217" class="vis" />
+<line x1="743.88" y1="217" x2="773.46" y2="217" class="vis" />
+<line x1="743.88" y1="241.5" x2="773.46" y2="241.5" class="vis" />
+<circle cx="743.88" cy="133" r="2.52" class="visf"/>
+<polygon points="894.5,227.5 919,227.5 919,98 894.5,98" class="lite" />
+<polygon points="890.42,104.42 921.1,104.42 921.1,98 890.42,98" class="visf" />
+<circle cx="917.6" cy="106.1" r="1.4" class="visf"/>
+<line x1="894.5" y1="222.78" x2="917.6" y2="222.78" class="lite" />
+<polygon points="916.73,105 918.48,105 918.48,100.92 916.73,100.92" class="cut" />
+<polygon points="916.2,336 930.2,336 924.6,330.4 918.3,331.52" class="black" />
+<circle cx="837.49" cy="159.59" r="45.5" class="ball"/>
+<line x1="833.99" y1="159.59" x2="840.99" y2="159.59" class="lite" />
+<line x1="837.49" y1="163.09" x2="837.49" y2="156.09" class="lite" /></g>
+
+<text x="730" y="382" class="vt">t = 1.2 s</text>
+<text x="730" y="398" class="vs">Drape down, bar flat. Ball rolling.</text>
+<clipPath id="clipA6_3"><rect x="40" y="465" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_3)"><rect x="19" y="731" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="19" y1="731" x2="376" y2="731" class="floor" />
+<polygon points="47,731 204.5,731 204.5,493 47,493" class="lite" />
+<polygon points="47,731 51.08,731 51.08,493 47,493" class="cut" />
+<polygon points="200.42,731 204.5,731 204.5,618.38 200.42,617.51" class="cut" />
+<polygon points="200.42,503.5 204.5,503.5 204.5,493 200.42,493" class="cut" />
+<polygon points="200.42,612.44 204.5,612.44 204.5,503.5 200.42,503.5" class="lite" />
+<polygon points="204.5,731 211.5,731 211.5,619 204.5,619" class="cut" />
+<polygon points="89,567.29 225.5,596.31 225.5,617.78 89,588.76" class="litef" />
+<polygon points="89,588.76 225.5,617.78 225.5,619.56 204.5,615.1 204.5,618.38 89,593.83" class="cut" />
+<line x1="89" y1="589.66" x2="204.5" y2="614.21" class="lite" />
+<line x1="204.5" y1="614.21" x2="225.5" y2="618.67" class="lite" />
+<polygon points="146.75,613.27 150.25,613.27 150.25,606.85 146.75,606.85" class="cut" />
+<polygon points="146.46,731 150.54,731 150.54,613.27 146.46,613.27" class="visf" />
+<polygon points="91.45,601.51 94.95,601.51 94.95,595.1 91.45,595.1" class="cut" />
+<polygon points="91.16,731 95.24,731 95.24,601.51 91.16,601.51" class="visf" />
+<polygon points="89.98,588.97 91.69,589.33 92.54,585.34 90.83,584.98" class="visf" />
+<polygon points="146.99,601.09 147.36,599.38 151.35,600.23 150.99,601.94" class="red" />
+<polygon points="51.08,661.88 85.5,661.88 85.5,661 51.08,661" class="cut" />
+<polygon points="51.08,668.29 85.5,668.29 85.5,661.88 51.08,661.88" class="visf" />
+<polygon points="81.42,731 85.5,731 85.5,668.29 81.42,668.29" class="visf" />
+<polygon points="51.08,731 55.17,731 55.17,668.29 51.08,668.29" class="visf" />
+<line x1="83.46" y1="661" x2="83.46" y2="612" class="vis" />
+<line x1="53.88" y1="612" x2="83.46" y2="612" class="vis" />
+<line x1="53.88" y1="636.5" x2="83.46" y2="636.5" class="vis" />
+<circle cx="53.88" cy="528" r="2.52" class="visf"/>
+<polygon points="204.5,622.5 229,622.5 229,493 204.5,493" class="lite" />
+<polygon points="200.42,499.42 231.1,499.42 231.1,493 200.42,493" class="visf" />
+<circle cx="227.6" cy="501.1" r="1.4" class="visf"/>
+<line x1="204.5" y1="617.78" x2="227.6" y2="617.78" class="lite" />
+<polygon points="226.73,500 228.48,500 228.48,495.92 226.73,495.92" class="cut" />
+<polygon points="226.2,731 240.2,731 234.6,725.4 228.3,726.52" class="black" />
+<circle cx="231.82" cy="572.6" r="45.5" class="ball"/>
+<line x1="228.32" y1="572.6" x2="235.32" y2="572.6" class="lite" />
+<line x1="231.82" y1="576.1" x2="231.82" y2="569.1" class="lite" /></g>
+
+<text x="40" y="777" class="vt">t = 2.6 s</text>
+<text x="40" y="793" class="vs">Ball reaches the lip.</text>
+<clipPath id="clipA6_4"><rect x="385" y="465" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_4)"><rect x="364" y="731" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="364" y1="731" x2="721" y2="731" class="floor" />
+<polygon points="392,731 549.5,731 549.5,493 392,493" class="lite" />
+<polygon points="392,731 396.08,731 396.08,493 392,493" class="cut" />
+<polygon points="545.42,731 549.5,731 549.5,618.38 545.42,617.51" class="cut" />
+<polygon points="545.42,503.5 549.5,503.5 549.5,493 545.42,493" class="cut" />
+<polygon points="545.42,612.44 549.5,612.44 549.5,503.5 545.42,503.5" class="lite" />
+<polygon points="549.5,731 556.5,731 556.5,619 549.5,619" class="cut" />
+<polygon points="434,567.29 570.5,596.31 570.5,617.78 434,588.76" class="litef" />
+<polygon points="434,588.76 570.5,617.78 570.5,619.56 549.5,615.1 549.5,618.38 434,593.83" class="cut" />
+<line x1="434" y1="589.66" x2="549.5" y2="614.21" class="lite" />
+<line x1="549.5" y1="614.21" x2="570.5" y2="618.67" class="lite" />
+<polygon points="491.75,613.27 495.25,613.27 495.25,606.85 491.75,606.85" class="cut" />
+<polygon points="491.46,731 495.54,731 495.54,613.27 491.46,613.27" class="visf" />
+<polygon points="436.45,601.51 439.95,601.51 439.95,595.1 436.45,595.1" class="cut" />
+<polygon points="436.16,731 440.24,731 440.24,601.51 436.16,601.51" class="visf" />
+<polygon points="434.98,588.97 436.69,589.33 437.54,585.34 435.83,584.98" class="visf" />
+<polygon points="491.99,601.09 492.36,599.38 496.35,600.23 495.99,601.94" class="red" />
+<polygon points="396.08,661.88 430.5,661.88 430.5,661 396.08,661" class="cut" />
+<polygon points="396.08,668.29 430.5,668.29 430.5,661.88 396.08,661.88" class="visf" />
+<polygon points="426.42,731 430.5,731 430.5,668.29 426.42,668.29" class="visf" />
+<polygon points="396.08,731 400.17,731 400.17,668.29 396.08,668.29" class="visf" />
+<line x1="428.46" y1="661" x2="428.46" y2="612" class="vis" />
+<line x1="398.88" y1="612" x2="428.46" y2="612" class="vis" />
+<line x1="398.88" y1="636.5" x2="428.46" y2="636.5" class="vis" />
+<circle cx="398.88" cy="528" r="2.52" class="visf"/>
+<polygon points="549.5,622.5 574,622.5 574,493 549.5,493" class="lite" />
+<polygon points="545.42,499.42 576.1,499.42 576.1,493 545.42,493" class="visf" />
+<circle cx="572.6" cy="501.1" r="1.4" class="visf"/>
+<line x1="549.5" y1="617.78" x2="572.6" y2="617.78" class="lite" />
+<polygon points="571.73,500 573.48,500 573.48,495.92 571.73,495.92" class="cut" />
+<polygon points="571.2,731 585.2,731 579.6,725.4 573.3,726.52" class="black" />
+<circle cx="619.42" cy="611.78" r="45.5" class="ball"/>
+<line x1="615.92" y1="611.78" x2="622.92" y2="611.78" class="lite" />
+<line x1="619.42" y1="615.28" x2="619.42" y2="608.28" class="lite" /></g>
+
+<text x="385" y="777" class="vt">t = 3.1 s</text>
+<text x="385" y="793" class="vs">Over the wall, dropping.</text>
+<clipPath id="clipA6_5"><rect x="730" y="465" width="330" height="290"/></clipPath>
+<g clip-path="url(#clipA6_5)"><rect x="709" y="731" width="357" height="6.3" fill="url(#ground)"/>
+<line x1="709" y1="731" x2="1066" y2="731" class="floor" />
+<polygon points="737,731 894.5,731 894.5,493 737,493" class="lite" />
+<polygon points="737,731 741.08,731 741.08,493 737,493" class="cut" />
+<polygon points="890.42,731 894.5,731 894.5,618.38 890.42,617.51" class="cut" />
+<polygon points="890.42,503.5 894.5,503.5 894.5,493 890.42,493" class="cut" />
+<polygon points="890.42,612.44 894.5,612.44 894.5,503.5 890.42,503.5" class="lite" />
+<polygon points="894.5,731 901.5,731 901.5,619 894.5,619" class="cut" />
+<polygon points="779,567.29 915.5,596.31 915.5,617.78 779,588.76" class="litef" />
+<polygon points="779,588.76 915.5,617.78 915.5,619.56 894.5,615.1 894.5,618.38 779,593.83" class="cut" />
+<line x1="779" y1="589.66" x2="894.5" y2="614.21" class="lite" />
+<line x1="894.5" y1="614.21" x2="915.5" y2="618.67" class="lite" />
+<polygon points="836.75,613.27 840.25,613.27 840.25,606.85 836.75,606.85" class="cut" />
+<polygon points="836.46,731 840.54,731 840.54,613.27 836.46,613.27" class="visf" />
+<polygon points="781.45,601.51 784.95,601.51 784.95,595.1 781.45,595.1" class="cut" />
+<polygon points="781.16,731 785.24,731 785.24,601.51 781.16,601.51" class="visf" />
+<polygon points="779.98,588.97 781.69,589.33 782.54,585.34 780.83,584.98" class="visf" />
+<polygon points="836.99,601.09 837.36,599.38 841.35,600.23 840.99,601.94" class="red" />
+<polygon points="741.08,661.88 775.5,661.88 775.5,661 741.08,661" class="cut" />
+<polygon points="741.08,668.29 775.5,668.29 775.5,661.88 741.08,661.88" class="visf" />
+<polygon points="771.42,731 775.5,731 775.5,668.29 771.42,668.29" class="visf" />
+<polygon points="741.08,731 745.17,731 745.17,668.29 741.08,668.29" class="visf" />
+<line x1="773.46" y1="661" x2="773.46" y2="612" class="vis" />
+<line x1="743.88" y1="612" x2="773.46" y2="612" class="vis" />
+<line x1="743.88" y1="636.5" x2="773.46" y2="636.5" class="vis" />
+<circle cx="743.88" cy="528" r="2.52" class="visf"/>
+<polygon points="894.5,622.5 919,622.5 919,493 894.5,493" class="lite" />
+<polygon points="890.42,499.42 921.1,499.42 921.1,493 890.42,493" class="visf" />
+<circle cx="917.6" cy="501.1" r="1.4" class="visf"/>
+<line x1="894.5" y1="617.78" x2="917.6" y2="617.78" class="lite" />
+<polygon points="916.73,500 918.48,500 918.48,495.92 916.73,495.92" class="cut" />
+<polygon points="916.2,731 930.2,731 924.6,725.4 918.3,726.52" class="black" />
+<circle cx="998.61" cy="664.92" r="45.5" class="ball"/>
+<line x1="995.11" y1="664.92" x2="1002.11" y2="664.92" class="lite" />
+<line x1="998.61" y1="668.42" x2="998.61" y2="661.42" class="lite" /></g>
+
+<text x="730" y="777" class="vt">t = 3.6 s</text>
+<text x="730" y="793" class="vs">Landed. Rolls on down the lane after the group.</text>
+<text x="1100" y="70" class="vt" text-anchor="start" >RIGGING (NOT TO SCALE)</text>
+<rect x="1370" y="130" width="210" height="40" class="tb"/>
+<text x="1475" y="146" class="lblb" text-anchor="middle" >BATTEN + 6 KABUKI PINS</text>
+<text x="1475" y="160" class="lbls" text-anchor="middle" >over the lane at 16'-6"</text>
+<rect x="1370" y="320" width="210" height="40" class="tb"/>
+<text x="1475" y="336" class="lblb" text-anchor="middle" >STOP BAR LATCHES (2)</text>
+<text x="1475" y="350" class="lbls" text-anchor="middle" >on the rails</text>
+<rect x="1370" y="490" width="210" height="40" class="tb"/>
+<text x="1475" y="506" class="lblb" text-anchor="middle" >BALL NET (reload only)</text>
+<text x="1475" y="520" class="lbls" text-anchor="middle" >snap shackle + trip line</text>
+<rect x="1100" y="570" width="150" height="40" class="tb"/>
+<text x="1175" y="586" class="lblb" text-anchor="middle" >T-HANDLE</text>
+<text x="1175" y="600" class="lbls" text-anchor="middle" >on platform guardrail</text>
+<rect x="1100" y="650" width="150" height="40" class="tb"/>
+<text x="1175" y="666" class="lblb" text-anchor="middle" >CLEAT RAIL</text>
+<text x="1175" y="680" class="lbls" text-anchor="middle" >on platform guardrail</text>
+<polyline points="1140,570 1140,210 1300,210 1540,210 1540,170" class="lineK" fill="none"/>
+<circle cx="1140" cy="210" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1140" y="200" class="lbls" text-anchor="middle" >P1 side wall top</text>
+<circle cx="1300" cy="210" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1300" y="200" class="lbls" text-anchor="middle" >P2 header</text>
+<circle cx="1540" cy="210" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1540" y="230" class="lbls" text-anchor="middle" >P3 outrigger</text>
+<text x="1148" y="270" class="lblb" text-anchor="start" >K</text>
+<polyline points="1170,570 1170,300 1430,300 1430,320" class="lineB" fill="none"/>
+<circle cx="1280" cy="300" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1280" y="290" class="lbls" text-anchor="middle" >P4 above bar</text>
+<text x="1178" y="370" class="lblb" text-anchor="start" >B</text>
+<polyline points="1500,360 1500,410 1210,410 1210,650" class="lineR" fill="none"/>
+<text x="1218" y="470" class="lblb" text-anchor="start" >R</text>
+<polyline points="1120,650 1120,630 1080,630 1080,510 1370,510" class="lineH" fill="none"/>
+<circle cx="1290" cy="510" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1290" y="500" class="lbls" text-anchor="middle" >P5 back wall, 14'-6"</text>
+<polyline points="1230,650 1230,540 1400,540 1400,530" class="lineH" fill="none"/>
+<text x="1086" y="590" class="lblb" text-anchor="start" >H</text>
+<text x="1272" y="555" class="lblb" text-anchor="start" >trip line</text>
+<polyline points="1390,130 1390,100 1240,100 1240,190" class="lineL" fill="none"/>
+<polyline points="1560,130 1560,88 1250,88 1250,190" class="lineL" fill="none"/>
+<polyline points="1240,230 1240,650" class="lineL" fill="none"/>
+<polyline points="1250,230 1250,650" class="lineL" fill="none"/>
+<circle cx="1390" cy="100" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<circle cx="1560" cy="88" r="6" fill="#fff" stroke="#111" stroke-width="1.2"/>
+<text x="1256" y="330" class="lblb" text-anchor="start" >L1 L2</text>
+<line x1="1100" y1="716" x2="1134" y2="716" class="lineK"/>
+<text x="1142" y="720" class="lbl" text-anchor="start" >K  Kabuki release: handle to all 6 pins (taut).</text>
+<line x1="1100" y1="732" x2="1134" y2="732" class="lineB"/>
+<text x="1142" y="736" class="lbl" text-anchor="start" >B  Bar release: handle to both latch arms, 2" slack.</text>
+<line x1="1100" y1="748" x2="1134" y2="748" class="lineR"/>
+<text x="1142" y="752" class="lbl" text-anchor="start" >R  Bar reset: bar ring to cleat (slack in show).</text>
+<line x1="1100" y1="764" x2="1134" y2="764" class="lineH"/>
+<text x="1142" y="768" class="lbl" text-anchor="start" >H  Hoist + trip line: reload only, never in show.</text>
+<line x1="1100" y1="780" x2="1134" y2="780" class="lineL"/>
+<text x="1142" y="784" class="lbl" text-anchor="start" >L1, L2  Batten lift lines: fly out to stops, cleat.</text>
+<text x="1100" y="808" class="lbl" text-anchor="start" >1/4" braided polyester line, black. Pulleys: 1 1/2" single</text>
+<text x="1100" y="822" class="lbl" text-anchor="start" >blocks on screw eyes or eye bolts. Handle travel about 6":</text>
+<text x="1100" y="836" class="lbl" text-anchor="start" >K frees the drape in the first 3", B frees the bar after 5".</text>
+<text x="1100" y="850" class="lbl" text-anchor="start" >Test the pull 20 times before any show (A-8).</text>
+
+      <rect x="18" y="18" width="1596" height="1020" fill="none" stroke="#111" stroke-width="2"/>
+      <rect x="1072" y="944" width="542" height="94" class="tb"/>
+      <line x1="1072" y1="974" x2="1614" y2="974" class="tbl"/>
+      <line x1="1502" y1="944" x2="1502" y2="1038" class="tbl"/>
+      <text x="1080" y="964" class="lblb">GYM HAUNTED HOUSE: HIDDEN BALL DROP (GROUP 4)</text>
+      <text x="1080" y="994" class="vt">Rigging and the release sequence</text>
+      <text x="1080" y="1008" class="lbls">Scale: section frames 3/16 in = 1 ft; rigging not to scale (on a 17 x 11 in sheet)</text>
+      <text x="1080" y="1020" class="lbls">Planning sketch: verify every dimension on site before cutting.</text>
+      <text x="1080" y="1032" class="lbls">From the sandbox model (src/scenes/ball-drop-rig.js), scripts/drawings.mjs</text>
+      <text x="1558" y="964" class="lbls" text-anchor="middle">SHEET</text>
+      <text x="1558" y="1006" class="vt" text-anchor="middle" style="font-size:28px">A-6</text>
+      <text x="1558" y="1028" class="lbls" text-anchor="middle">2026-10-17</text>
+</svg>
