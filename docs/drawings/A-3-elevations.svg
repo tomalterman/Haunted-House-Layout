@@ -1,0 +1,323 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1632" height="1056" viewBox="0 0 1632 1056">
+<style>
+  .cut { stroke:#111; stroke-width:2; fill:url(#hatch); }
+  .cutsolid { stroke:#111; stroke-width:2; fill:#1b1b1b; }
+  .vis { stroke:#111; stroke-width:1.2; fill:none; }
+  .visf { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .lite { stroke:#777; stroke-width:0.8; fill:none; }
+  .litef { stroke:#777; stroke-width:0.8; fill:#f1f1f1; }
+  .black { stroke:#111; stroke-width:1; fill:#2b2b30; }
+  .grayf { stroke:#555; stroke-width:0.8; fill:#d9d9dc; }
+  .hid { stroke:#555; stroke-width:0.9; fill:none; stroke-dasharray:6 4; }
+  .ctr { stroke:#999; stroke-width:0.7; fill:none; stroke-dasharray:16 4 3 4; }
+  .dim { stroke:#1a4fa0; stroke-width:0.7; fill:none; }
+  .dimt { fill:#1a4fa0; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbl { fill:#111; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .lbls { fill:#333; font:9.5px 'DejaVu Sans', Arial, sans-serif; }
+  .lblb { fill:#111; font:bold 11px 'DejaVu Sans', Arial, sans-serif; }
+  .vt { fill:#111; font:bold 15px 'DejaVu Sans', Arial, sans-serif; }
+  .vs { fill:#444; font:11px 'DejaVu Sans', Arial, sans-serif; }
+  .ldr { stroke:#111; stroke-width:0.6; fill:none; }
+  .ball { stroke:#111; stroke-width:1.4; fill:#fbfbf8; }
+  .ghost { stroke:#888; stroke-width:1; fill:none; stroke-dasharray:4 3; }
+  .path { stroke:#c0392b; stroke-width:1.2; fill:none; stroke-dasharray:3 3; }
+  .zone { fill:#d33; fill-opacity:0.12; stroke:#d33; stroke-width:1; stroke-dasharray:5 3; }
+  .route { stroke:#7b3fbf; stroke-width:1.5; fill:none; stroke-dasharray:8 4; }
+  .lineK { stroke:#c0392b; stroke-width:1.6; fill:none; }
+  .lineB { stroke:#1f7a3a; stroke-width:1.6; fill:none; }
+  .lineR { stroke:#d68910; stroke-width:1.6; fill:none; stroke-dasharray:7 3; }
+  .lineH { stroke:#1a4fa0; stroke-width:1.6; fill:none; stroke-dasharray:2 3; }
+  .lineL { stroke:#7b3fbf; stroke-width:1.6; fill:none; }
+  .red { stroke:#8e1d14; stroke-width:1.2; fill:#d23b2a; }
+  .floor { stroke:#111; stroke-width:1.6; }
+  .tb { stroke:#111; stroke-width:1.2; fill:#fff; }
+  .tbl { stroke:#999; stroke-width:0.6; }
+</style><defs>
+  <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="6" height="6" fill="#f4efe4"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a6d3b" stroke-width="0.8"/>
+  </pattern>
+  <pattern id="ground" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="10" stroke="#aaa" stroke-width="0.6"/>
+  </pattern>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+  </marker>
+  <marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5">
+    <circle cx="5" cy="5" r="4" fill="#111"/>
+  </marker>
+</defs>
+<rect width="1632" height="1056" fill="#fff"/>
+<clipPath id="clipA3_0"><rect x="50" y="60" width="560" height="720"/></clipPath>
+<g clip-path="url(#clipA3_0)"><rect x="42.8" y="740.4" width="576" height="16.2" fill="url(#ground)"/>
+<line x1="42.8" y1="740.4" x2="618.8" y2="740.4" class="floor" />
+<polygon points="42.8,740.4 618.8,740.4 618.8,452.4 42.8,452.4" class="grayf" />
+<line x1="42.8" y1="458.4" x2="618.8" y2="458.4" class="lite" />
+<line x1="60.8" y1="740.4" x2="60.8" y2="452.4" class="lite" />
+<line x1="330.8" y1="740.4" x2="330.8" y2="452.4" class="lite" />
+<line x1="600.8" y1="740.4" x2="600.8" y2="452.4" class="lite" />
+<polygon points="126.8,452.4 534.8,452.4 534.8,128.4 126.8,128.4" class="black" />
+<polygon points="186.8,449.25 474.8,449.25 474.8,155.4 186.8,155.4" class="litef" />
+<polygon points="186.8,449.25 474.8,449.25 474.8,155.4 186.8,155.4" class="grayf" />
+<polygon points="186.8,449.25 474.8,449.25 474.8,374.64 186.8,374.64" class="litef" />
+<polygon points="207.5,449.25 202.1,449.25 202.1,319.44 207.5,319.44" class="black" />
+<polygon points="454.1,449.25 459.5,449.25 459.5,319.44 454.1,319.44" class="black" />
+<polygon points="208.4,405.87 453.2,405.87 453.2,395.37 208.4,395.37" class="red" />
+<polygon points="208.4,374.64 453.2,374.64 453.2,364.14 208.4,364.14" class="visf" />
+<circle cx="330.8" cy="280.86" r="117" class="ball"/>
+<line x1="186.8" y1="449.25" x2="474.8" y2="449.25" class="vis" />
+<polygon points="186.8,453.85 474.8,453.85 474.8,449.25 186.8,449.25" class="black" />
+<polygon points="186.8,451.5 137.3,451.5 137.3,449.25 186.8,449.25" class="black" />
+<polygon points="137.3,461.4 126.8,461.4 126.8,128.4 137.3,128.4" class="black" />
+<polygon points="137.3,144.9 126.8,144.9 126.8,128.4 137.3,128.4" class="visf" />
+<polygon points="474.8,451.5 524.3,451.5 524.3,449.25 474.8,449.25" class="black" />
+<polygon points="524.3,461.4 534.8,461.4 534.8,128.4 524.3,128.4" class="black" />
+<polygon points="524.3,144.9 534.8,144.9 534.8,128.4 524.3,128.4" class="visf" />
+<polygon points="135.8,146.4 525.8,146.4 525.8,135.9 135.8,135.9" class="visf" />
+<line x1="141.2" y1="135.9" x2="139.1" y2="148.5" class="lineL" />
+<circle cx="141.62" cy="149.22" r="3.6" class="visf"/>
+<line x1="520.4" y1="135.9" x2="522.5" y2="148.5" class="lineL" />
+<circle cx="519.98" cy="149.22" r="3.6" class="visf"/>
+<circle cx="168.44" cy="141.15" r="2.16" class="visf"/>
+<circle cx="233.24" cy="141.15" r="2.16" class="visf"/>
+<circle cx="298.4" cy="141.15" r="2.16" class="visf"/>
+<circle cx="363.2" cy="141.15" r="2.16" class="visf"/>
+<circle cx="428.36" cy="141.15" r="2.16" class="visf"/>
+<circle cx="493.16" cy="141.15" r="2.16" class="visf"/>
+<polygon points="135.8,461.4 525.8,461.4 525.8,146.4 135.8,146.4" class="black" />
+<line x1="152" y1="459.6" x2="152" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="173.6" y1="459.6" x2="173.6" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="195.2" y1="459.6" x2="195.2" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="216.8" y1="459.6" x2="216.8" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="238.4" y1="459.6" x2="238.4" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="260" y1="459.6" x2="260" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="281.6" y1="459.6" x2="281.6" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="303.2" y1="459.6" x2="303.2" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="324.8" y1="459.6" x2="324.8" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="346.4" y1="459.6" x2="346.4" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="368" y1="459.6" x2="368" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="389.6" y1="459.6" x2="389.6" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="411.2" y1="459.6" x2="411.2" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="432.8" y1="459.6" x2="432.8" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="454.4" y1="459.6" x2="454.4" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="476" y1="459.6" x2="476" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="497.6" y1="459.6" x2="497.6" y2="148.2" class="lite" style="stroke:#55555c"/>
+<line x1="519.2" y1="459.6" x2="519.2" y2="148.2" class="lite" style="stroke:#55555c"/>
+<circle cx="168.44" cy="141.15" r="2.16" class="visf"/>
+<circle cx="233.24" cy="141.15" r="2.16" class="visf"/>
+<circle cx="298.4" cy="141.15" r="2.16" class="visf"/>
+<circle cx="363.2" cy="141.15" r="2.16" class="visf"/>
+<circle cx="428.36" cy="141.15" r="2.16" class="visf"/>
+<circle cx="493.16" cy="141.15" r="2.16" class="visf"/>
+<polygon points="321.8,128.4 339.8,128.4 339.8,117.6 321.8,117.6" class="visf" /></g>
+<line x1="126.8" y1="109.68" x2="126.8" y2="89.52" class="dim" />
+<line x1="534.8" y1="109.68" x2="534.8" y2="89.52" class="dim" />
+<line x1="126.8" y1="96" x2="534.8" y2="96" class="dim" />
+<line x1="123.26" y1="92.46" x2="130.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<line x1="531.26" y1="92.46" x2="538.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<text x="330.8" y="94" class="dimt" text-anchor="middle" transform="rotate(0 330.8 90)">11'-4" booth</text>
+<line x1="135.8" y1="465.72" x2="135.8" y2="500.28" class="dim" />
+<line x1="525.8" y1="465.72" x2="525.8" y2="500.28" class="dim" />
+<line x1="135.8" y1="493.8" x2="525.8" y2="493.8" class="dim" />
+<line x1="132.26" y1="490.26" x2="139.34" y2="497.34" class="dim" style="stroke-width:1.3"/>
+<line x1="522.26" y1="490.26" x2="529.34" y2="497.34" class="dim" style="stroke-width:1.3"/>
+<text x="330.8" y="503.8" class="dimt" text-anchor="middle" transform="rotate(0 330.8 499.8)">10'-10" drape (between returns)</text>
+<line x1="530.12" y1="461.4" x2="571.88" y2="461.4" class="dim" />
+<line x1="530.12" y1="146.4" x2="571.88" y2="146.4" class="dim" />
+<line x1="565.4" y1="461.4" x2="565.4" y2="146.4" class="dim" />
+<line x1="561.86" y1="464.94" x2="568.94" y2="457.86" class="dim" style="stroke-width:1.3"/>
+<line x1="561.86" y1="149.94" x2="568.94" y2="142.86" class="dim" style="stroke-width:1.3"/>
+<text x="571.4" y="307.9" class="dimt" text-anchor="middle" transform="rotate(-90 571.4 303.9)">8'-9" drape</text>
+<line x1="93.2" y1="740.4" x2="93.2" y2="461.4" class="dim" />
+<line x1="89.66" y1="743.94" x2="96.74" y2="736.86" class="dim" style="stroke-width:1.3"/>
+<line x1="89.66" y1="464.94" x2="96.74" y2="457.86" class="dim" style="stroke-width:1.3"/>
+<text x="89.2" y="604.9" class="dimt" text-anchor="middle" transform="rotate(-90 89.2 600.9)">7'-9" hem</text>
+<line x1="64.4" y1="740.4" x2="64.4" y2="452.4" class="dim" />
+<line x1="60.86" y1="743.94" x2="67.94" y2="736.86" class="dim" style="stroke-width:1.3"/>
+<line x1="60.86" y1="455.94" x2="67.94" y2="448.86" class="dim" style="stroke-width:1.3"/>
+<text x="60.4" y="600.4" class="dimt" text-anchor="middle" transform="rotate(-90 60.4 596.4)">8'-0" wall</text>
+<line x1="539.12" y1="740.4" x2="598.88" y2="740.4" class="dim" />
+<line x1="539.12" y1="128.4" x2="598.88" y2="128.4" class="dim" />
+<line x1="592.4" y1="740.4" x2="592.4" y2="128.4" class="dim" />
+<line x1="588.86" y1="743.94" x2="595.94" y2="736.86" class="dim" style="stroke-width:1.3"/>
+<line x1="588.86" y1="131.94" x2="595.94" y2="124.86" class="dim" style="stroke-width:1.3"/>
+<text x="598.4" y="438.4" class="dimt" text-anchor="middle" transform="rotate(-90 598.4 434.4)">17'-0" booth top</text>
+<line x1="428.36" y1="141.15" x2="449.46" y2="108.7" class="ldr" marker-start="url(#dot)"/>
+<circle cx="454.36" cy="101.15" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="454.36" y="105.15" class="lblb" text-anchor="middle" style="font-size:10px">1</text>
+<line x1="146.6" y1="130.5" x2="138.51" y2="93.29" class="ldr" marker-start="url(#dot)"/>
+<circle cx="136.6" cy="84.5" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="136.6" y="88.5" class="lblb" text-anchor="middle" style="font-size:10px">2</text>
+<line x1="330.8" y1="123" x2="363.6" y2="98.4" class="ldr" marker-start="url(#dot)"/>
+<circle cx="370.8" cy="93" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="370.8" y="97" class="lblb" text-anchor="middle" style="font-size:10px">3</text>
+<line x1="130.4" y1="308.4" x2="99.4" y2="308.4" class="ldr" marker-start="url(#dot)"/>
+<circle cx="90.4" cy="308.4" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="90.4" y="312.4" class="lblb" text-anchor="middle" style="font-size:10px">4</text>
+<line x1="420.8" y1="344.4" x2="420.8" y2="344.4" class="ldr" marker-start="url(#dot)"/>
+<circle cx="420.8" cy="344.4" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="420.8" y="348.4" class="lblb" text-anchor="middle" style="font-size:10px">5</text>
+<line x1="105.2" y1="456" x2="86.82" y2="478.97" class="ldr" marker-start="url(#dot)"/>
+<circle cx="81.2" cy="486" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="81.2" y="490" class="lblb" text-anchor="middle" style="font-size:10px">6</text>
+<text x="50" y="802" class="vt">ELEVATION B: SHOW CONDITION</text>
+<text x="50" y="818" class="vs">Seen from the group 4 lane, drape hung and armed. Only black surfaces show.</text>
+<clipPath id="clipA3_1"><rect x="660" y="60" width="560" height="720"/></clipPath>
+<g clip-path="url(#clipA3_1)"><rect x="652.8" y="740.4" width="576" height="16.2" fill="url(#ground)"/>
+<line x1="652.8" y1="740.4" x2="1228.8" y2="740.4" class="floor" />
+<polygon points="652.8,740.4 1228.8,740.4 1228.8,452.4 652.8,452.4" class="grayf" />
+<line x1="652.8" y1="458.4" x2="1228.8" y2="458.4" class="lite" />
+<line x1="670.8" y1="740.4" x2="670.8" y2="452.4" class="lite" />
+<line x1="940.8" y1="740.4" x2="940.8" y2="452.4" class="lite" />
+<line x1="1210.8" y1="740.4" x2="1210.8" y2="452.4" class="lite" />
+<polygon points="736.8,452.4 1144.8,452.4 1144.8,128.4 736.8,128.4" class="black" />
+<polygon points="796.8,449.25 1084.8,449.25 1084.8,155.4 796.8,155.4" class="litef" />
+<polygon points="796.8,449.25 1084.8,449.25 1084.8,155.4 796.8,155.4" class="grayf" />
+<polygon points="796.8,449.25 1084.8,449.25 1084.8,374.64 796.8,374.64" class="litef" />
+<polygon points="817.5,449.25 812.1,449.25 812.1,319.44 817.5,319.44" class="black" />
+<polygon points="1064.1,449.25 1069.5,449.25 1069.5,319.44 1064.1,319.44" class="black" />
+<polygon points="818.4,405.87 1063.2,405.87 1063.2,395.37 818.4,395.37" class="red" />
+<polygon points="818.4,374.64 1063.2,374.64 1063.2,364.14 818.4,364.14" class="visf" />
+<circle cx="940.8" cy="280.86" r="117" class="ball"/>
+<line x1="796.8" y1="449.25" x2="1084.8" y2="449.25" class="vis" />
+<polygon points="796.8,453.85 1084.8,453.85 1084.8,449.25 796.8,449.25" class="black" />
+<polygon points="796.8,451.5 747.3,451.5 747.3,449.25 796.8,449.25" class="black" />
+<polygon points="747.3,461.4 736.8,461.4 736.8,128.4 747.3,128.4" class="black" />
+<polygon points="747.3,144.9 736.8,144.9 736.8,128.4 747.3,128.4" class="visf" />
+<polygon points="1084.8,451.5 1134.3,451.5 1134.3,449.25 1084.8,449.25" class="black" />
+<polygon points="1134.3,461.4 1144.8,461.4 1144.8,128.4 1134.3,128.4" class="black" />
+<polygon points="1134.3,144.9 1144.8,144.9 1144.8,128.4 1134.3,128.4" class="visf" />
+<polygon points="745.8,146.4 1135.8,146.4 1135.8,135.9 745.8,135.9" class="visf" />
+<line x1="751.2" y1="135.9" x2="749.1" y2="148.5" class="lineL" />
+<circle cx="751.62" cy="149.22" r="3.6" class="visf"/>
+<line x1="1130.4" y1="135.9" x2="1132.5" y2="148.5" class="lineL" />
+<circle cx="1129.98" cy="149.22" r="3.6" class="visf"/>
+<circle cx="778.44" cy="141.15" r="2.16" class="visf"/>
+<circle cx="843.24" cy="141.15" r="2.16" class="visf"/>
+<circle cx="908.4" cy="141.15" r="2.16" class="visf"/>
+<circle cx="973.2" cy="141.15" r="2.16" class="visf"/>
+<circle cx="1038.36" cy="141.15" r="2.16" class="visf"/>
+<circle cx="1103.16" cy="141.15" r="2.16" class="visf"/>
+<polygon points="931.8,128.4 949.8,128.4 949.8,117.6 931.8,117.6" class="visf" /></g>
+<line x1="796.8" y1="109.68" x2="796.8" y2="89.52" class="dim" />
+<line x1="1084.8" y1="109.68" x2="1084.8" y2="89.52" class="dim" />
+<line x1="796.8" y1="96" x2="1084.8" y2="96" class="dim" />
+<line x1="793.26" y1="92.46" x2="800.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<line x1="1081.26" y1="92.46" x2="1088.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<text x="940.8" y="94" class="dimt" text-anchor="middle" transform="rotate(0 940.8 90)">8'-0" clear opening</text>
+<line x1="1084.8" y1="109.68" x2="1084.8" y2="89.52" class="dim" />
+<line x1="1144.8" y1="109.68" x2="1144.8" y2="89.52" class="dim" />
+<line x1="1084.8" y1="96" x2="1144.8" y2="96" class="dim" />
+<line x1="1081.26" y1="92.46" x2="1088.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<line x1="1141.26" y1="92.46" x2="1148.34" y2="99.54" class="dim" style="stroke-width:1.3"/>
+<text x="1114.8" y="96" class="dimt" text-anchor="middle" transform="rotate(0 1114.8 92)">1'-8"</text>
+<line x1="817.5" y1="464.37" x2="817.5" y2="498.93" class="dim" />
+<line x1="1064.1" y1="464.37" x2="1064.1" y2="498.93" class="dim" />
+<line x1="817.5" y1="492.45" x2="1064.1" y2="492.45" class="dim" />
+<line x1="813.96" y1="488.92" x2="821.04" y2="495.99" class="dim" style="stroke-width:1.3"/>
+<line x1="1060.56" y1="488.92" x2="1067.64" y2="495.99" class="dim" style="stroke-width:1.3"/>
+<text x="940.8" y="502.45" class="dimt" text-anchor="middle" transform="rotate(0 940.8 498.45)">6'-10 1/4" between rails</text>
+<line x1="1149.12" y1="740.4" x2="1187.28" y2="740.4" class="dim" />
+<line x1="1149.12" y1="155.4" x2="1187.28" y2="155.4" class="dim" />
+<line x1="1180.8" y1="740.4" x2="1180.8" y2="155.4" class="dim" />
+<line x1="1177.26" y1="743.94" x2="1184.34" y2="736.86" class="dim" style="stroke-width:1.3"/>
+<line x1="1177.26" y1="158.94" x2="1184.34" y2="151.86" class="dim" style="stroke-width:1.3"/>
+<text x="1186.8" y="451.9" class="dimt" text-anchor="middle" transform="rotate(-90 1186.8 447.9)">16'-3" opening top</text>
+<line x1="1149.12" y1="740.4" x2="1219.68" y2="740.4" class="dim" />
+<line x1="1149.12" y1="449.25" x2="1219.68" y2="449.25" class="dim" />
+<line x1="1213.2" y1="740.4" x2="1213.2" y2="449.25" class="dim" />
+<line x1="1209.66" y1="743.94" x2="1216.74" y2="736.86" class="dim" style="stroke-width:1.3"/>
+<line x1="1209.66" y1="452.79" x2="1216.74" y2="445.72" class="dim" style="stroke-width:1.3"/>
+<text x="1219.2" y="598.83" class="dimt" text-anchor="middle" transform="rotate(-90 1219.2 594.83)">8'-1" lip</text>
+<line x1="823.8" y1="280.86" x2="1057.8" y2="280.86" class="dim" />
+<line x1="820.26" y1="277.33" x2="827.34" y2="284.4" class="dim" style="stroke-width:1.3"/>
+<line x1="1054.26" y1="277.33" x2="1061.34" y2="284.4" class="dim" style="stroke-width:1.3"/>
+<text x="940.8" y="280.86" class="dimt" text-anchor="middle" transform="rotate(0 940.8 276.86)">6'-6" ball</text>
+<line x1="1041.6" y1="400.62" x2="1083.24" y2="417.28" class="ldr" marker-start="url(#dot)"/>
+<circle cx="1091.6" cy="420.62" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1091.6" y="424.62" class="lblb" text-anchor="middle" style="font-size:10px">7</text>
+<line x1="1066.62" y1="353.04" x2="1107.79" y2="344.81" class="ldr" marker-start="url(#dot)"/>
+<circle cx="1116.62" cy="343.04" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1116.62" y="347.04" class="lblb" text-anchor="middle" style="font-size:10px">8</text>
+<line x1="771.6" y1="450.33" x2="747" y2="483.13" class="ldr" marker-start="url(#dot)"/>
+<circle cx="741.6" cy="490.33" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="741.6" y="494.33" class="lblb" text-anchor="middle" style="font-size:10px">9</text>
+<line x1="994.8" y1="142.8" x2="1037.77" y2="108.42" class="ldr" marker-start="url(#dot)"/>
+<circle cx="1044.8" cy="102.8" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1044.8" y="106.8" class="lblb" text-anchor="middle" style="font-size:10px">10</text>
+<line x1="940.8" y1="370.32" x2="887.71" y2="414.56" class="ldr" marker-start="url(#dot)"/>
+<circle cx="880.8" cy="420.32" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="880.8" y="424.32" class="lblb" text-anchor="middle" style="font-size:10px">11</text>
+<line x1="811.2" y1="451.41" x2="794.05" y2="502.87" class="ldr" marker-start="url(#dot)"/>
+<circle cx="791.2" cy="511.41" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="791.2" y="515.41" class="lblb" text-anchor="middle" style="font-size:10px">12</text>
+<text x="660" y="802" class="vt">ELEVATION C: DRAPE REMOVED</text>
+<text x="660" y="818" class="vs">Same view with the drape and batten left off to show the opening and ramp.</text>
+<text x="1290" y="80" class="vt" text-anchor="start" >KEYED NOTES</text>
+<circle cx="1299" cy="98" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="102" class="lblb" text-anchor="middle" style="font-size:10px">1</text>
+<text x="1316" y="102" class="lbl" text-anchor="start" >Kabuki pins (6) on the batten</text>
+<text x="1316" y="115" class="lbl" text-anchor="start" >(A-5, D3 and D4).</text>
+<circle cx="1299" cy="131" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="135" class="lblb" text-anchor="middle" style="font-size:10px">2</text>
+<text x="1316" y="135" class="lbl" text-anchor="start" >Lift line to the outrigger pulley,</text>
+<text x="1316" y="148" class="lbl" text-anchor="start" >leads back to a cleat in the booth.</text>
+<circle cx="1299" cy="164" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="168" class="lblb" text-anchor="middle" style="font-size:10px">3</text>
+<text x="1316" y="168" class="lbl" text-anchor="start" >Lane camera on the header,</text>
+<text x="1316" y="181" class="lbl" text-anchor="start" >for the operator's monitor.</text>
+<circle cx="1299" cy="197" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="201" class="lblb" text-anchor="middle" style="font-size:10px">4</text>
+<text x="1316" y="201" class="lbl" text-anchor="start" >Return, seen end-on.</text>
+<circle cx="1299" cy="217" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="221" class="lblb" text-anchor="middle" style="font-size:10px">5</text>
+<text x="1316" y="221" class="lbl" text-anchor="start" >Drape: IFR black velour.</text>
+<circle cx="1299" cy="237" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="241" class="lblb" text-anchor="middle" style="font-size:10px">6</text>
+<text x="1316" y="241" class="lbl" text-anchor="start" >Maze wall (existing), 8'-0".</text>
+<circle cx="1299" cy="257" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="261" class="lblb" text-anchor="middle" style="font-size:10px">7</text>
+<text x="1316" y="261" class="lbl" text-anchor="start" >Stop bar, 2x4 on edge, 6'-9 5/8".</text>
+<circle cx="1299" cy="277" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="281" class="lblb" text-anchor="middle" style="font-size:10px">8</text>
+<text x="1316" y="281" class="lbl" text-anchor="start" >Rail: 3/4" ply x 18", padded cap.</text>
+<circle cx="1299" cy="297" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="301" class="lblb" text-anchor="middle" style="font-size:10px">9</text>
+<text x="1316" y="301" class="lbl" text-anchor="start" >Lip filler: 3/4" ply, black.</text>
+<circle cx="1299" cy="317" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="321" class="lblb" text-anchor="middle" style="font-size:10px">10</text>
+<text x="1316" y="321" class="lbl" text-anchor="start" >Header: 2x4 frame, black sheeting.</text>
+<circle cx="1299" cy="337" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="341" class="lblb" text-anchor="middle" style="font-size:10px">11</text>
+<text x="1316" y="341" class="lbl" text-anchor="start" >Back stop (reload).</text>
+<circle cx="1299" cy="357" r="9" fill="#fff" stroke="#111" stroke-width="1"/>
+<text x="1299" y="361" class="lblb" text-anchor="middle" style="font-size:10px">12</text>
+<text x="1316" y="361" class="lbl" text-anchor="start" >Lip: doubled ply, carpet wrapped.</text>
+<text x="1290" y="387" class="lblb" text-anchor="start" >Notes</text>
+<text x="1290" y="401" class="lbl" text-anchor="start" >1. Booth front, jambs, and header are</text>
+<text x="1290" y="415" class="lbl" text-anchor="start" >   framed like the maze walls and covered</text>
+<text x="1290" y="429" class="lbl" text-anchor="start" >   in the same black sheeting.</text>
+<text x="1290" y="443" class="lbl" text-anchor="start" >2. The drape fills the width between the</text>
+<text x="1290" y="457" class="lbl" text-anchor="start" >   returns. With the returns, the lip</text>
+<text x="1290" y="471" class="lbl" text-anchor="start" >   fillers, and the hem below the lip, it</text>
+<text x="1290" y="485" class="lbl" text-anchor="start" >   closes every sight line from the lanes</text>
+<text x="1290" y="499" class="lbl" text-anchor="start" >   (checked in the model from every route</text>
+<text x="1290" y="513" class="lbl" text-anchor="start" >   position at 3'-6", 5'-6", 6'-6" eyes).</text>
+<text x="1290" y="527" class="lbl" text-anchor="start" >3. Returns run from the hem to the booth</text>
+<text x="1290" y="541" class="lbl" text-anchor="start" >   top, notched over the maze wall cap.</text>
+<text x="1290" y="555" class="lbl" text-anchor="start" >4. Ball at rest: top at 16'-0", 5 ft back</text>
+<text x="1290" y="569" class="lbl" text-anchor="start" >   from the opening. It only rolls down-</text>
+<text x="1290" y="583" class="lbl" text-anchor="start" >   hill, so it never nears the header.</text>
+
+      <rect x="18" y="18" width="1596" height="1020" fill="none" stroke="#111" stroke-width="2"/>
+      <rect x="1072" y="944" width="542" height="94" class="tb"/>
+      <line x1="1072" y1="974" x2="1614" y2="974" class="tbl"/>
+      <line x1="1502" y1="944" x2="1502" y2="1038" class="tbl"/>
+      <text x="1080" y="964" class="lblb">GYM HAUNTED HOUSE: HIDDEN BALL DROP (GROUP 4)</text>
+      <text x="1080" y="994" class="vt">Elevations from the lane</text>
+      <text x="1080" y="1008" class="lbls">Scale: 3/8 in = 1 ft (on a 17 x 11 in sheet)</text>
+      <text x="1080" y="1020" class="lbls">Planning sketch: verify every dimension on site before cutting.</text>
+      <text x="1080" y="1032" class="lbls">From the sandbox model (src/scenes/ball-drop-rig.js), scripts/drawings.mjs</text>
+      <text x="1558" y="964" class="lbls" text-anchor="middle">SHEET</text>
+      <text x="1558" y="1006" class="vt" text-anchor="middle" style="font-size:28px">A-3</text>
+      <text x="1558" y="1028" class="lbls" text-anchor="middle">2026-10-17</text>
+</svg>
